@@ -1,7 +1,8 @@
 package ohm.java;
 
-public class TerminalNode extends AbstractNode {
-	private static final Node[] children;
+public class TerminalNode extends ParseNode {
+	private static final ParseNode[] defaultChildren = new ParseNode[0];
+	private static final int[] defaultChildOffsets = new int[0];
 
 	public static TerminalNode get(int matchLength) {
 		// TODO: introduce cache up to length 20
@@ -12,18 +13,19 @@ public class TerminalNode extends AbstractNode {
 		super(matchLength);
 	}
 
-	static {
-		children = new Node[0];
+	@Override
+	public ParseNode[] getChildren() {
+		return defaultChildren;
+	}
+
+	@Override
+	public int[] getChildOffsets() {
+		return defaultChildOffsets;
 	}
 
 	@Override
 	public String ctorName() {
 		return "_terminal";
-	}
-
-	@Override
-	public Node[] getChildren() {
-		return children;
 	}
 
 	@Override

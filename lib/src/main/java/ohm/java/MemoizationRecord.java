@@ -7,7 +7,7 @@ import ohm.java.pexprs.Apply;
 public class MemoizationRecord {
 	private int matchLength = 0;
 	private int examinedLength = 0;
-	private Node value = null;
+	private ParseNode value = null;
 	private int rightmostFailureOffset = -1;
 
 	private boolean isLeftRecursion = false;
@@ -36,11 +36,11 @@ public class MemoizationRecord {
 		this.examinedLength = examinedLength;
 	}
 
-	public Node getValue() {
+	public ParseNode getValue() {
 		return value;
 	}
 
-	public void setValue(Node value) {
+	public void setValue(ParseNode value) {
 		this.value = value;
 	}
 

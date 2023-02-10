@@ -1,11 +1,11 @@
 package ohm.java;
 
-public class IterationNode extends AbstractNode {
+public class IterationNode extends ParseNode {
 	private final boolean optional;
-	private final Node[] children;
+	private final ParseNode[] children;
 	private final int[] childOffsets;
 
-	public IterationNode(int matchLength, Node[] children, int[] childOffsets, boolean optional) {
+	public IterationNode(int matchLength, ParseNode[] children, int[] childOffsets, boolean optional) {
 		super(matchLength);
 		this.children = children;
 		this.childOffsets = childOffsets;
@@ -18,8 +18,13 @@ public class IterationNode extends AbstractNode {
 	}
 
 	@Override
-	public Node[] getChildren() {
+	public ParseNode[] getChildren() {
 		return children;
+	}
+
+	@Override
+	public int[] getChildOffsets() {
+		return childOffsets;
 	}
 
 	@Override

@@ -1,12 +1,32 @@
 package ohm.java;
 
 public interface Node {
+	/**
+	 * Returns the name of grammar rule that created this CST node.
+	 */
 	abstract String ctorName();
 
+	/**
+	 * Returns a `SourceInterval` representing the portion of the input that was
+	 * consumed by this CST node.
+	 */
+	abstract SourceInterval getSource();
+
+	/**
+	 * Returns the contents of the input stream consumed by this CST node.
+	 */
+	default String sourceString() {
+		return getSource().getContents();
+	}
+
+	/**
+	 * Returns an array containing the children of this CST node.
+	 */
 	abstract Node[] getChildren();
 
-	abstract int getMatchLength();
-
+	/**
+	 * Returns the number of children of this CST node.
+	 */
 	default int numChildren() {
 		return getChildren().length;
 	}
@@ -16,10 +36,8 @@ public interface Node {
 	}
 
 	default int indexOfChild(Node childToFind) {
-		Node[] children = getChildren();
-		for (int i = 0; i < children.length; i++) {
-			Node child = children[i];
-			if (child == childToFind) {
+		for (int i = 0; i < numChildren(); i++) {
+			if (childAt(i) == childToFind) {
 				return i;
 			}
 		}
@@ -39,7 +57,7 @@ public interface Node {
 			throw new OhmException(
 					String.format("Cannot get only child of node %s. It does not have only 1 child", toString()));
 		}
-		return getChildren()[0];
+		return childAt(0);
 	}
 
 	default Node firstChild() {
@@ -80,19 +98,37 @@ public interface Node {
 		return childAt(childIndex + 1);
 	}
 
-	default boolean isIteration() {
-		return false;
-	}
+	/**
+	 * Returns `true` if the receiver node corresponds to an iteration expression,
+	 * i.e., a Kleene-*, Kleene-+, or an optional. Returns `false` otherwise.
+	 */
+	abstract boolean isIteration();
 
-	default boolean isNonterminal() {
-		return false;
-	}
+	/**
+	 * Returns `true` if the receiver node is a terminal node, `false` otherwise.
+	 */
+	abstract boolean isTerminal();
 
-	default boolean isTerminal() {
-		return false;
-	}
+	/**
+	 * Returns `true` if the receiver node is a nonterminal node, `false` otherwise.
+	 */
+	abstract boolean isNonterminal();
 
-	default boolean isOptional() {
-		return false;
-	}
+	/**
+	 * Returns `true` if the receiver node is a nonterminal node corresponding to a
+	 * syntactic rule, `false` otherwise.
+	 */
+	abstract boolean isSyntactic();
+
+	/**
+	 * Returns `true` if the receiver node is a nonterminal node corresponding to a
+	 * lexical rule, `false` otherwise.
+	 */
+	abstract boolean isLexical();
+
+	/**
+	 * Returns `true` if the receiver node is an iterator node having either one or
+	 * no child (? operator), `false` otherwise.
+	 */
+	abstract boolean isOptional();
 }

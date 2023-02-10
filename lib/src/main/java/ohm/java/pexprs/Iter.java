@@ -64,7 +64,7 @@ public abstract class Iter extends PExpr {
 		int offset = matchState.positionToOffset(originalPosition);
 		int matchLength = 0;
 		int numBindings = numMatches * arity;
-		Node[] bindings = matchState.spliceLastBindings(numBindings);
+		ParseNode[] bindings = matchState.spliceLastBindings(numBindings);
 		int[] bindingOffsets = matchState.spliceLastBindingOffsets(numBindings);
 
 		if (numMatches > 0) {
@@ -75,7 +75,7 @@ public abstract class Iter extends PExpr {
 
 		int position = matchState.offsetToPosition(offset);
 		for (int columnIndex = 0; columnIndex < arity; columnIndex++) {
-			Node[] column = new Node[numMatches];
+			ParseNode[] column = new ParseNode[numMatches];
 			int[] columnOffsets = new int[numMatches];
 			for (int rowIndex = 0; rowIndex < numMatches; rowIndex++) {
 				int index = rowIndex * arity + columnIndex;

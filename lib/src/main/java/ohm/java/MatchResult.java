@@ -6,10 +6,10 @@ public class MatchResult {
 	private final Matcher matcher;
 	private final String input;
 	private final Apply startApplication;
-	private final Node cst;
+	private final ParseNode cst;
 	private final int cstOffset;
 
-	public MatchResult(Matcher matcher, String input, Apply startApplication, Node cst, int cstOffset) {
+	public MatchResult(Matcher matcher, String input, Apply startApplication, ParseNode cst, int cstOffset) {
 		super();
 		this.matcher = matcher;
 		this.input = input;
@@ -30,7 +30,7 @@ public class MatchResult {
 		return startApplication;
 	}
 
-	public Node getCST() {
+	public ParseNode getCST() {
 		return cst;
 	}
 

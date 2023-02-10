@@ -124,7 +124,7 @@ public class Apply extends PExpr {
 
 		matchState.enterApplication(origPosInfo, this);
 
-		Node nodeOrNull = evalOnce(rule.getBody(), matchState);
+		ParseNode nodeOrNull = evalOnce(rule.getBody(), matchState);
 		MemoizationRecord currentLR = origPosInfo.getCurrentLeftRecursion();
 		String memoKey = toMemoKey();
 		boolean isHeadOfLeftRecursion = (currentLR != null)
@@ -149,13 +149,13 @@ public class Apply extends PExpr {
 		return nodeOrNull != null;
 	}
 
-	private Node evalOnce(PExpr body, MatchState matchState) {
+	private ParseNode evalOnce(PExpr body, MatchState matchState) {
 		InputStream inputStream = matchState.getInputStream();
 		int originalPosition = inputStream.getPosition();
 
 		if (matchState.eval(body)) {
 			int arity = body.getArity();
-			Node[] bindings = matchState.spliceLastBindings(arity);
+			ParseNode[] bindings = matchState.spliceLastBindings(arity);
 			int[] offsets = matchState.spliceLastBindingOffsets(arity);
 			int matchLength = inputStream.getPosition() - originalPosition;
 			return new NonterminalNode(matchLength, ruleName, bindings, offsets);
@@ -164,8 +164,8 @@ public class Apply extends PExpr {
 		return null;
 	}
 
-	private Node growSeedResult(PExpr body, MatchState matchState, int originalPosition, MemoizationRecord lrMemoRec,
-			Node newValue) {
+	private ParseNode growSeedResult(PExpr body, MatchState matchState, int originalPosition,
+			MemoizationRecord lrMemoRec, ParseNode newValue) {
 		if (newValue == null) {
 			return null;
 		}

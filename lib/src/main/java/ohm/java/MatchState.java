@@ -16,7 +16,7 @@ public class MatchState {
 	private final PExpr startExpr;
 	private final Apply startApplication;
 
-	private final Deque<Node> bindings = new ArrayDeque<>();
+	private final Deque<ParseNode> bindings = new ArrayDeque<>();
 	private final Deque<Integer> bindingOffsets = new ArrayDeque<>();
 	private final Deque<Apply> applicationStack = new ArrayDeque<>();
 	private final Deque<Integer> positionStack = new ArrayDeque<>();
@@ -75,7 +75,7 @@ public class MatchState {
 		positionInfo.enter(application);
 	}
 
-	public void exitApplication(PositionInfo positionInfo, Node nodeOrNull) {
+	public void exitApplication(PositionInfo positionInfo, ParseNode nodeOrNull) {
 		int originalPosition = positionStack.removeLast();
 		applicationStack.removeLast();
 		inLexifiedContextStack.removeLast();
@@ -129,8 +129,8 @@ public class MatchState {
 		}
 	}
 
-	public Node[] spliceLastBindings(int numBindings) {
-		Node[] result = new Node[numBindings];
+	public ParseNode[] spliceLastBindings(int numBindings) {
+		ParseNode[] result = new ParseNode[numBindings];
 		for (int i = numBindings - 1; i >= 0; i--) {
 			result[i] = bindings.removeLast();
 		}
@@ -145,7 +145,7 @@ public class MatchState {
 		return result;
 	}
 
-	public void pushBinding(Node node, int originalPosition) {
+	public void pushBinding(ParseNode node, int originalPosition) {
 		bindings.addLast(node);
 		bindingOffsets.addLast(positionToOffset(originalPosition));
 	}
@@ -222,7 +222,7 @@ public class MatchState {
 	}
 
 	public MatchResult getMatchResult() {
-		Node cst = bindings.peekFirst();
+		ParseNode cst = bindings.peekFirst();
 		int cstOffset = bindingOffsets.isEmpty() ? 0 : bindingOffsets.getFirst();
 		return new MatchResult(matcher, input, startApplication, cst, cstOffset);
 	}

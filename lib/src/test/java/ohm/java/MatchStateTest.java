@@ -94,7 +94,7 @@ class MatchStateTest {
 	@Test
 	void testBindingsStack() {
 		matchState = getMatchState();
-		Node node = TerminalNode.get(3);
+		ParseNode node = TerminalNode.get(3);
 		assertEquals(0, matchState.numBindings());
 		matchState.pushBinding(node, 0);
 		matchState.pushBinding(node, 3);
@@ -107,13 +107,13 @@ class MatchStateTest {
 	@Test
 	void testBindingsSplice() {
 		matchState = getMatchState();
-		Node node1 = TerminalNode.get(3);
-		Node node2 = TerminalNode.get(5);
-		Node node3 = TerminalNode.get(1);
+		ParseNode node1 = TerminalNode.get(3);
+		ParseNode node2 = TerminalNode.get(5);
+		ParseNode node3 = TerminalNode.get(1);
 		matchState.pushBinding(node1, 0);
 		matchState.pushBinding(node2, 3);
 		matchState.pushBinding(node3, 8);
-		assertArrayEquals(new Node[] { node2, node3 }, matchState.spliceLastBindings(2));
+		assertArrayEquals(new ParseNode[] { node2, node3 }, matchState.spliceLastBindings(2));
 		assertArrayEquals(new int[] { 3, 8 }, matchState.spliceLastBindingOffsets(2));
 		assertEquals(1, matchState.numBindings());
 	}
@@ -121,9 +121,9 @@ class MatchStateTest {
 	@Test
 	void testTruncateBindings() {
 		matchState = getMatchState();
-		Node node1 = TerminalNode.get(3);
-		Node node2 = TerminalNode.get(5);
-		Node node3 = TerminalNode.get(1);
+		ParseNode node1 = TerminalNode.get(3);
+		ParseNode node2 = TerminalNode.get(5);
+		ParseNode node3 = TerminalNode.get(1);
 		matchState.pushBinding(node1, 0);
 		matchState.pushBinding(node2, 3);
 		matchState.pushBinding(node3, 8);
