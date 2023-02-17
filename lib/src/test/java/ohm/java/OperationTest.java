@@ -9,17 +9,19 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import ohm.java.SemanticActions.SpecialActionNames;
+
 class OperationTest {
-	Operation op;
+	SemanticActions op;
 	Map<String, Method> actionMap;
 
 	@Test
 	void testNonterminalAlwaysHasDefaultAction() {
-		op = new Operation();
-		assertTrue(op.actionMap.containsKey(Operation.SpecialActionNames.nonterminal));
+		op = new SemanticActions();
+		assertTrue(op.actionMap.containsKey(SpecialActionNames.nonterminal));
 	}
 
-	class ActionWithMultipleNames extends Operation {
+	class ActionWithMultipleNames extends SemanticActions {
 		@Action("Exp")
 		@Action("AddExp")
 		public String defaultExp() {
@@ -36,7 +38,7 @@ class OperationTest {
 		assertEquals("defaultExp", (String) op.actionMap.get("AddExp").invoke(op));
 	}
 
-	class NonVarArgsAction extends Operation {
+	class NonVarArgsAction extends SemanticActions {
 		@Action("AddExp_plus")
 		public String AddExp_plus(Node node) {
 			return "AddExp_plus";
@@ -50,7 +52,7 @@ class OperationTest {
 		assertEquals("AddExp_plus", (String) op.actionMap.get("AddExp_plus").invoke(op, (Object) null));
 	}
 
-	class VarArgsAction extends Operation {
+	class VarArgsAction extends SemanticActions {
 		@Action
 		public String AddExp_minus(Node... nodes) {
 			return "AddExp_minus";
@@ -64,7 +66,7 @@ class OperationTest {
 		assertEquals("AddExp_minus", (String) op.actionMap.get("AddExp_minus").invoke(op, (Object) new Node[0]));
 	}
 
-	class DuplicateActionOperation extends Operation {
+	class DuplicateActionOperation extends SemanticActions {
 		@Action("Exp")
 		public String Exp() {
 			return "Exp";
@@ -81,7 +83,7 @@ class OperationTest {
 		assertThrows(OhmException.class, () -> new DuplicateActionOperation());
 	}
 
-	class WrongParameterOperation extends Operation {
+	class WrongParameterOperation extends SemanticActions {
 		@Action
 		public String Exp(int index) {
 			return "Exp";
@@ -93,7 +95,7 @@ class OperationTest {
 		assertThrows(OhmException.class, () -> new WrongParameterOperation());
 	}
 
-	class WrongVarArgsParameterOperation extends Operation {
+	class WrongVarArgsParameterOperation extends SemanticActions {
 		@Action
 		public String Exp(int... indices) {
 			return "Exp";
@@ -105,7 +107,7 @@ class OperationTest {
 		assertThrows(OhmException.class, () -> new WrongVarArgsParameterOperation());
 	}
 
-	class SimpleOperation extends Operation {
+	class SimpleOperation extends SemanticActions {
 		@Action("RuleA")
 		public String RuleA(Node node) {
 			return String.class.cast(apply(node));
@@ -124,7 +126,7 @@ class OperationTest {
 
 	@Test
 	void testApply() {
-		Operation op = new SimpleOperation();
+		SemanticActions op = new SimpleOperation();
 
 		assertEquals("Rule B", op.apply(Nonterminal("RuleB")));
 		assertEquals("Rule B", op.apply(Nonterminal("RuleA", Nonterminal("RuleB"))));
@@ -133,11 +135,11 @@ class OperationTest {
 
 	@Test
 	void testApplyDefaultNonterminalSpecialAction() {
-		Operation op = new SimpleOperation();
+		SemanticActions op = new SimpleOperation();
 		assertEquals("Rule B", op.apply(Nonterminal("RuleX", Nonterminal("RuleB"))));
 	}
 
-	class SpecialActions extends Operation {
+	class SpecialActions extends SemanticActions {
 		@Action("RuleA")
 		public String RuleA() {
 			return "Rule A";
@@ -153,7 +155,7 @@ class OperationTest {
 
 	@Test
 	void testApplySpecialActions() {
-		Operation op = new SpecialActions();
+		SemanticActions op = new SpecialActions();
 
 		assertEquals("Rule A", op.apply(Nonterminal("RuleA")));
 		assertEquals("default action", op.apply(Nonterminal("RuleX")));

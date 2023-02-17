@@ -1,5 +1,7 @@
 package ohm.java;
 
+import ohm.java.SemanticActions.SpecialActionNames;
+
 public abstract class MockNode implements Node {
 	public static IterNode Iter(Node... children) {
 		return new IterNode(children);
@@ -27,7 +29,7 @@ public abstract class MockNode implements Node {
 
 		@Override
 		public String ctorName() {
-			return Operation.SpecialActionNames.iteration;
+			return SpecialActionNames.iteration;
 		}
 
 		@Override
@@ -80,7 +82,7 @@ public abstract class MockNode implements Node {
 	static class TerminalNode extends MockNode {
 		@Override
 		public String ctorName() {
-			return Operation.SpecialActionNames.terminal;
+			return SpecialActionNames.terminal;
 		}
 
 		@Override

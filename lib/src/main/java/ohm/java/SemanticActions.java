@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * An Operation represents a function to be applied to a concrete syntax tree
+ * An SemanticActions represents a function to be applied to a concrete syntax tree
  * (CST) -- it's very similar to a Visitor
  * (http://en.wikipedia.org/wiki/Visitor_pattern). An operation is executed by
  * recursively walking the CST, and at each node, invoking the matching semantic
  * action from `actionMap`.
  *
  */
-public class Operation {
+public class SemanticActions {
 	protected Node self = null;
 	Map<String, Method> actionMap;
 
@@ -24,14 +24,14 @@ public class Operation {
 	}
 
 	public static final Class<? extends Node> NodeClass = Node.class;
-	private static final Map<Class<? extends Operation>, Map<String, Method>> knownActionMaps = new HashMap<>();
+	private static final Map<Class<? extends SemanticActions>, Map<String, Method>> knownActionMaps = new HashMap<>();
 
-	public Operation() {
+	public SemanticActions() {
 		super();
 		this.actionMap = getActionMap(getClass());
 	}
 
-	private static Map<String, Method> getActionMap(Class<? extends Operation> myClass) {
+	private static Map<String, Method> getActionMap(Class<? extends SemanticActions> myClass) {
 		Map<String, Method> actionMap = knownActionMaps.get(myClass);
 		if (actionMap == null) {
 			actionMap = gatherActionMap(myClass);
@@ -40,9 +40,9 @@ public class Operation {
 		return actionMap;
 	}
 
-	private static Map<String, Method> gatherActionMap(Class<? extends Operation> myClass) {
+	private static Map<String, Method> gatherActionMap(Class<? extends SemanticActions> myClass) {
 		Map<String, Method> actionMap = gatherLocalActionMap(myClass);
-		if (myClass.equals(Operation.class)) {
+		if (myClass.equals(SemanticActions.class)) {
 			return actionMap;
 		}
 
@@ -50,7 +50,7 @@ public class Operation {
 		// condition above, but maybe think about it again later. Also, what's the worst
 		// that could happen here?
 		@SuppressWarnings("unchecked")
-		Class<? extends Operation> superClass = (Class<? extends Operation>) myClass.getSuperclass();
+		Class<? extends SemanticActions> superClass = (Class<? extends SemanticActions>) myClass.getSuperclass();
 
 		Map<String, Method> superActionMap = getActionMap(superClass);
 		superActionMap.forEach((name, action) -> {
@@ -59,7 +59,7 @@ public class Operation {
 		return actionMap;
 	}
 
-	private static Map<String, Method> gatherLocalActionMap(Class<? extends Operation> myClass) {
+	private static Map<String, Method> gatherLocalActionMap(Class<? extends SemanticActions> myClass) {
 		Map<String, Method> actionMap = new HashMap<>();
 
 		// TODO: could throw SecurityException -> what then?
