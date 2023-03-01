@@ -4,14 +4,14 @@ import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SemanticsBlueprint {
-	private final Class<? extends Semantics> semanticsClass;
+public class SemanticsBlueprint<T extends Semantics> {
+	private final Class<T> semanticsClass;
 	private final Grammar grammar;
-	private final Constructor<? extends Semantics> constructor;
+	private final Constructor<T> constructor;
 	private final OperationBlueprint[] operationBlueprints;
 
-	private SemanticsBlueprint(Class<? extends Semantics> semanticsClass, Grammar grammar,
-			Constructor<? extends Semantics> constructor, OperationBlueprint[] operationBlueprints) {
+	private SemanticsBlueprint(Class<T> semanticsClass, Grammar grammar, Constructor<T> constructor,
+			OperationBlueprint[] operationBlueprints) {
 		super();
 		this.semanticsClass = semanticsClass;
 		this.grammar = grammar;
@@ -19,11 +19,11 @@ public class SemanticsBlueprint {
 		this.operationBlueprints = operationBlueprints;
 	}
 
-	static SemanticsBlueprint create(Class<? extends Semantics> semanticsClass) {
+	static <T extends Semantics> SemanticsBlueprint<T> create(Class<T> semanticsClass) {
 		return create(semanticsClass, null);
 	}
 
-	static SemanticsBlueprint create(Class<? extends Semantics> semanticsClass, Grammar grammar) {
+	static <T extends Semantics> SemanticsBlueprint<T> create(Class<T> semanticsClass, Grammar grammar) {
 		int modifiers = semanticsClass.getModifiers();
 		if (Modifier.isAbstract(modifiers)) {
 			throw new OhmException(
@@ -36,7 +36,7 @@ public class SemanticsBlueprint {
 							.formatted(semanticsClass.getCanonicalName()));
 		}
 
-		Constructor<? extends Semantics> constructor;
+		Constructor<T> constructor;
 		try {
 			constructor = semanticsClass.getConstructor();
 		} catch (SecurityException e) {
@@ -55,10 +55,10 @@ public class SemanticsBlueprint {
 					.formatted(semanticsClass.getCanonicalName()));
 		}
 
-		return new SemanticsBlueprint(semanticsClass, grammar, constructor, operationBlueprints);
+		return new SemanticsBlueprint<T>(semanticsClass, grammar, constructor, operationBlueprints);
 	}
 
-	public Semantics on(MatchResult matchResult) {
+	public T on(MatchResult matchResult) {
 		if (matchResult.failed()) {
 			throw new OhmException("Cannot instantiate semantics '%s' for a match result that failed."
 					.formatted(semanticsClass.getCanonicalName()));
@@ -66,9 +66,15 @@ public class SemanticsBlueprint {
 		return on(matchResult.getRootNode());
 	}
 
-	Semantics on(Node rootNode) {
+	T on(Node rootNode) {
+		T result = instantiate();
+		result.rootNode = rootNode;
+		return result;
+	}
 
-		Semantics semantics;
+	T instantiate() {
+
+		T semantics;
 		try {
 			semantics = constructor.newInstance();
 		} catch (InvocationTargetException e) {
@@ -91,7 +97,6 @@ public class SemanticsBlueprint {
 		semantics.operations = createOperations(semantics);
 		semantics.defaultOperation = semantics.operations.length == 1 ? semantics.operations[0]
 				: semantics.getOperation(Operation.defaultName);
-		semantics.rootNode = rootNode;
 		semantics.grammar = grammar;
 		semantics.initialize();
 		semantics.initializeOperations();
