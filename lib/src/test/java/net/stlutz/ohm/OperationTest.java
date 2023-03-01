@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import net.stlutz.ohm.Operation.SpecialActionNames;
 
-class SemanticActionsTest {
+class OperationTest {
 	Operation op;
 	Map<String, Method> actionMap;
 
