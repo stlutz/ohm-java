@@ -31,17 +31,17 @@ public class SemanticActions {
 	/**
 	 * Returns either
 	 * <ul>
-	 * <li>the name given to {@code myClass} via an {@code @Operation} annotation
-	 * (e.g. {@code "foobar"} for {@code @Operation("foobar")},</li>
+	 * <li>the name given to {@code myClass} via an {@code @Named} annotation
+	 * (e.g. {@code "foobar"} for {@code @Named("foobar")},</li>
 	 * <li>or a default name if no annotation is present</li>
 	 * </ul>
 	 */
 	static String getName(Class<? extends SemanticActions> opClass) {
-		Operation annotation = opClass.getAnnotation(Operation.class);
+		Named annotation = opClass.getAnnotation(Named.class);
 		if (annotation != null) {
 			String annotatedName = annotation.value();
 			if (annotatedName.equals(defaultName)) {
-				throw new OhmException("Operation '%s' was named '%s', which is a reserved name."
+				throw new OhmException("Named '%s' was named '%s', which is a reserved name."
 						.formatted(opClass.getCanonicalName(), defaultName));
 			}
 			return annotatedName;

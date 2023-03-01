@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-public @interface Operation {
+public @interface Named {
 	String value() default SemanticActions.defaultName;
 }
