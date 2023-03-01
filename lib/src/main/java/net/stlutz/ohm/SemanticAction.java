@@ -15,6 +15,10 @@ class SemanticAction {
 		this.method = method;
 	}
 
+	static boolean isExactlyNode(Class<?> type) {
+		return Node.class.isAssignableFrom(type) && type.isAssignableFrom(Node.class);
+	}
+
 	static SemanticAction fromMethod(String actionName, Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		if (method.isVarArgs() && parameterTypes.length >= 2) {
@@ -24,18 +28,18 @@ class SemanticAction {
 		} else if (parameterTypes.length == 1 && parameterTypes[0].isArray()) {
 			// foobar(Node[] children)
 			// foobar(Node... children)
-			if (!Node.class.isAssignableFrom(parameterTypes[0].getComponentType())) {
+			if (!isExactlyNode(parameterTypes[0].getComponentType())) {
 				throw new OhmException("Action method '%s' has vararg parameter that is not '%s'"
-						.formatted(method.getName(), Node.class.arrayType().getSimpleName()));
+						.formatted(method.getName(), Node.class.arrayType().getCanonicalName()));
 			}
 			return new VarArgsSemanticAction(actionName, method);
 		} else {
 			// foobar(Node a, Node b)
 			// foobar()
 			for (Class<?> parameterType : parameterTypes) {
-				if (!Node.class.isAssignableFrom(parameterType)) {
+				if (!isExactlyNode(parameterType)) {
 					throw new OhmException("Action method '%s' expects parameters that are not '%s'"
-							.formatted(method.getName(), Node.class.getSimpleName()));
+							.formatted(method.getName(), Node.class.getCanonicalName()));
 				}
 			}
 			return new SemanticAction(actionName, method);
