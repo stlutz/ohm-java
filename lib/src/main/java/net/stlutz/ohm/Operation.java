@@ -4,14 +4,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
- * A SemanticActions represents a function to be applied to a concrete syntax
+ * A Operation represents a function to be applied to a concrete syntax
  * tree (CST) -- it's very similar to a Visitor
  * (http://en.wikipedia.org/wiki/Visitor_pattern). An operation is executed by
  * recursively walking the CST, and at each node, invoking the matching semantic
  * action from `actionMap`.
  *
  */
-public class SemanticActions {
+public class Operation {
 	protected Node self = null;
 	String name;
 	Map<String, SemanticAction> actionMap;
@@ -36,7 +36,7 @@ public class SemanticActions {
 	 * <li>or a default name if no annotation is present</li>
 	 * </ul>
 	 */
-	static String getName(Class<? extends SemanticActions> opClass) {
+	static String getName(Class<? extends Operation> opClass) {
 		Named annotation = opClass.getAnnotation(Named.class);
 		if (annotation != null) {
 			String annotatedName = annotation.value();

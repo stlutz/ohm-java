@@ -7,15 +7,15 @@ import java.util.Map;
 class OperationBlueprint {
 	private final String name;
 	private final Map<String, SemanticAction> actionMap;
-	private final Class<? extends SemanticActions> operationClass;
-	private final Constructor<? extends SemanticActions> operationConstructor;
+	private final Class<? extends Operation> operationClass;
+	private final Constructor<? extends Operation> operationConstructor;
 	private final boolean isStandalone;
 
 	public static final Class<? extends Node> NodeClass = Node.class;
 
 	private OperationBlueprint(String name, Map<String, SemanticAction> actionMap,
-			Class<? extends SemanticActions> operationClass,
-			Constructor<? extends SemanticActions> operationConstructor, boolean isStandalone) {
+			Class<? extends Operation> operationClass,
+			Constructor<? extends Operation> operationConstructor, boolean isStandalone) {
 		super();
 		this.name = name;
 		this.actionMap = actionMap;
@@ -24,7 +24,7 @@ class OperationBlueprint {
 		this.isStandalone = isStandalone;
 	}
 
-	static OperationBlueprint create(Class<? extends SemanticActions> operationClass) {
+	static OperationBlueprint create(Class<? extends Operation> operationClass) {
 		int modifiers = operationClass.getModifiers();
 		if (Modifier.isAbstract(modifiers)) {
 			throw new OhmException("Defining operations as abstract classes is not allowed");
@@ -42,7 +42,7 @@ class OperationBlueprint {
 			}
 		}
 
-		Constructor<? extends SemanticActions> constructor;
+		Constructor<? extends Operation> constructor;
 		try {
 			if (isStandalone) {
 				constructor = operationClass.getConstructor();
@@ -58,20 +58,20 @@ class OperationBlueprint {
 		}
 
 		Map<String, SemanticAction> actionMap = gatherActionMap(operationClass);
-		String name = SemanticActions.getName(operationClass);
+		String name = Operation.getName(operationClass);
 
 		return new OperationBlueprint(name, actionMap, operationClass, constructor, isStandalone);
 	}
 
-	SemanticActions make() {
+	Operation make() {
 		if (!isStandalone) {
 			throw new OhmException("Cannot create this operation blueprint standalone");
 		}
 		return make(null);
 	}
 
-	SemanticActions make(Semantics semantics) {
-		SemanticActions result;
+	Operation make(Semantics semantics) {
+		Operation result;
 
 		try {
 			if (isStandalone) {
@@ -89,7 +89,7 @@ class OperationBlueprint {
 		return result;
 	}
 
-	private static Map<String, SemanticAction> gatherActionMap(Class<? extends SemanticActions> operationClass) {
+	private static Map<String, SemanticAction> gatherActionMap(Class<? extends Operation> operationClass) {
 		Map<String, SemanticAction> actionMap = new HashMap<>();
 
 		// TODO: could throw SecurityException -> what then?

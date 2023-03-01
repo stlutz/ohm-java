@@ -1,6 +1,6 @@
 package net.stlutz.ohm;
 
-import net.stlutz.ohm.SemanticActions.SpecialActionNames;
+import net.stlutz.ohm.Operation.SpecialActionNames;
 
 public abstract class MockNode implements Node {
 	public static IterNode Iter(Node... children) {

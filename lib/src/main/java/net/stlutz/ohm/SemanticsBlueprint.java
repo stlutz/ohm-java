@@ -90,7 +90,7 @@ public class SemanticsBlueprint {
 
 		semantics.operations = createOperations(semantics);
 		semantics.defaultOperation = semantics.operations.length == 1 ? semantics.operations[0]
-				: semantics.getOperation(SemanticActions.defaultName);
+				: semantics.getOperation(Operation.defaultName);
 		semantics.rootNode = rootNode;
 		semantics.grammar = grammar;
 		semantics.initialize();
@@ -98,8 +98,8 @@ public class SemanticsBlueprint {
 		return semantics;
 	}
 
-	private SemanticActions[] createOperations(Semantics semantics) {
-		SemanticActions[] operations = new SemanticActions[operationBlueprints.length];
+	private Operation[] createOperations(Semantics semantics) {
+		Operation[] operations = new Operation[operationBlueprints.length];
 
 		for (int i = 0; i < operations.length; i++) {
 			operations[i] = operationBlueprints[i].make(semantics);
@@ -109,31 +109,31 @@ public class SemanticsBlueprint {
 	}
 
 	private static OperationBlueprint[] gatherOperationBlueprints(Class<? extends Semantics> semanticsClass) {
-		Map<String, Class<? extends SemanticActions>> operationClasses = gatherOperationClasses(semanticsClass);
+		Map<String, Class<? extends Operation>> operationClasses = gatherOperationClasses(semanticsClass);
 		OperationBlueprint[] operationBlueprints = new OperationBlueprint[operationClasses.size()];
 
 		int i = 0;
-		for (Class<? extends SemanticActions> opClass : operationClasses.values()) {
+		for (Class<? extends Operation> opClass : operationClasses.values()) {
 			operationBlueprints[i++] = OperationBlueprint.create(opClass);
 		}
 
 		return operationBlueprints;
 	}
 
-	private static Map<String, Class<? extends SemanticActions>> gatherOperationClasses(
+	private static Map<String, Class<? extends Operation>> gatherOperationClasses(
 			Class<? extends Semantics> semanticsClass) {
-		Map<String, Class<? extends SemanticActions>> nameToOpClass = new HashMap<>();
+		Map<String, Class<? extends Operation>> nameToOpClass = new HashMap<>();
 
 		// TODO: could throw SecurityException
 		for (Class<?> cls : semanticsClass.getClasses()) {
-			// only include subclasses of SemanticActions
-			if (!SemanticActions.class.isAssignableFrom(cls)) {
+			// only include subclasses of Operation
+			if (!Operation.class.isAssignableFrom(cls)) {
 				continue;
 			}
 
 			@SuppressWarnings("unchecked") // safe due to the check above
-			Class<? extends SemanticActions> opClass = (Class<? extends SemanticActions>) cls;
-			String opName = SemanticActions.getName(opClass);
+			Class<? extends Operation> opClass = (Class<? extends Operation>) cls;
+			String opName = Operation.getName(opClass);
 
 			// always get the most specialized operation class of a given name
 			nameToOpClass.merge(opName, opClass, (classA, classB) -> {
@@ -142,7 +142,7 @@ public class SemanticsBlueprint {
 				} else if (classB.isAssignableFrom(classA)) {
 					return classA;
 				} else {
-					if (opName.equals(SemanticActions.defaultName)) {
+					if (opName.equals(Operation.defaultName)) {
 						throw new OhmException("Semantics '%s' contains more than one unnamed operation: '%s' and '%s'."
 								.formatted(semanticsClass.getCanonicalName(), classA.getCanonicalName(),
 										classB.getCanonicalName()));

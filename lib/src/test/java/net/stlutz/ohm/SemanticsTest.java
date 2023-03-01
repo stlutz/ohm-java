@@ -14,7 +14,7 @@ class SemanticsTest {
 	}
 
 	public static class SimpleSemantics extends Semantics {
-		public class SimpleOperation extends SemanticActions {
+		public class SimpleOperation extends Operation {
 			@Action
 			public String Exp() {
 				return "Exp";

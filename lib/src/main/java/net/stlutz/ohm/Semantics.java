@@ -2,8 +2,8 @@ package net.stlutz.ohm;
 
 public class Semantics {
 	Grammar grammar;
-	SemanticActions[] operations;
-	SemanticActions defaultOperation;
+	Operation[] operations;
+	Operation defaultOperation;
 	Node rootNode;
 
 	public Grammar getGrammar() {
@@ -14,7 +14,7 @@ public class Semantics {
 		return rootNode;
 	}
 
-	public SemanticActions getOperation() {
+	public Operation getOperation() {
 		if (defaultOperation != null) {
 			return defaultOperation;
 		} else {
@@ -22,8 +22,8 @@ public class Semantics {
 		}
 	}
 
-	public SemanticActions getOperation(String name) {
-		for (SemanticActions operation : operations) {
+	public Operation getOperation(String name) {
+		for (Operation operation : operations) {
 			if (operation.getName().equals(name)) {
 				return operation;
 			}
@@ -35,7 +35,7 @@ public class Semantics {
 	}
 
 	void initializeOperations() {
-		for (SemanticActions operation : operations) {
+		for (Operation operation : operations) {
 			operation.initialize();
 		}
 	}

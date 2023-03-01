@@ -3,7 +3,7 @@ package net.stlutz.ohm;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import net.stlutz.ohm.SemanticActions.SpecialActionNames;
+import net.stlutz.ohm.Operation.SpecialActionNames;
 
 class SemanticAction {
 	final String name;
@@ -42,7 +42,7 @@ class SemanticAction {
 		}
 	}
 
-	public Object invoke(SemanticActions operation, Node self)
+	public Object invoke(Operation operation, Node self)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		return method.invoke(operation, (Object[]) self.getChildren());
 	}
@@ -97,7 +97,7 @@ class SemanticAction {
 		}
 
 		@Override
-		public Object invoke(SemanticActions operation, Node self)
+		public Object invoke(Operation operation, Node self)
 				throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			return method.invoke(operation, (Object) self.getChildren());
 		}

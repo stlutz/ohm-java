@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 @Target(TYPE)
 @Inherited
 public @interface Named {
-	String value() default SemanticActions.defaultName;
+	String value() default Operation.defaultName;
 }
