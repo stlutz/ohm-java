@@ -17,6 +17,10 @@ public class NodeWrapper implements Node {
 		this.baseInterval = baseInterval;
 	}
 
+	public NodeWrapper(ParseNode node, SourceInterval sourceInterval) {
+		this(node, sourceInterval, sourceInterval);
+	}
+
 	@Override
 	public String ctorName() {
 		return node.ctorName();

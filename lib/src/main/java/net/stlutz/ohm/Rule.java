@@ -34,6 +34,10 @@ public class Rule {
 		return body;
 	}
 
+	public int getArity() {
+		return body.getArity();
+	}
+
 	public String[] getFormals() {
 		return formals;
 	}

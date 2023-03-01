@@ -30,6 +30,14 @@ public class MatchResult {
 		return startApplication;
 	}
 
+	public SourceInterval getSourceInterval() {
+		return new SourceInterval(input, cstOffset, input.length());
+	}
+
+	public Node getRootNode() {
+		return new NodeWrapper(cst, getSourceInterval());
+	}
+
 	public ParseNode getCST() {
 		return cst;
 	}

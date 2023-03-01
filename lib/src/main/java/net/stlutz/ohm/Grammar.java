@@ -88,6 +88,10 @@ public class Grammar {
 		return getMatcher(input).match(startRule);
 	}
 
+	public SemanticsBlueprint createSemanticsBlueprint(Class<? extends Semantics> semanticsClass) {
+		return SemanticsBlueprint.create(semanticsClass, this);
+	}
+
 	Apply parseApplication(String ruleName) {
 		if (ruleName.contains("<")) {
 			// TODO

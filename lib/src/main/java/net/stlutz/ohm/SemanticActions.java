@@ -1,8 +1,6 @@
 package net.stlutz.ohm;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,122 +13,77 @@ import java.util.Map;
  */
 public class SemanticActions {
 	protected Node self = null;
-	Map<String, Method> actionMap;
+	String name;
+	Map<String, SemanticAction> actionMap;
 
-	public static class SpecialActionNames {
+	public static final class SpecialActionNames {
 		public static final String nonterminal = "_nonterminal";
 		public static final String terminal = "_terminal";
 		public static final String iteration = "_iter";
-	}
 
-	public static final Class<? extends Node> NodeClass = Node.class;
-	private static final Map<Class<? extends SemanticActions>, Map<String, Method>> knownActionMaps = new HashMap<>();
-
-	public SemanticActions() {
-		super();
-		this.actionMap = getActionMap(getClass());
-	}
-
-	private static Map<String, Method> getActionMap(Class<? extends SemanticActions> myClass) {
-		Map<String, Method> actionMap = knownActionMaps.get(myClass);
-		if (actionMap == null) {
-			actionMap = gatherActionMap(myClass);
-			knownActionMaps.put(myClass, actionMap);
+		public static boolean includes(String name) {
+			return name.equals(nonterminal) || name.equals(terminal) || name.equals(iteration);
 		}
-		return actionMap;
 	}
 
-	private static Map<String, Method> gatherActionMap(Class<? extends SemanticActions> myClass) {
-		Map<String, Method> actionMap = gatherLocalActionMap(myClass);
-		if (myClass.equals(SemanticActions.class)) {
-			return actionMap;
-		}
+	public static final String defaultName = "__default__";
 
-		// TODO: I'm pretty sure this should be completely fine due to the abort
-		// condition above, but maybe think about it again later. Also, what's the worst
-		// that could happen here?
-		@SuppressWarnings("unchecked")
-		Class<? extends SemanticActions> superClass = (Class<? extends SemanticActions>) myClass.getSuperclass();
-
-		Map<String, Method> superActionMap = getActionMap(superClass);
-		superActionMap.forEach((name, action) -> {
-			actionMap.putIfAbsent(name, action);
-		});
-		return actionMap;
-	}
-
-	private static Map<String, Method> gatherLocalActionMap(Class<? extends SemanticActions> myClass) {
-		Map<String, Method> actionMap = new HashMap<>();
-
-		// TODO: could throw SecurityException -> what then?
-		for (Method method : myClass.getDeclaredMethods()) {
-			for (Action annotation : method.getDeclaredAnnotationsByType(Action.class)) {
-				String name = annotation.value();
-				if (name.isEmpty()) {
-					name = method.getName();
-				}
-
-				if (actionMap.containsKey(name)) {
-					throw new OhmException("Rule '%s' has multiple actions defined".formatted(name));
-				}
-
-				// verify parameters
-				Class<?>[] parameterTypes = method.getParameterTypes();
-				int numNonVarParams = method.getParameterCount();
-				if (method.isVarArgs()) {
-					numNonVarParams--;
-				}
-				for (int i = 0; i < numNonVarParams; i++) {
-					Class<?> pType = parameterTypes[i];
-					if (!NodeClass.isAssignableFrom(pType)) {
-						throw new OhmException(
-								"Action '%s' expects parameters that are not '%s'".formatted(name, NodeClass));
-					}
-				}
-				if (method.isVarArgs()) {
-					if (!NodeClass.isAssignableFrom(parameterTypes[numNonVarParams].getComponentType())) {
-						throw new OhmException("Action '%s' expects vararg parameter that is not '%s'".formatted(name,
-								NodeClass.arrayType()));
-					}
-				}
-				// TODO: verify against grammar's rule definitions, probably not here though
-
-				actionMap.put(name, method);
+	/**
+	 * Returns either
+	 * <ul>
+	 * <li>the name given to {@code myClass} via an {@code @Operation} annotation
+	 * (e.g. {@code "foobar"} for {@code @Operation("foobar")},</li>
+	 * <li>or a default name if no annotation is present</li>
+	 * </ul>
+	 */
+	static String getName(Class<? extends SemanticActions> opClass) {
+		Operation annotation = opClass.getAnnotation(Operation.class);
+		if (annotation != null) {
+			String annotatedName = annotation.value();
+			if (annotatedName.equals(defaultName)) {
+				throw new OhmException("Operation '%s' was named '%s', which is a reserved name."
+						.formatted(opClass.getCanonicalName(), defaultName));
 			}
+			return annotatedName;
+		} else {
+			return defaultName;
 		}
-
-		return actionMap;
 	}
 
-	Method getActionMethod(Node node) {
+	public String getName() {
+		return name;
+	}
+
+	boolean hasAction(String actionName) {
+		return actionMap.containsKey(actionName);
+	}
+
+	SemanticAction getAction(Node node) {
 		String actionName = node.ctorName();
-		Method method = actionMap.get(actionName);
-		if (method != null) {
-			return method;
+		SemanticAction action = actionMap.get(actionName);
+		if (action != null) {
+			return action;
 		}
 
 		if (node.isNonterminal()) {
-			method = actionMap.get(SpecialActionNames.nonterminal);
+			action = actionMap.get(SpecialActionNames.nonterminal);
 		}
 
-		return method;
+		return action;
 	}
 
-	Object executeActionMethod(Method method, Node node) {
+	Object executeAction(SemanticAction action, Node node) {
 		Node previousSelf = self;
 
 		Object result = null;
 		try {
 			self = node;
-			if (method.isVarArgs()) {
-				result = method.invoke(this, (Object) node.getChildren());
-			} else {
-				result = method.invoke(this, (Object[]) node.getChildren());
-			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO: actual error message
-			// case: numChildren != num parameters
-			throw new OhmException("Failed to execute action");
+			result = action.invoke(this, node);
+		} catch (IllegalAccessException | IllegalArgumentException e) {
+			throw new OhmException("Failed to execute action. This should never happen.");
+		} catch (InvocationTargetException e) {
+			// TODO: we should be throwing an unchecked exception wrapping the original
+			throw new OhmException("There was an error executing the action '%s'.".formatted(action.name));
 		} finally {
 			self = previousSelf;
 		}
@@ -139,12 +92,15 @@ public class SemanticActions {
 	}
 
 	public Object apply(Node node) {
-		Method method = getActionMethod(node);
-		if (method == null) {
+		SemanticAction action = getAction(node);
+		if (action == null) {
 			throw new OhmException("Missing semantic action for '%s'".formatted(node.ctorName()));
 		}
 
-		return executeActionMethod(method, node);
+		return executeAction(action, node);
+	}
+
+	protected void initialize() {
 	}
 
 	// TODO: Ensure this does not override default actions defined in super semantic

@@ -3,7 +3,6 @@ package net.stlutz.ohm;
 import static net.stlutz.ohm.MockNode.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -15,13 +14,19 @@ class SemanticActionsTest {
 	SemanticActions op;
 	Map<String, Method> actionMap;
 
-	@Test
-	void testNonterminalAlwaysHasDefaultAction() {
-		op = new SemanticActions();
-		assertTrue(op.actionMap.containsKey(SpecialActionNames.nonterminal));
+	static SemanticActions make(Class<? extends SemanticActions> opClass) {
+		return OperationBlueprint.create(opClass).make();
 	}
 
-	class ActionWithMultipleNames extends SemanticActions {
+	@Test
+	void testNonterminalAlwaysHasDefaultAction() {
+		op = make(SemanticActions.class);
+		assertTrue(op.hasAction(SpecialActionNames.nonterminal));
+		assertFalse(op.hasAction(SpecialActionNames.terminal));
+		assertFalse(op.hasAction(SpecialActionNames.iteration));
+	}
+
+	public static class ActionWithMultipleNames extends SemanticActions {
 		@Action("Exp")
 		@Action("AddExp")
 		public String defaultExp() {
@@ -30,84 +35,59 @@ class SemanticActionsTest {
 	}
 
 	@Test
-	void testActionWithMultipleNames()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		op = new ActionWithMultipleNames();
-
-		assertEquals("defaultExp", (String) op.actionMap.get("Exp").invoke(op));
-		assertEquals("defaultExp", (String) op.actionMap.get("AddExp").invoke(op));
+	void testActionWithMultipleNames() {
+		op = make(ActionWithMultipleNames.class);
+		assertTrue(op.hasAction("Exp"));
+		assertTrue(op.hasAction("AddExp"));
 	}
 
-	class NonVarArgsAction extends SemanticActions {
-		@Action("AddExp_plus")
-		public String AddExp_plus(Node node) {
-			return "AddExp_plus";
+	public static class NonVarArgsAction extends SemanticActions {
+		@Action("Rule0")
+		public String Rule0() {
+			return "Rule0";
+		}
+
+		@Action("Rule1")
+		public String Rule1(Node node) {
+			return "Rule1";
+		}
+
+		@Action("Rule2")
+		public String Rule2(Node node1, Node node2) {
+			return "Rule2";
 		}
 	}
 
 	@Test
-	void testNonVarArgsAction() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		op = new NonVarArgsAction();
+	void testNonVarArgsAction() {
+		op = make(NonVarArgsAction.class);
 
-		assertEquals("AddExp_plus", (String) op.actionMap.get("AddExp_plus").invoke(op, (Object) null));
+		assertTrue(op.hasAction("Rule0"));
+		assertTrue(op.hasAction("Rule1"));
+		assertTrue(op.hasAction("Rule2"));
 	}
 
-	class VarArgsAction extends SemanticActions {
+	public static class VarArgsAction extends SemanticActions {
 		@Action
-		public String AddExp_minus(Node... nodes) {
-			return "AddExp_minus";
-		}
-	}
-
-	@Test
-	void testVarArgsAction() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		op = new VarArgsAction();
-
-		assertEquals("AddExp_minus", (String) op.actionMap.get("AddExp_minus").invoke(op, (Object) new Node[0]));
-	}
-
-	class DuplicateActionOperation extends SemanticActions {
-		@Action("Exp")
-		public String Exp() {
-			return "Exp";
+		public String RuleA(Node... nodes) {
+			return "RuleA";
 		}
 
-		@Action("Exp")
-		public String AddExp() {
-			return "AddExp";
-		}
-	}
-
-	@Test
-	void testDuplicateActions() {
-		assertThrows(OhmException.class, () -> new DuplicateActionOperation());
-	}
-
-	class WrongParameterOperation extends SemanticActions {
 		@Action
-		public String Exp(int index) {
-			return "Exp";
+		public String RuleB(Node[] nodes) {
+			return "RuleB";
 		}
 	}
 
 	@Test
-	void testWrongParameterType() {
-		assertThrows(OhmException.class, () -> new WrongParameterOperation());
+	void testVarArgsAction() {
+		op = make(VarArgsAction.class);
+
+		assertTrue(op.hasAction("RuleA"));
+		assertTrue(op.hasAction("RuleB"));
 	}
 
-	class WrongVarArgsParameterOperation extends SemanticActions {
-		@Action
-		public String Exp(int... indices) {
-			return "Exp";
-		}
-	}
-
-	@Test
-	void testWrongVarArgsParameterType() {
-		assertThrows(OhmException.class, () -> new WrongVarArgsParameterOperation());
-	}
-
-	class SimpleOperation extends SemanticActions {
+	public static class SimpleOperation extends SemanticActions {
 		@Action("RuleA")
 		public String RuleA(Node node) {
 			return String.class.cast(apply(node));
@@ -126,7 +106,7 @@ class SemanticActionsTest {
 
 	@Test
 	void testApply() {
-		SemanticActions op = new SimpleOperation();
+		SemanticActions op = make(SimpleOperation.class);
 
 		assertEquals("Rule B", op.apply(Nonterminal("RuleB")));
 		assertEquals("Rule B", op.apply(Nonterminal("RuleA", Nonterminal("RuleB"))));
@@ -135,11 +115,32 @@ class SemanticActionsTest {
 
 	@Test
 	void testApplyDefaultNonterminalSpecialAction() {
-		SemanticActions op = new SimpleOperation();
+		SemanticActions op = make(SimpleOperation.class);
 		assertEquals("Rule B", op.apply(Nonterminal("RuleX", Nonterminal("RuleB"))));
 	}
 
-	class SpecialActions extends SemanticActions {
+	public static class ExtensionOperation extends SimpleOperation {
+		@Action("RuleA")
+		public String RuleA(Node node) {
+			return "better " + super.RuleA(node);
+		}
+
+		@Action("RuleB")
+		public String newRuleB() {
+			return "new Rule B";
+		}
+	}
+
+	@Test
+	void testApplyExtension() {
+		SemanticActions op = make(ExtensionOperation.class);
+
+		assertEquals("new Rule B", op.apply(Nonterminal("RuleB")));
+		assertEquals("better new Rule B", op.apply(Nonterminal("RuleA", Nonterminal("RuleB"))));
+		assertEquals("better Rule C", op.apply(Nonterminal("RuleA", Nonterminal("RuleC", Nonterminal("RuleB")))));
+	}
+
+	public static class SpecialActions extends SemanticActions {
 		@Action("RuleA")
 		public String RuleA() {
 			return "Rule A";
@@ -155,7 +156,7 @@ class SemanticActionsTest {
 
 	@Test
 	void testApplySpecialActions() {
-		SemanticActions op = new SpecialActions();
+		SemanticActions op = make(SpecialActions.class);
 
 		assertEquals("Rule A", op.apply(Nonterminal("RuleA")));
 		assertEquals("default action", op.apply(Nonterminal("RuleX")));
@@ -163,4 +164,95 @@ class SemanticActionsTest {
 		assertEquals("default action", op.apply(Iter()));
 	}
 
+	public static class DuplicateActionOperation extends SemanticActions {
+		@Action("Exp")
+		public String Exp() {
+			return "Exp";
+		}
+
+		@Action("Exp")
+		public String AddExp() {
+			return "AddExp";
+		}
+	}
+
+	@Test
+	void testDuplicateActions() {
+		assertThrows(OhmException.class, () -> make(DuplicateActionOperation.class));
+	}
+
+	public static class WrongParameterOperation extends SemanticActions {
+		@Action
+		public String Exp(int index) {
+			return "Exp";
+		}
+	}
+
+	@Test
+	void testWrongParameterType() {
+		assertThrows(OhmException.class, () -> make(WrongParameterOperation.class));
+	}
+
+	public static class WrongVarArgsParameterOperation extends SemanticActions {
+		@Action
+		public String Exp(int... indices) {
+			return "Exp";
+		}
+	}
+
+	@Test
+	void testWrongVarArgsParameterType() {
+		assertThrows(OhmException.class, () -> make(WrongVarArgsParameterOperation.class));
+	}
+
+	public static class MixedVarArgsParameterOperation extends SemanticActions {
+		@Action
+		public String Exp(Node first, Node... rest) {
+			return "Exp";
+		}
+	}
+
+	@Test
+	void testMixedVarArgsParameterType() {
+		assertThrows(OhmException.class, () -> make(MixedVarArgsParameterOperation.class));
+	}
+
+	public static class DuplicateActionInSuperOperation extends DuplicateActionOperation {
+		@Action
+		public String Rule() {
+			return "Rule";
+		}
+	}
+
+	@Test
+	void testDuplicateActionInSuperOperation() {
+		assertThrows(OhmException.class, () -> make(DuplicateActionInSuperOperation.class));
+	}
+
+	public static class NoDefaultConstructorOperation extends SemanticActions {
+		NoDefaultConstructorOperation(boolean isBetter) {
+			super();
+		}
+	}
+
+	@Test
+	void testNoDefaultConstructor() {
+		assertThrows(OhmException.class, () -> make(NoDefaultConstructorOperation.class));
+	}
+
+	public static class MySemantics extends Semantics {
+		public class InnerOperation extends SemanticActions {
+			@Action
+			public String Rule() {
+				return "Rule";
+			}
+		}
+	}
+
+	@Test
+	void testInnerOperation() {
+		op = make(MySemantics.InnerOperation.class);
+
+		assertTrue(op.hasAction("Rule"));
+	}
 }
