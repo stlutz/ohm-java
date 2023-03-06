@@ -241,7 +241,7 @@ class OperationTest {
 	}
 
 	public static class MySemantics extends Semantics {
-		public class InnerOperation extends Operation {
+		public static class InnerOperation extends Operation {
 			@Action
 			public String Rule() {
 				return "Rule";
