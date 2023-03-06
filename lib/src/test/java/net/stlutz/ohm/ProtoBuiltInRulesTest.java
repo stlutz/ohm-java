@@ -1,58 +1,53 @@
 package net.stlutz.ohm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
-class ProtoBuiltInRulesTest {
-	private Grammar grammar = Grammar.ProtoBuiltInRules;
-
-	void checkMatch(String rule, boolean shouldMatch, String input) {
-		assertEquals(shouldMatch, grammar.match(input, rule).succeeded());
+class ProtoBuiltInRulesTest extends SyntaxTest {
+	@Override
+	protected Grammar getGrammar() {
+		return Grammar.ProtoBuiltInRules;
 	}
 
 	@Test
 	void testAny() {
-		checkMatch("any", true, "H");
-		checkMatch("any", false, "H ");
+		shouldMatch("any", "H");
+		shouldNotMatch("any", "H ", "");
 	}
 
 	@Test
 	void testEnd() {
-		checkMatch("end", true, "");
-		checkMatch("end", false, "H");
+		shouldMatch("end", "");
+		shouldNotMatch("end", "H");
 	}
 
 	@Test
 	void testLower() {
-		checkMatch("lower", true, "h");
-		checkMatch("lower", false, "H ");
+		shouldMatch("lower", "h");
+		shouldNotMatch("lower", "H", " ");
 	}
 
 	@Test
 	void testUpper() {
-		checkMatch("upper", true, "H");
-		checkMatch("upper", false, "h ");
+		shouldMatch("upper", "H");
+		shouldNotMatch("upper", "h", " ");
 	}
 
 	@Test
 	void testUnicodeLtmo() {
-		checkMatch("unicodeLtmo", true, "ˇ");
-		checkMatch("unicodeLtmo", false, "H");
+		shouldMatch("unicodeLtmo", "ˇ");
+		shouldNotMatch("unicodeLtmo", "H");
 	}
 
 	@Test
 	void testSpace() {
-		checkMatch("space", true, " ");
-		checkMatch("space", false, "H");
+		shouldMatch("space", " ", "\n", "\t");
+		shouldNotMatch("space", "H", ".");
 	}
 
 	@Test
 	void testSpaces() {
-		checkMatch("spaces", true, "");
-		checkMatch("spaces", true, " ");
-		checkMatch("spaces", true, "      ");
-		checkMatch("spaces", false, "H");
+		shouldMatch("spaces", "", " ", "    ", "\t\t\t");
+		shouldNotMatch("spaces", "H", "  H", ".\n");
 	}
 
 }
