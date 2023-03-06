@@ -33,6 +33,11 @@ public class Seq extends Aggregation {
 	}
 
 	@Override
+	public boolean isSequence() {
+		return true;
+	}
+
+	@Override
 	protected String getOperator() {
 		return " ";
 	}

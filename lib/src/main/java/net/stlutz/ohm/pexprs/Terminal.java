@@ -6,6 +6,7 @@ import org.json.JSONWriter;
 import net.stlutz.ohm.*;
 
 public class Terminal extends Prim {
+	// TODO: rename
 	private String obj;
 
 	public Terminal(String obj) {

@@ -31,6 +31,11 @@ public class Alt extends Aggregation {
 	}
 
 	@Override
+	public boolean isAlternation() {
+		return true;
+	}
+
+	@Override
 	protected String getOperator() {
 		return " | ";
 	}

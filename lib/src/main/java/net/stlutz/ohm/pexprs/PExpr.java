@@ -50,6 +50,9 @@ public abstract class PExpr {
 	 */
 	public abstract PExpr introduceParams(String[] formals);
 
+	public void resolveSplice(PExpr superRuleBody) {
+	}
+
 	/**
 	 * Evaluate the expression and return `true` if it succeeds, `false` otherwise.
 	 * This method should only be called directly by `MatchState.eval(expr)`, which
@@ -123,7 +126,104 @@ public abstract class PExpr {
 		return toRecipe(null);
 	}
 
+	public boolean isSequence() {
+		return false;
+	}
+
+	public boolean isAlternation() {
+		return false;
+	}
+
 //	public static PExpr fromRecipe(JSONArray recipe) {
 //		
 //	}
+
+	public static PExpr alt(PExpr... terms) {
+		// TODO: we could merge terms that are alternations directly into the terms,
+		// however doing so modifies the resulting grammar, so a dedicated 'optimize'
+		// method in Grammar might be preferable
+		return new Alt(terms);
+	}
+
+	public static PExpr any() {
+		return Any.getInstance();
+	}
+
+	public static PExpr apply(String ruleName, PExpr... params) {
+		// TODO: change params type?
+		return new Apply(ruleName, params);
+	}
+
+	public static PExpr end() {
+		return End.getInstance();
+	}
+
+	public static PExpr lex(PExpr expr) {
+		return new Lex(expr);
+	}
+
+	public static PExpr lookahead(PExpr expr) {
+		return new Lookahead(expr);
+	}
+
+	public static PExpr none() {
+		return seq();
+	}
+
+	public static PExpr not(PExpr expr) {
+		return new Not(expr);
+	}
+
+	public static PExpr opt(PExpr expr) {
+		return new Opt(expr);
+	}
+
+	public static PExpr param(int index) {
+		// TODO: can we avoid leaking the param implementation to the outside world?
+		return new Param(index);
+	}
+
+	public static PExpr plus(PExpr expr) {
+		return new Plus(expr);
+	}
+
+	public static PExpr range(int fromCodePoint, int toCodePoint) {
+		if (fromCodePoint > toCodePoint) {
+			throw new OhmException("Cannot create PExpr range. 'fromCodePoint' must not be higher than 'toCodePoint'.");
+		}
+		return new Range(fromCodePoint, toCodePoint);
+	}
+
+	public static PExpr range(String from, String to) {
+		if (Character.codePointCount(from, 0, from.length()) != 1) {
+			throw new OhmException("Cannot create PExpr range. 'from' must contain exactly one code point.");
+		}
+		if (Character.codePointCount(to, 0, to.length()) != 1) {
+			throw new OhmException("Cannot create PExpr range. 'to' must contain exactly one code point.");
+		}
+		int fromCodePoint = from.codePointAt(0);
+		int toCodePoint = to.codePointAt(0);
+		return range(fromCodePoint, toCodePoint);
+	}
+
+	public static PExpr seq(PExpr... terms) {
+		// TODO: see comment in alt
+		return new Seq(terms);
+	}
+
+	public static PExpr star(PExpr expr) {
+		return new Star(expr);
+	}
+
+	public static PExpr terminal(String contents) {
+		return new Terminal(contents);
+	}
+
+	public static PExpr unicodeChar(String unicodeCategory) {
+		if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory)) {
+			throw new OhmException("Cannot create PExpr unicodeChar. '%s' is not a valid unicode category."
+					.formatted(unicodeCategory));
+		}
+		return new UnicodeChar(unicodeCategory);
+	}
 }

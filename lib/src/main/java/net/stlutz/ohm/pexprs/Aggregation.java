@@ -20,6 +20,13 @@ public abstract class Aggregation extends PExpr {
 	}
 
 	@Override
+	public void resolveSplice(PExpr superRuleBody) {
+		for (PExpr term : terms) {
+			term.resolveSplice(superRuleBody);
+		}
+	}
+
+	@Override
 	public PExpr introduceParams(String[] formals) {
 		for (int i = 0; i < terms.length; i++) {
 			terms[i] = terms[i].introduceParams(formals);

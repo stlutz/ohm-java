@@ -25,7 +25,7 @@ public class JSONRecipeReader {
 		recipeNameToFunction.put("la", recipe -> this.lookahead(recipe));
 		recipeNameToFunction.put("lex", recipe -> this.lex(recipe));
 		recipeNameToFunction.put("app", recipe -> this.app(recipe));
-		recipeNameToFunction.put("splice", recipe -> this.splice(recipe));
+//		recipeNameToFunction.put("splice", recipe -> this.splice(recipe));
 	}
 
 	protected void errorMalformedRecipe(JSONArray recipe) {
@@ -98,11 +98,11 @@ public class JSONRecipeReader {
 		return new Apply(recipe.getString(2), readArgs(recipe.optJSONArray(3), 0));
 	}
 
-	protected PExpr splice(JSONArray recipe) {
-		// TODO: Implement Grammar
-		Arrays.stream(new int[] {}).map(x -> x * x);
-		return new Splice(null, null, readArgs(recipe.getJSONArray(2), 0), readArgs(recipe.getJSONArray(3), 0));
-	}
+//	protected PExpr splice(JSONArray recipe) {
+//		// TODO: Implement Grammar
+//		Arrays.stream(new int[] {}).map(x -> x * x);
+//		return new Splice(null, null, readArgs(recipe.getJSONArray(2), 0), readArgs(recipe.getJSONArray(3), 0));
+//	}
 
 	protected SourceInterval readSourceIntervalRecipe(JSONObject recipe) throws JSONException {
 		if (Objects.isNull(recipe))

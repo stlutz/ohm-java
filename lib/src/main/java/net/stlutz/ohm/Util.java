@@ -1,6 +1,6 @@
 package net.stlutz.ohm;
 
-import java.util.Arrays;
+import java.util.*;
 
 public final class Util {
 	public static boolean isSyntactic(String ruleName) {
@@ -26,5 +26,20 @@ public final class Util {
 		}
 
 		return result;
+	}
+
+	public static <T> Collection<T> getDuplicates(Collection<T> elements) {
+		Set<T> seen = new HashSet<>();
+		Set<T> duplicates = new HashSet<>();
+		for (T element : elements) {
+			if (!seen.add(element)) {
+				duplicates.add(element);
+			}
+		}
+		return duplicates;
+	}
+
+	public static <T> Collection<T> getDuplicates(T[] elements) {
+		return getDuplicates(List.of(elements));
 	}
 }
