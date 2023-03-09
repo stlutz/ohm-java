@@ -1,9 +1,7 @@
 package net.stlutz.ohm;
 
 import static net.stlutz.ohm.pexprs.PExpr.*;
-
 import java.util.Map;
-
 import net.stlutz.ohm.pexprs.*;
 
 public class Grammar {
@@ -105,11 +103,11 @@ public class Grammar {
     grammar.newRule("Rule_extend")
         .body(seq(apply("ident"), opt(apply("Formals")), terminal("+="), apply("RuleBody")));
     grammar.newRule("RuleBody").body(
-        seq(opt(terminal("|")), apply("NonEmptyListOf", apply("TopLevelTerm"), terminal("|"))));
+        seq(opt(terminal("|")), apply("NonemptyListOf", apply("TopLevelTerm"), terminal("|"))));
     grammar.newRule("TopLevelTerm").body(alt(apply("TopLevelTerm_line"), apply("Seq")));
     grammar.newRule("TopLevelTerm_inline").body(seq(apply("Seq"), apply("caseName")));
     grammar.newRule("OverrideRuleBody").body(seq(opt(terminal("|")),
-        apply("NonEmptyListOf", apply("OverrideTopLevelTerm"), terminal("|"))));
+        apply("NonemptyListOf", apply("OverrideTopLevelTerm"), terminal("|"))));
     grammar.newRule("OverrideTopLevelTerm")
         .body(alt(apply("OverrideTopLevelTerm_superSplice"), apply("TopLevelTerm")));
     grammar.newRule("OverrideTopLevelTerm_superSplice").body(terminal("..."));
@@ -117,10 +115,10 @@ public class Grammar {
         .body(seq(terminal("<"), apply("ListOf", apply("ident"), terminal(",")), terminal(">")));
     grammar.newRule("Params")
         .body(seq(terminal("<"), apply("ListOf", apply("Seq"), terminal(",")), terminal(">")));
-    grammar.newRule("Alt").body(apply("NonEmptyListOf", apply("Seq"), terminal("|")));
+    grammar.newRule("Alt").body(apply("NonemptyListOf", apply("Seq"), terminal("|")));
     grammar.newRule("Seq").body(star(apply("Iter")));
     grammar.newRule("Iter")
-        .body(alt(apply("Pred_star"), apply("Pred_plus"), apply("Pred_opt"), apply("Pred")));
+        .body(alt(apply("Iter_star"), apply("Iter_plus"), apply("Iter_opt"), apply("Pred")));
     grammar.newRule("Iter_star").body(seq(apply("Pred"), terminal("*")));
     grammar.newRule("Iter_plus").body(seq(apply("Pred"), terminal("+")));
     grammar.newRule("Iter_opt").body(seq(apply("Pred"), terminal("?")));
