@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 @Target(METHOD)
 @Repeatable(Actions.class)
 public @interface Action {
-	String value() default "";
+  String value() default "";
 }

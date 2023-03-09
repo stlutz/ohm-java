@@ -8,11 +8,11 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 class UnicodeCharTest {
-	@Test
-	void testUnicodeCategories() {
-		Pattern pattern = UnicodeChar.unicodeCategoryPatterns.get("L");
-		assertTrue(pattern.matcher("h").matches());
-		assertFalse(pattern.matcher(" ").matches());
-	}
+  @Test
+  void testUnicodeCategories() {
+    Pattern pattern = UnicodeChar.unicodeCategoryPatterns.get("L");
+    assertTrue(pattern.matcher("h").matches());
+    assertFalse(pattern.matcher(" ").matches());
+  }
 
 }
