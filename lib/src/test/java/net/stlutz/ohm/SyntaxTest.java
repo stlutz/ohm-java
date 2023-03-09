@@ -16,7 +16,12 @@ public abstract class SyntaxTest {
 
 	private void assertMatch(String startRule, String[] inputs, boolean shouldMatch) {
 		for (String input : inputs) {
-			assertEquals(shouldMatch, grammar.match(input, startRule).succeeded());
+			boolean doesMatch = grammar.match(input, startRule).succeeded();
+			assertEquals(shouldMatch, doesMatch, () -> {
+				String template = shouldMatch ? "Expected input '%s' to be matched by rule '%s', but it wasn't"
+						: "Expected input '%s' to not be matched by rule '%s', but it was";
+				return template.formatted(input, startRule);
+			});
 		}
 	}
 
