@@ -1,8 +1,7 @@
 package net.stlutz.ohm.pexprs;
 
 import org.json.JSONArray;
-import org.json.JSONWriter;
-
+import org.json.JSONObject;
 import net.stlutz.ohm.*;
 
 public class Terminal extends Prim {
@@ -24,14 +23,13 @@ public class Terminal extends Prim {
       inputStream.advance(obj.length());
       matchState.pushBinding(TerminalNode.get(obj.length()), originalPosition);
       return true;
-    } else {
+    } else
       return false;
-    }
   }
 
   @Override
   public void toString(StringBuilder sb) {
-    new JSONWriter(sb).value(obj);
+    sb.append(JSONObject.quote(obj));
   }
 
   @Override
