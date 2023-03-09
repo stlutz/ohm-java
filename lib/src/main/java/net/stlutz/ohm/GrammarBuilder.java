@@ -1,7 +1,6 @@
 package net.stlutz.ohm;
 
 import java.util.*;
-
 import net.stlutz.ohm.pexprs.PExpr;
 
 public class GrammarBuilder {
@@ -29,13 +28,12 @@ public class GrammarBuilder {
   }
 
   public Grammar buildGrammar() {
-    if (grammars.isEmpty()) {
+    if (grammars.isEmpty())
       throw new OhmException("No grammars defined.");
-    } else if (grammars.size() > 1) {
+    else if (grammars.size() > 1)
       throw new OhmException("More than one grammar defined.");
-    } else {
+    else
       return buildGrammars().get(0);
-    }
   }
 
   public List<Grammar> buildGrammars() {
@@ -49,19 +47,17 @@ public class GrammarBuilder {
         GrammarDefinition gDef = grammarsToBuild.removeFirst();
         if (namespace.has(gDef.name)) {
           builtGrammars.forEach(grammar -> {
-            if (grammar.getName().equals(gDef.name)) {
+            if (grammar.getName().equals(gDef.name))
               throw new OhmException(
                   "The grammar '%s' was declared multiple times.".formatted(gDef.name));
-            }
           });
-          if (namespace.get(gDef.name).isBuiltIn()) {
+          if (namespace.get(gDef.name).isBuiltIn())
             throw new OhmException(
                 "The grammar '%s' is built-in and cannot be overridden.".formatted(gDef.name));
-          } else {
+          else
             throw new OhmException(
                 "The grammar '%s' was already declared in the provided namespace."
                     .formatted(gDef.name));
-          }
         }
         if (gDef.superGrammarName == null || namespace.has(gDef.superGrammarName)) {
           Grammar grammar = buildGrammar(gDef);
@@ -72,9 +68,8 @@ public class GrammarBuilder {
           grammarsToBuild.addLast(gDef);
         }
       }
-      if (grammarsToBuild.isEmpty()) {
+      if (grammarsToBuild.isEmpty())
         return builtGrammars;
-      }
     }
     // TODO: differentiate between the two and give concrete offending grammars
     throw new OhmException(
@@ -92,24 +87,22 @@ public class GrammarBuilder {
   }
 
   private String getDefaultStartRuleName(GrammarDefinition def, Grammar superGrammar) {
-    if (def.defaultStartRuleName != null) {
+    if (def.defaultStartRuleName != null)
       return def.defaultStartRuleName;
-    } else if (superGrammar != null && !superGrammar.isBuiltIn()) {
+    else if (superGrammar != null && !superGrammar.isBuiltIn())
       return superGrammar.defaultStartRule;
-    } else if (!def.rules.isEmpty()) {
+    else if (!def.rules.isEmpty())
       return def.rules.get(0).name;
-    } else {
+    else
       return null;
-    }
   }
 
   private Map<String, Rule> buildRules(GrammarDefinition gDef, Grammar superGrammar) {
     Map<String, Rule> rules = new HashMap<>();
 
     for (RuleDefinition rDef : gDef.rules) {
-      if (rules.containsKey(rDef.name)) {
+      if (rules.containsKey(rDef.name))
         throw new OhmException("Duplicate declaration for rule '%s'".formatted(rDef.name));
-      }
       Rule rule = buildRule(rDef, superGrammar);
       rules.put(rDef.name, rule);
     }
@@ -127,39 +120,39 @@ public class GrammarBuilder {
     PExpr body = def.body;
 
     Collection<String> duplicateParameterNames = Util.getDuplicates(def.formals);
-    if (!duplicateParameterNames.isEmpty()) {
+    if (!duplicateParameterNames.isEmpty())
       throw new OhmException("Duplicate parameter names in rule '%s': %s".formatted(def.name,
           String.join(", ", duplicateParameterNames)));
-    }
 
     Rule superRule = superGrammar != null ? superGrammar.getRule(def.name) : null;
 
-    if (def.operation != Rule.Operation.DEFINE) {
+    if (!def.isDefinition()) {
       // TODO: insert override / extend in err msg depending on operation enum
       if (superRule == null) {
-        if (superGrammar == null) {
+        if (superGrammar == null)
           throw new OhmException("Cannot %s rule '%s'. No super grammar was specified."
               .formatted("override", def.name));
-        } else {
+        else
           throw new OhmException(
               "Cannot %s rule '%s'. No rule of the same name was found in a super grammar."
                   .formatted("override", def.name));
-        }
       }
       String[] superRuleFormals = superRule.getFormals();
-      if (superRuleFormals.length != def.formals.length) {
+      if (superRuleFormals.length != def.formals.length)
         throw new OhmException(
             "Cannot %s rule '%s': Got %d parameters, but super rule has %d parameters."
                 .formatted("override", def.formals.length, superRuleFormals.length));
-      }
 
-      body.resolveSplice(superRule.getBody());
+      if (def.isExtension()) {
+        body = PExpr.extend(superRule.getBody(), body);
+      } else { // isOverride() implied
+        body.resolveSplice(superRule.getBody());
+      }
     } else {
-      if (superRule != null) {
+      if (superRule != null)
         throw new OhmException(
             "Rule '%s' was already declared in super grammar and must be explicitly overridden."
                 .formatted(def.name));
-      }
     }
 
     body.introduceParams(def.formals);

@@ -1,10 +1,8 @@
 package net.stlutz.ohm.pexprs;
 
 import java.util.Objects;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import net.stlutz.ohm.*;
 
 public abstract class PExpr {
@@ -76,6 +74,7 @@ public abstract class PExpr {
     return eval(matchState, inputStream, inputStream.getPosition());
   }
 
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     toString(sb);
@@ -155,6 +154,11 @@ public abstract class PExpr {
     return End.getInstance();
   }
 
+  // TODO: should this really be accessible?
+  public static PExpr extend(PExpr superBody, PExpr body) {
+    return new Extend(superBody, body);
+  }
+
   public static PExpr lex(PExpr expr) {
     return new Lex(expr);
   }
@@ -185,22 +189,19 @@ public abstract class PExpr {
   }
 
   public static PExpr range(int fromCodePoint, int toCodePoint) {
-    if (fromCodePoint > toCodePoint) {
+    if (fromCodePoint > toCodePoint)
       throw new OhmException(
           "Cannot create PExpr range. 'fromCodePoint' must not be higher than 'toCodePoint'.");
-    }
     return new Range(fromCodePoint, toCodePoint);
   }
 
   public static PExpr range(String from, String to) {
-    if (Character.codePointCount(from, 0, from.length()) != 1) {
+    if (Character.codePointCount(from, 0, from.length()) != 1)
       throw new OhmException(
           "Cannot create PExpr range. 'from' must contain exactly one code point.");
-    }
-    if (Character.codePointCount(to, 0, to.length()) != 1) {
+    if (Character.codePointCount(to, 0, to.length()) != 1)
       throw new OhmException(
           "Cannot create PExpr range. 'to' must contain exactly one code point.");
-    }
     int fromCodePoint = from.codePointAt(0);
     int toCodePoint = to.codePointAt(0);
     return range(fromCodePoint, toCodePoint);
@@ -220,11 +221,10 @@ public abstract class PExpr {
   }
 
   public static PExpr unicodeChar(String unicodeCategory) {
-    if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory)) {
+    if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory))
       throw new OhmException(
           "Cannot create PExpr unicodeChar. '%s' is not a valid unicode category."
               .formatted(unicodeCategory));
-    }
     return new UnicodeChar(unicodeCategory);
   }
 }

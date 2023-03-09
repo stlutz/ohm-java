@@ -54,4 +54,16 @@ class RuleDefinition {
     this.formals = formals;
     return this;
   }
+
+  boolean isDefinition() {
+    return operation == Rule.Operation.DEFINE;
+  }
+
+  boolean isExtension() {
+    return operation == Rule.Operation.EXTEND;
+  }
+
+  boolean isOverride() {
+    return operation == Rule.Operation.OVERRIDE;
+  }
 }
