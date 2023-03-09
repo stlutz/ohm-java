@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import org.json.JSONArray;
-
 import net.stlutz.ohm.*;
 
 public class Apply extends PExpr {
@@ -122,7 +121,11 @@ public class Apply extends PExpr {
 
   private boolean reallyEval(MatchState matchState, InputStream inputStream, int originalPosition) {
     PositionInfo origPosInfo = matchState.getCurrentPositionInfo();
+    // TODO: bake rule body into apply node?
     Rule rule = matchState.getRule(ruleName);
+    if (rule == null) {
+      throw new OhmException("No rule '%s' found".formatted(ruleName));
+    }
 
     matchState.enterApplication(origPosInfo, this);
 
@@ -205,8 +208,9 @@ public class Apply extends PExpr {
   public void toString(StringBuilder sb) {
     sb.append(ruleName);
 
-    if (args.length == 0)
+    if (args.length == 0) {
       return;
+    }
 
     sb.append('<');
     boolean isFirst = true;
@@ -225,8 +229,9 @@ public class Apply extends PExpr {
     // TODO: Almost identical to toString()
     sb.append(ruleName);
 
-    if (args.length == 0)
+    if (args.length == 0) {
       return;
+    }
 
     sb.append('<');
     boolean isFirst = true;
@@ -248,8 +253,9 @@ public class Apply extends PExpr {
   @Override
   public JSONArray toRecipe(SourceInterval grammarInterval) {
     JSONArray argsRecipe = new JSONArray();
-    for (PExpr arg : args)
+    for (PExpr arg : args) {
       argsRecipe.put(arg.toRecipe(grammarInterval));
+    }
     return super.toRecipe(grammarInterval).put(ruleName).put(argsRecipe);
   }
 }
