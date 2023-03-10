@@ -104,7 +104,7 @@ public class Grammar {
         .body(seq(apply("ident"), opt(apply("Formals")), terminal("+="), apply("RuleBody")));
     grammar.newRule("RuleBody").body(
         seq(opt(terminal("|")), apply("NonemptyListOf", apply("TopLevelTerm"), terminal("|"))));
-    grammar.newRule("TopLevelTerm").body(alt(apply("TopLevelTerm_line"), apply("Seq")));
+    grammar.newRule("TopLevelTerm").body(alt(apply("TopLevelTerm_inline"), apply("Seq")));
     grammar.newRule("TopLevelTerm_inline").body(seq(apply("Seq"), apply("caseName")));
     grammar.newRule("OverrideRuleBody").body(seq(opt(terminal("|")),
         apply("NonemptyListOf", apply("OverrideTopLevelTerm"), terminal("|"))));
