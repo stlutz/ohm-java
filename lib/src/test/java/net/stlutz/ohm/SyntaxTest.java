@@ -1,7 +1,6 @@
 package net.stlutz.ohm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
 
 public abstract class SyntaxTest {
@@ -16,7 +15,8 @@ public abstract class SyntaxTest {
 
   private void assertMatch(String startRule, String[] inputs, boolean shouldMatch) {
     for (String input : inputs) {
-      boolean doesMatch = grammar.match(input, startRule).succeeded();
+      var matchResult = grammar.match(input, startRule);
+      boolean doesMatch = matchResult.succeeded();
       assertEquals(shouldMatch, doesMatch, () -> {
         String template =
             shouldMatch ? "Expected input '%s' to be matched by rule '%s', but it wasn't"
