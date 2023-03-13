@@ -14,8 +14,9 @@ public final class Util {
   public static <T> T[] concatenate(T[] firstArray, T[]... arrays) {
     // TODO: write test
     int resultLength = firstArray.length;
-    for (T[] array : arrays)
+    for (T[] array : arrays) {
       resultLength += array.length;
+    }
 
     T[] result = Arrays.copyOf(firstArray, resultLength);
 

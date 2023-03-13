@@ -3,9 +3,9 @@ package net.stlutz.ohm;
 import java.util.Objects;
 
 public class SourceInterval {
-  public String sourceString;
-  public int startIndex;
-  public int endIndex;
+  private String sourceString;
+  private int startIndex;
+  private int endIndex;
   private String contents;
 
   public SourceInterval(String sourceString, int startIndex, int endIndex) {
@@ -15,12 +15,26 @@ public class SourceInterval {
     this.endIndex = endIndex;
   }
 
+  public String getSourceString() {
+    return sourceString;
+  }
+
+  public int getStartIndex() {
+    return startIndex;
+  }
+
+  public int getEndIndex() {
+    return endIndex;
+  }
+
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!(obj instanceof SourceInterval))
+    }
+    if (!(obj instanceof SourceInterval)) {
       return false;
+    }
     SourceInterval other = (SourceInterval) obj;
     return endIndex == other.endIndex && Objects.equals(sourceString, other.sourceString)
         && startIndex == other.startIndex;
@@ -117,11 +131,13 @@ public class SourceInterval {
     int left = startIndex;
     int right = endIndex;
 
-    while (left < right && Character.isWhitespace(sourceString.charAt(right - 1)))
+    while (left < right && Character.isWhitespace(sourceString.charAt(right - 1))) {
       right--;
+    }
 
-    while (left < right && Character.isWhitespace(sourceString.charAt(left)))
+    while (left < right && Character.isWhitespace(sourceString.charAt(left))) {
       left++;
+    }
 
     return new SourceInterval(sourceString, left, right);
   }

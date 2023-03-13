@@ -13,7 +13,7 @@ public class Terminal extends Prim {
     this.obj = obj;
   }
 
-  String getString() {
+  public String getString() {
     return obj;
   }
 
@@ -23,8 +23,9 @@ public class Terminal extends Prim {
       inputStream.advance(obj.length());
       matchState.pushBinding(TerminalNode.get(obj.length()), originalPosition);
       return true;
-    } else
+    } else {
       return false;
+    }
   }
 
   @Override

@@ -2,7 +2,6 @@ package net.stlutz.ohm;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 class SourceIntervalTest {
@@ -50,9 +49,9 @@ class SourceIntervalTest {
     SourceInterval interval2 = make(35, 39);
     SourceInterval interval3 = make(26, 30);
     SourceInterval coverage = interval1.coverageWith(interval2, interval3);
-    assertEquals(16, coverage.startIndex);
-    assertEquals(39, coverage.endIndex);
-    assertEquals(interval1.sourceString, coverage.sourceString);
+    assertEquals(16, coverage.getStartIndex());
+    assertEquals(39, coverage.getEndIndex());
+    assertEquals(interval1.getSourceString(), coverage.getSourceString());
   }
 
   @Test

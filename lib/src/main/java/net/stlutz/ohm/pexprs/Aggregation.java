@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import org.json.JSONArray;
-
 import net.stlutz.ohm.SourceInterval;
 
 public abstract class Aggregation extends PExpr {
@@ -10,6 +9,10 @@ public abstract class Aggregation extends PExpr {
   protected Aggregation(PExpr[] terms) {
     super();
     this.terms = terms;
+  }
+
+  public PExpr[] getTerms() {
+    return terms;
   }
 
   protected abstract Aggregation newInstance(PExpr[] terms);
@@ -47,8 +50,9 @@ public abstract class Aggregation extends PExpr {
   @Override
   public JSONArray toRecipe(SourceInterval grammarInterval) {
     JSONArray recipe = super.toRecipe(grammarInterval);
-    for (PExpr term : terms)
+    for (PExpr term : terms) {
       recipe.put(term.toRecipe(grammarInterval));
+    }
     return recipe;
   }
 

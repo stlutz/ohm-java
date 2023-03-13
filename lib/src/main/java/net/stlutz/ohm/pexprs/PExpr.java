@@ -26,6 +26,11 @@ public abstract class PExpr {
     this.source = source;
   }
 
+  public PExpr withSource(SourceInterval source) {
+    this.source = source;
+    return this;
+  }
+
   public abstract boolean allowsSkippingPrecedingSpace();
 
   public abstract int getArity();
@@ -113,7 +118,7 @@ public abstract class PExpr {
       adjustedInterval = source.relativeTo(grammarInterval);
     }
     recipe.put(new JSONObject().put("sourceInterval",
-        new JSONArray().put(adjustedInterval.startIndex).put(adjustedInterval.endIndex)));
+        new JSONArray().put(adjustedInterval.getStartIndex()).put(adjustedInterval.getEndIndex())));
 
     return recipe;
   }
@@ -189,19 +194,22 @@ public abstract class PExpr {
   }
 
   public static PExpr range(int fromCodePoint, int toCodePoint) {
-    if (fromCodePoint > toCodePoint)
+    if (fromCodePoint > toCodePoint) {
       throw new OhmException(
           "Cannot create PExpr range. 'fromCodePoint' must not be higher than 'toCodePoint'.");
+    }
     return new Range(fromCodePoint, toCodePoint);
   }
 
   public static PExpr range(String from, String to) {
-    if (Character.codePointCount(from, 0, from.length()) != 1)
+    if (Character.codePointCount(from, 0, from.length()) != 1) {
       throw new OhmException(
           "Cannot create PExpr range. 'from' must contain exactly one code point.");
-    if (Character.codePointCount(to, 0, to.length()) != 1)
+    }
+    if (Character.codePointCount(to, 0, to.length()) != 1) {
       throw new OhmException(
           "Cannot create PExpr range. 'to' must contain exactly one code point.");
+    }
     int fromCodePoint = from.codePointAt(0);
     int toCodePoint = to.codePointAt(0);
     return range(fromCodePoint, toCodePoint);
@@ -210,6 +218,10 @@ public abstract class PExpr {
   public static PExpr seq(PExpr... terms) {
     // TODO: see comment in alt
     return new Seq(terms);
+  }
+
+  public static PExpr splice() {
+    return new Splice();
   }
 
   public static PExpr star(PExpr expr) {
@@ -221,10 +233,11 @@ public abstract class PExpr {
   }
 
   public static PExpr unicodeChar(String unicodeCategory) {
-    if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory))
+    if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory)) {
       throw new OhmException(
           "Cannot create PExpr unicodeChar. '%s' is not a valid unicode category."
               .formatted(unicodeCategory));
+    }
     return new UnicodeChar(unicodeCategory);
   }
 }

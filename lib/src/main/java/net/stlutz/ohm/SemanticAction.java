@@ -2,7 +2,6 @@ package net.stlutz.ohm;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import net.stlutz.ohm.Operation.SpecialActionNames;
 
 class SemanticAction {

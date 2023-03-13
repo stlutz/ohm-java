@@ -22,6 +22,10 @@ public class Apply extends PExpr {
     this.args = args;
   }
 
+  public String getRuleName() {
+    return ruleName;
+  }
+
   public PExpr[] getArgs() {
     return args;
   }
