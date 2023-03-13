@@ -2,7 +2,6 @@ package net.stlutz.ohm;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-
 import net.stlutz.ohm.pexprs.*;
 
 public class MatchState {
@@ -162,7 +161,7 @@ public class MatchState {
   public void truncateBindings(int newLength) {
     int bindingsToRemove = bindings.size() - newLength;
     for (int i = 0; i < bindingsToRemove; i++) {
-      bindings.removeLast();
+      popBinding();
     }
   }
 

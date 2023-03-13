@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import org.json.JSONArray;
-
 import net.stlutz.ohm.*;
 
 public abstract class Iter extends PExpr {
@@ -57,7 +56,6 @@ public abstract class Iter extends PExpr {
     }
 
     if (numMatches < getMinNumMatches()) {
-      matchState.truncateBindings(matchState.numBindings() - (numMatches * arity));
       return false;
     }
 
