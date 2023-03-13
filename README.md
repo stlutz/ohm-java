@@ -12,7 +12,7 @@ This project is **work in progress**. The currently targeted Ohm version is `v16
 | impl. input parsing based on grammar | ✓   |
 | impl. semantics definition           | ✓   |
 | impl. semantics application          | ✓   |
-| impl. grammar construction from DSL  | ✗   |
+| impl. grammar construction from DSL  | ✓   |
 | write comprehensive tests            | ✗   |
 | port examples                        | ✗   |
 | rework / stabilize API               | ✗   |
