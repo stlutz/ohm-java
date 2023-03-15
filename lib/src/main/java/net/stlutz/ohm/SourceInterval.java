@@ -2,27 +2,44 @@ package net.stlutz.ohm;
 
 import java.util.Objects;
 
+/**
+ * An object describing a subrange of a string.
+ */
 public class SourceInterval {
-  private String sourceString;
-  private int startIndex;
-  private int endIndex;
-  private String contents;
+  private final String sourceString;
+  private final int startIndex;
+  private final int endIndex;
+  private String contentsCache;
 
   public SourceInterval(String sourceString, int startIndex, int endIndex) {
-    super();
-    this.sourceString = sourceString;
+    this.sourceString = Objects.requireNonNull(sourceString);
+
+    if (startIndex > endIndex || startIndex < 0 || endIndex > sourceString.length()) {
+      throw new RuntimeException(
+          "Invalid interval bounds (%1$d, %2$d).".formatted(startIndex, endIndex));
+    }
+
     this.startIndex = startIndex;
     this.endIndex = endIndex;
   }
 
+  /**
+   * Returns the string the receiver is referencing.
+   */
   public String getSourceString() {
     return sourceString;
   }
 
+  /**
+   * Returns the start index (inclusive) of the receiver.
+   */
   public int getStartIndex() {
     return startIndex;
   }
 
+  /**
+   * Returns the end index (exclusive) of the receiver.
+   */
   public int getEndIndex() {
     return endIndex;
   }
@@ -47,84 +64,98 @@ public class SourceInterval {
 
   @Override
   public String toString() {
-    return "SourceInterval [startIndex=" + startIndex + ", endIndex=" + endIndex + ", contents="
-        + getContents() + "]";
+    return "SourceInterval (" + startIndex + ", " + endIndex + ", \"" + getContents() + "\")";
   }
 
   public String getContents() {
-    if (Objects.isNull(contents)) {
-      contents = sourceString.substring(startIndex, endIndex);
+    if (contentsCache == null) {
+      contentsCache = sourceString.substring(startIndex, endIndex);
     }
-    return contents;
+    return contentsCache;
   }
 
+  /**
+   * Returns the number of characters covered by the receiver.
+   */
   public int length() {
     return endIndex - startIndex;
   }
 
-  public SourceInterval coverageWith(SourceInterval... intervals) {
-    return coverage(this, intervals);
-  }
-
+  /**
+   * Returns a new interval of length 0 that starts at the start index of the receiver.
+   */
   public SourceInterval collapsedLeft() {
+    // TODO: why?
     return new SourceInterval(sourceString, startIndex, startIndex);
   }
 
+  /**
+   * Returns a new interval of length 0 that starts at the end index of the receiver.
+   */
   public SourceInterval collapsedRight() {
+    // TODO: why?
     return new SourceInterval(sourceString, endIndex, endIndex);
   }
 
-  public LineAndColumnInfo getLineAndColumn() {
+  LineAndColumnInfo getLineAndColumn() {
+    // TODO
     return LineAndColumnInfo.from(sourceString, startIndex);
   }
 
-  public String getLineAndColumnMessage() {
+  String getLineAndColumnMessage() {
     // TODO
     throw new RuntimeException("Not yet implemented");
   }
 
   /**
-   * Subtract the specified interval from the receiver.
+   * Subtracts the interval {@code sub} from this interval.
    * 
-   * @param the interval to be subtracted. Must reference the same source string.
-   * @return an array of 0, 1, or 2 intervals
+   * @param subtrahend The interval to be subtracted. Must reference the same source string.
+   * @return An array of 0, 1, or 2 intervals
    */
-  public SourceInterval[] minus(SourceInterval sub) {
-    assertSameSource(sub);
+  public SourceInterval[] minus(SourceInterval subtrahend) {
+    Objects.requireNonNull(subtrahend);
+    assertSameSource(subtrahend);
 
-    if (startIndex >= sub.startIndex && endIndex <= sub.endIndex) {
+    if (startIndex >= subtrahend.startIndex && endIndex <= subtrahend.endIndex) {
       // we are a subset of the subtrahend
       return new SourceInterval[0];
-    } else if (endIndex <= sub.startIndex || startIndex >= sub.endIndex) {
+    } else if (endIndex <= subtrahend.startIndex || startIndex >= subtrahend.endIndex) {
       // no overlap with the subtrahend
       return new SourceInterval[] {this};
-    } else if (startIndex < sub.startIndex && endIndex > sub.endIndex) {
+    } else if (startIndex < subtrahend.startIndex && endIndex > subtrahend.endIndex) {
       // we are split by the subtrahend
-      return new SourceInterval[] {new SourceInterval(sourceString, startIndex, sub.startIndex),
-          new SourceInterval(sourceString, sub.endIndex, endIndex),};
-    } else if (startIndex >= sub.startIndex) {
+      return new SourceInterval[] {
+          new SourceInterval(sourceString, startIndex, subtrahend.startIndex),
+          new SourceInterval(sourceString, subtrahend.endIndex, endIndex),};
+    } else if (startIndex >= subtrahend.startIndex) {
       // subtrahend overlaps with our start
-      return new SourceInterval[] {new SourceInterval(sourceString, sub.endIndex, endIndex)};
+      return new SourceInterval[] {new SourceInterval(sourceString, subtrahend.endIndex, endIndex)};
     } else {
       // subtrahend overlaps with our end
-      return new SourceInterval[] {new SourceInterval(sourceString, startIndex, sub.startIndex)};
+      return new SourceInterval[] {
+          new SourceInterval(sourceString, startIndex, subtrahend.startIndex)};
     }
   }
 
   /**
-   * @param interval
-   * @return new interval with the receiver's extent, but relative to {@code interval}
+   * Returns a new interval with this interval's extent, but relative to the start index of
+   * {@code interval}.
+   *
+   * @param anchor The interval the returned interval will be relative to. Must have the same source
+   *        string as the receiver.
    */
-  public SourceInterval relativeTo(SourceInterval interval) {
-    assertSameSource(interval);
-    interval.assertCoverage(this);
+  public SourceInterval relativeTo(SourceInterval anchor) {
+    Objects.requireNonNull(anchor);
+    assertSameSource(anchor);
+    anchor.assertCovers(this);
 
-    return new SourceInterval(sourceString, startIndex - interval.startIndex,
-        endIndex - interval.startIndex);
+    return new SourceInterval(sourceString, startIndex - anchor.startIndex,
+        endIndex - anchor.startIndex);
   }
 
   /**
-   * Returns a new Interval which contains the same contents as the receiver, but with whitespace
+   * Returns a new interval which contains the same contents as the receiver, but with whitespace
    * trimmed from both ends.
    */
   public SourceInterval trimmed() {
@@ -142,33 +173,47 @@ public class SourceInterval {
     return new SourceInterval(sourceString, left, right);
   }
 
+  /**
+   * Returns a new interval of length {@code length} starting at the receiver's startIndex offset by
+   * {@code offset}.
+   */
   public SourceInterval subInterval(int offset, int length) {
     int newStartIndex = startIndex + offset;
-    return new SourceInterval(sourceString, newStartIndex, newStartIndex + length);
+    int newEndIndex = newStartIndex + length;
+    return new SourceInterval(sourceString, newStartIndex, newEndIndex);
   }
 
-  protected void assertSameSource(SourceInterval interval) {
+  private void assertSameSource(SourceInterval interval) {
     if (!sourceString.equals(interval.sourceString)) {
-      throw new RuntimeException("Interval sources don't match: \"%s\" != \"%s\""
+      throw new RuntimeException("Interval sources don't match: \"%1$s\" != \"%2$s\""
           .formatted(sourceString, interval.sourceString));
     }
   }
 
   /**
-   * Assert that the receiver covers {@code interval}
+   * Returns whether {@code otherInterval} is a sub-interval of the receiver.
    */
-  protected void assertCoverage(SourceInterval interval) {
-    if (startIndex > interval.startIndex || endIndex < interval.endIndex) {
-      throw new RuntimeException(
-          "%s does not cover %s".formatted(this.toString(), interval.toString()));
+  public boolean covers(SourceInterval otherInterval) {
+    Objects.requireNonNull(otherInterval);
+    assertSameSource(otherInterval);
+    return startIndex <= otherInterval.startIndex && endIndex >= otherInterval.endIndex;
+  }
+
+  private void assertCovers(SourceInterval otherInterval) {
+    if (startIndex > otherInterval.startIndex || endIndex < otherInterval.endIndex) {
+      throw new RuntimeException("%1$s does not cover %2$s".formatted(this, otherInterval));
     }
   }
 
-  public static SourceInterval coverage(SourceInterval firstInterval, SourceInterval... intervals) {
+  /**
+   * Returns the shortest interval that covers all argument intervals. All intervals must have the
+   * same source string.
+   */
+  public static SourceInterval cover(SourceInterval firstInterval, SourceInterval... intervals) {
     int startIndex = firstInterval.startIndex;
     int endIndex = firstInterval.endIndex;
 
-    for (SourceInterval interval : intervals) {
+    for (var interval : intervals) {
       firstInterval.assertSameSource(interval);
       startIndex = Math.min(startIndex, interval.startIndex);
       endIndex = Math.max(endIndex, interval.endIndex);
