@@ -50,7 +50,7 @@ public class Grammar {
 
   static Namespace buildDefaultNamespace() {
     GrammarBuilder builder = new GrammarBuilder(Namespace.empty());
-    GrammarDefinition grammar = builder.newGrammar("ProtoBuiltInRules");
+    GrammarDefinition grammar = builder.newGrammar("ProtoBuiltInRules").builtIn();
     grammar.newRule("any").description("any character").body(any());
     grammar.newRule("end").description("end of input").body(end());
     grammar.newRule("caseInsensitive").formals("str")
@@ -62,7 +62,7 @@ public class Grammar {
     grammar.newRule("spaces").description("zero or more spaces").body(star(apply("space")));
     grammar.newRule("space").description("a space").body(range(0x00, " ".codePointAt(0)));
 
-    grammar = builder.newGrammar("BuiltInRules").extend("ProtoBuiltInRules");
+    grammar = builder.newGrammar("BuiltInRules").extend("ProtoBuiltInRules").builtIn();
     grammar.newRule("alnum").description("an alpha-numeric character")
         .body(alt(apply("letter"), apply("digit")));
     grammar.newRule("letter").description("a letter")
@@ -89,6 +89,7 @@ public class Grammar {
   static Grammar buildOhmGrammar() {
     GrammarBuilder builder = new GrammarBuilder();
     GrammarDefinition grammar = builder.newGrammar("Ohm");
+    grammar.defaultStartRule("Grammars");
     grammar.newRule("Grammars").body(star(apply("Grammar")));
     grammar.newRule("Grammar").body(seq(apply("ident"), opt(apply("SuperGrammar")), terminal("{"),
         star(apply("Rule")), terminal("}")));
@@ -191,9 +192,8 @@ public class Grammar {
     return builder.buildGrammar();
   }
 
-  public static Grammar parse(String grammar) {
-    // TODO
-    return null;
+  public static Grammar parse(String grammarSource) {
+    return null;// OhmGrammar.match(grammarSource);
   }
 
   public Rule getRule(String ruleName) {
