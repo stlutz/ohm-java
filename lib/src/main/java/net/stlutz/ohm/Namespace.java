@@ -3,48 +3,48 @@ package net.stlutz.ohm;
 import java.util.*;
 
 public class Namespace {
-  private final Map<String, Grammar> grammars = new HashMap<>();
+    private final Map<String, Grammar> grammars = new HashMap<>();
 
-  private Namespace() {
-    super();
-  }
-
-  private Namespace(Namespace toCopy) {
-    super();
-    for (Grammar grammar : toCopy.getGrammars()) {
-      add(grammar);
+    private Namespace() {
+        super();
     }
-  }
 
-  static Namespace empty() {
-    return new Namespace();
-  }
+    private Namespace(Namespace toCopy) {
+        super();
+        for (Grammar grammar : toCopy.getGrammars()) {
+            add(grammar);
+        }
+    }
 
-  public static Namespace create() {
-    return copyOf(Grammar.DefaultNamespace);
-  }
+    static Namespace empty() {
+        return new Namespace();
+    }
 
-  public static Namespace copyOf(Namespace toCopy) {
-    return new Namespace(toCopy);
-  }
+    public static Namespace create() {
+        return copyOf(DynamicGrammar.DefaultNamespace);
+    }
 
-  public Grammar get(String grammarName) {
-    return grammars.get(grammarName);
-  }
+    public static Namespace copyOf(Namespace toCopy) {
+        return new Namespace(toCopy);
+    }
 
-  public Grammar add(Grammar grammar) {
-    return grammars.put(grammar.getName(), grammar);
-  }
+    public DynamicGrammar get(String grammarName) {
+        return grammars.get(grammarName);
+    }
 
-  public Grammar remove(String grammarName) {
-    return grammars.remove(grammarName);
-  }
+    public Grammar add(Grammar grammar) {
+        return grammars.put(grammar.getName(), grammar);
+    }
 
-  public boolean has(String grammarName) {
-    return grammars.containsKey(grammarName);
-  }
+    public Grammar remove(String grammarName) {
+        return grammars.remove(grammarName);
+    }
 
-  public Collection<Grammar> getGrammars() {
-    return List.copyOf(grammars.values());
-  }
+    public boolean has(String grammarName) {
+        return grammars.containsKey(grammarName);
+    }
+
+    public Collection<Grammar> getGrammars() {
+        return List.copyOf(grammars.values());
+    }
 }
