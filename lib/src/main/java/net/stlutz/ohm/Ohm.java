@@ -1,5 +1,6 @@
 package net.stlutz.ohm;
 
+import java.util.Collections;
 import java.util.List;
 
 public final class Ohm {
@@ -20,13 +21,14 @@ public final class Ohm {
 
     public static List<Grammar> grammars(String source, Namespace namespace) {
         if (source == null) {
-            throw new OhmException("source must not be null");
+            throw new IllegalArgumentException("source must not be null");
         }
         var matchResult = DynamicGrammar.OhmGrammar.match(source);
         if (matchResult.failed()) {
+            // TODO: actual syntax error
             throw new OhmException("Syntax error in grammar source");
         }
 
-        return buildGrammarSemantics.buildGrammars(matchResult.getRootNode(), namespace);
+        return Collections.unmodifiableList(buildGrammarSemantics.buildGrammars(matchResult.getRootNode(), namespace));
     }
 }

@@ -2,72 +2,24 @@ package net.stlutz.ohm;
 
 import net.stlutz.ohm.pexprs.PExpr;
 
-public class Rule {
-  final Operation operation;
-  final PExpr body;
-  final String[] formals;
-  final String description;
-  final SourceInterval source;
+public interface Rule {
+    public enum Operation {
+        DEFINE, EXTEND, OVERRIDE,
+    }
 
-  public enum Operation {
-    DEFINE, EXTEND, OVERRIDE,
-  }
+    PExpr getBody();
 
-  Rule(Rule toCopy) {
-    this(toCopy.body, toCopy.formals, toCopy.description, toCopy.source, toCopy.operation);
-  }
+    Operation getOperation();
 
-  Rule(PExpr body, String[] formals, String description) {
-    this(body, formals, description, null, Operation.DEFINE);
-  }
+    int getArity();
 
-  Rule(PExpr body, String[] formals, String description, SourceInterval source,
-      Operation operation) {
-    super();
-    this.body = body;
-    this.formals = formals;
-    this.description = description;
-    this.source = source;
-    this.operation = operation;
-  }
+    String[] getFormals();
 
-  public static Rule copyOf(Rule rule) {
-    return new Rule(rule);
-  }
+    String getDescription();
 
-  public Operation getOperation() {
-    return operation;
-  }
+    boolean isDefinition();
 
-  public PExpr getBody() {
-    return body;
-  }
+    boolean isOverride();
 
-  public int getArity() {
-    return body.getArity();
-  }
-
-  public String[] getFormals() {
-    return formals;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public SourceInterval getSource() {
-    return source;
-  }
-
-  public boolean isDefinition() {
-    return operation == Operation.DEFINE;
-  }
-
-  public boolean isOverride() {
-    return operation == Operation.OVERRIDE;
-  }
-
-  public boolean isExtension() {
-    return operation == Operation.EXTEND;
-  }
+    boolean isExtension();
 }

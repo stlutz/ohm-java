@@ -12,12 +12,9 @@ public class DynamicGrammar extends AbstractGrammar {
     static final Grammar BuiltInRules = DefaultNamespace.get("BuiltInRules");
     static final Grammar OhmGrammar = buildOhmGrammar();
 
-    final Map<String, Rule> rules;
-
-    DynamicGrammar(String name, Grammar superGrammar, Map<String, Rule> rules, String defaultStartRule,
+    DynamicGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule,
                    boolean isBuiltIn) {
-        super(name, superGrammar, defaultStartRule, isBuiltIn);
-        this.rules = rules;
+        super(name, superGrammar, rules, defaultStartRule, isBuiltIn);
     }
 
     static Namespace buildDefaultNamespace() {
@@ -169,16 +166,6 @@ public class DynamicGrammar extends AbstractGrammar {
     }
 
     @Override
-    public Rule getRule(String ruleName) {
-        return rules.get(ruleName);
-    }
-
-    @Override
-    public boolean hasRule(String ruleName) {
-        return rules.containsKey(ruleName);
-    }
-
-    @Override
     public Matcher getMatcher(String input) {
         return new Matcher(this, input);
     }
@@ -207,5 +194,4 @@ public class DynamicGrammar extends AbstractGrammar {
 
         return new Apply(ruleName);
     }
-
 }

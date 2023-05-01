@@ -28,7 +28,7 @@ public class Namespace {
         return new Namespace(toCopy);
     }
 
-    public DynamicGrammar get(String grammarName) {
+    public Grammar get(String grammarName) {
         return grammars.get(grammarName);
     }
 

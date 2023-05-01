@@ -85,16 +85,16 @@ public class DynamicGrammarBuilder {
     }
 
     private DynamicGrammar buildGrammar(GrammarDefinition def) {
-        DynamicGrammar superGrammar = namespace.get(def.superGrammarName);
+        Grammar superGrammar = namespace.get(def.superGrammarName);
         if (superGrammar == null && !def.isBuiltIn) {
             superGrammar = namespace.get("BuiltInRules");
         }
-        Map<String, Rule> rules = buildRules(def, superGrammar);
+        Map<String, RuleImpl> rules = buildRules(def, superGrammar);
         String defaultRuleName = getDefaultStartRuleName(def, superGrammar);
         return new DynamicGrammar(def.name, superGrammar, rules, defaultRuleName, def.isBuiltIn);
     }
 
-    private String getDefaultStartRuleName(GrammarDefinition def, DynamicGrammar superGrammar) {
+    private String getDefaultStartRuleName(GrammarDefinition def, Grammar superGrammar) {
         if (def.defaultStartRuleName != null) {
             return def.defaultStartRuleName;
         }
@@ -110,27 +110,27 @@ public class DynamicGrammarBuilder {
         return null;
     }
 
-    private Map<String, Rule> buildRules(GrammarDefinition gDef, DynamicGrammar superGrammar) {
-        Map<String, Rule> rules = new HashMap<>();
+    private Map<String, RuleImpl> buildRules(GrammarDefinition gDef, Grammar superGrammar) {
+        Map<String, RuleImpl> rules = new HashMap<>();
 
         for (RuleDefinition rDef : gDef.rules) {
             if (rules.containsKey(rDef.name)) {
                 throw new OhmException("Duplicate declaration for rule '%s'".formatted(rDef.name));
             }
-            Rule rule = buildRule(rDef, superGrammar);
+            RuleImpl rule = buildRule(rDef, superGrammar);
             rules.put(rDef.name, rule);
         }
 
         if (superGrammar != null) {
-            superGrammar.rules.forEach((name, rule) -> {
-                rules.putIfAbsent(name, Rule.copyOf(rule));
+            superGrammar.getRules().forEach((name, rule) -> {
+                rules.putIfAbsent(name, RuleImpl.copyOf(rule));
             });
         }
 
         return rules;
     }
 
-    private Rule buildRule(RuleDefinition def, Grammar superGrammar) {
+    private RuleImpl buildRule(RuleDefinition def, Grammar superGrammar) {
         PExpr body = def.body;
 
         Collection<String> duplicateParameterNames = Util.getDuplicates(def.formals);
@@ -157,7 +157,7 @@ public class DynamicGrammarBuilder {
             if (superRuleFormals.length != def.formals.length) {
                 throw new OhmException(
                         "Cannot %s rule '%s': Got %d parameters, but super rule has %d parameters."
-                                .formatted("override", def.formals.length, superRuleFormals.length));
+                                .formatted("override", def.name, def.formals.length, superRuleFormals.length));
             }
 
             if (def.isExtension()) {
@@ -174,6 +174,6 @@ public class DynamicGrammarBuilder {
         }
 
         body.introduceParams(def.formals);
-        return new Rule(body, def.formals, def.description, def.sourceInterval, def.operation);
+        return new RuleImpl(body, def.formals, def.description, def.sourceInterval, def.operation);
     }
 }

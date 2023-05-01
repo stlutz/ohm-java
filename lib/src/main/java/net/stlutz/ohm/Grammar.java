@@ -2,6 +2,8 @@ package net.stlutz.ohm;
 
 import net.stlutz.ohm.pexprs.Apply;
 
+import java.util.Map;
+
 public interface Grammar {
     /**
      * Returns the default start rule name of this grammar (used in {@link Grammar#match(String)}.
@@ -43,7 +45,9 @@ public interface Grammar {
     Grammar getSuperGrammar();
 
     /**
-     * Returns this grammar's {@link Rule} object for the rule named {@code ruleName}.
+     * Returns this grammar's rule object for the rule named {@code ruleName}.
+     * <p>
+     * Rules defined by super grammars are considered rules of this grammar.
      *
      * @param ruleName The name of the rule.
      * @return The rule object, or {@code null} if this grammar does not have a rule of this name.
@@ -51,10 +55,17 @@ public interface Grammar {
     Rule getRule(String ruleName);
 
     /**
-     * Returns {@code true} if this grammar or any supergrammar contains a rule named {@code ruleName}.
+     * Returns all rules defined by this grammar or its super grammar as a map with the respective rule name as key.
+     *
+     * @return A map of rule names to rule objects for all rules in this grammar.
+     */
+    Map<String, Rule> getRules();
+
+    /**
+     * Returns {@code true} if this grammar or any super grammar contains a rule named {@code ruleName}.
      *
      * @param ruleName The name of the rule
-     * @return {@code true} if this grammar or a supergrammar can match {@code ruleName}, otherwise {@code false}
+     * @return {@code true} if this grammar or a super grammar can match {@code ruleName}, otherwise {@code false}
      */
     boolean hasRule(String ruleName);
 

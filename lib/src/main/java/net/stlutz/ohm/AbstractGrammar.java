@@ -1,15 +1,20 @@
 package net.stlutz.ohm;
 
+import java.util.Collections;
+import java.util.Map;
+
 public abstract class AbstractGrammar implements Grammar {
     final String name;
     final Grammar superGrammar;
     final boolean isBuiltIn;
     String defaultStartRule;
+    final Map<String, RuleImpl> rules;
 
-    public AbstractGrammar(String name, Grammar superGrammar, String defaultStartRule, boolean isBuiltIn) {
+    public AbstractGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule, boolean isBuiltIn) {
         super();
         this.name = name;
         this.superGrammar = superGrammar;
+        this.rules = rules;
         this.defaultStartRule = defaultStartRule;
         this.isBuiltIn = isBuiltIn;
     }
@@ -52,5 +57,20 @@ public abstract class AbstractGrammar implements Grammar {
     @Override
     public boolean isBuiltIn() {
         return isBuiltIn;
+    }
+
+    @Override
+    public RuleImpl getRule(String ruleName) {
+        return rules.get(ruleName);
+    }
+
+    @Override
+    public boolean hasRule(String ruleName) {
+        return rules.containsKey(ruleName);
+    }
+
+    @Override
+    public Map<String, Rule> getRules() {
+        return Collections.unmodifiableMap(rules);
     }
 }
