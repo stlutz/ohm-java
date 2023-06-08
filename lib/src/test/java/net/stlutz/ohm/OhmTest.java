@@ -20,7 +20,7 @@ class OhmTest {
     }
 
     Grammar getOhmGrammar() {
-        return DynamicGrammar.OhmGrammar;
+        return ConstructedGrammar.OhmGrammar;
     }
 
     String getOhmGrammarSource() {
@@ -41,7 +41,7 @@ class OhmTest {
     @Test
     void testOhmGrammarOuroboros() {
         String ohmSource = getOhmGrammarSource();
-        Grammar ohmGrammar = DynamicGrammar.OhmGrammar;
+        Grammar ohmGrammar = ConstructedGrammar.OhmGrammar;
         int numLoops = 10;
         for (int i = 0; i < numLoops; i++) {
             var matchResult = ohmGrammar.match(ohmSource);

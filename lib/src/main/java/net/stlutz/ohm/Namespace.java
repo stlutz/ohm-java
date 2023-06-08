@@ -21,7 +21,7 @@ public class Namespace {
     }
 
     public static Namespace create() {
-        return copyOf(DynamicGrammar.DefaultNamespace);
+        return copyOf(ConstructedGrammar.DefaultNamespace);
     }
 
     public static Namespace copyOf(Namespace toCopy) {

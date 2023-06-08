@@ -47,21 +47,6 @@ public class RuleImpl implements Rule {
     }
 
     @Override
-    public boolean isDefinition() {
-        return operation == Operation.DEFINE;
-    }
-
-    @Override
-    public boolean isOverride() {
-        return operation == Operation.OVERRIDE;
-    }
-
-    @Override
-    public boolean isExtension() {
-        return operation == Operation.EXTEND;
-    }
-
-    @Override
     public PExpr getBody() {
         return body;
     }

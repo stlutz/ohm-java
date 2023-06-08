@@ -5,18 +5,18 @@ import java.util.*;
 import net.stlutz.ohm.pexprs.PExpr;
 
 /**
- * A builder for {@link DynamicGrammar}s.
+ * A builder for {@link ConstructedGrammar}s.
  */
-public class DynamicGrammarBuilder {
+public class ConstructedGrammarBuilder {
     final Namespace namespace;
     List<GrammarDefinition> grammars = new ArrayList<>();
 
-    public DynamicGrammarBuilder() {
+    public ConstructedGrammarBuilder() {
         super();
         this.namespace = Namespace.create();
     }
 
-    public DynamicGrammarBuilder(Namespace namespace) {
+    public ConstructedGrammarBuilder(Namespace namespace) {
         super();
         this.namespace = namespace != null ? namespace : Namespace.create();
     }
@@ -31,7 +31,7 @@ public class DynamicGrammarBuilder {
         return grammar;
     }
 
-    public DynamicGrammar buildGrammar() {
+    public ConstructedGrammar buildGrammar() {
         if (grammars.isEmpty()) {
             throw new OhmException("No grammars defined.");
         } else if (grammars.size() > 1) {
@@ -41,9 +41,9 @@ public class DynamicGrammarBuilder {
         }
     }
 
-    public List<DynamicGrammar> buildGrammars() {
+    public List<ConstructedGrammar> buildGrammars() {
         Deque<GrammarDefinition> grammarsToBuild = new ArrayDeque<>(grammars);
-        List<DynamicGrammar> builtGrammars = new ArrayList<>();
+        List<ConstructedGrammar> builtGrammars = new ArrayList<>();
 
         boolean isMakingProgress = true;
         while (isMakingProgress) {
@@ -67,7 +67,7 @@ public class DynamicGrammarBuilder {
                     }
                 }
                 if (gDef.superGrammarName == null || namespace.has(gDef.superGrammarName)) {
-                    DynamicGrammar grammar = buildGrammar(gDef);
+                    ConstructedGrammar grammar = buildGrammar(gDef);
                     builtGrammars.add(grammar);
                     namespace.add(grammar);
                     isMakingProgress = true;
@@ -84,14 +84,14 @@ public class DynamicGrammarBuilder {
                 "Either the specified super grammar was not found in the given namespace or grammar inheritance is circular.");
     }
 
-    private DynamicGrammar buildGrammar(GrammarDefinition def) {
+    private ConstructedGrammar buildGrammar(GrammarDefinition def) {
         Grammar superGrammar = namespace.get(def.superGrammarName);
         if (superGrammar == null && !def.isBuiltIn) {
             superGrammar = namespace.get("BuiltInRules");
         }
         Map<String, RuleImpl> rules = buildRules(def, superGrammar);
         String defaultRuleName = getDefaultStartRuleName(def, superGrammar);
-        return new DynamicGrammar(def.name, superGrammar, rules, defaultRuleName, def.isBuiltIn);
+        return new ConstructedGrammar(def.name, superGrammar, rules, defaultRuleName, def.isBuiltIn);
     }
 
     private String getDefaultStartRuleName(GrammarDefinition def, Grammar superGrammar) {
@@ -132,6 +132,7 @@ public class DynamicGrammarBuilder {
 
     private RuleImpl buildRule(RuleDefinition def, Grammar superGrammar) {
         PExpr body = def.body;
+        String description = def.description;
 
         Collection<String> duplicateParameterNames = Util.getDuplicates(def.formals);
         if (!duplicateParameterNames.isEmpty()) {
@@ -165,6 +166,8 @@ public class DynamicGrammarBuilder {
             } else { // isOverride() implied
                 body.resolveSplice(superRule.getBody());
             }
+
+            description = superRule.getDescription();
         } else {
             if (superRule != null) {
                 throw new OhmException(
@@ -174,6 +177,6 @@ public class DynamicGrammarBuilder {
         }
 
         body.introduceParams(def.formals);
-        return new RuleImpl(body, def.formals, def.description, def.sourceInterval, def.operation);
+        return new RuleImpl(body, def.formals, description, def.sourceInterval, def.operation);
     }
 }

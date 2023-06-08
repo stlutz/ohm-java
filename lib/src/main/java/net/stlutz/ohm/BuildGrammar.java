@@ -18,16 +18,16 @@ public class BuildGrammar extends Semantics {
         buildOperation = Build.class.cast(getOperation("build"));
     }
 
-    public List<DynamicGrammar> buildGrammars(Node node, Namespace namespace) {
-        var builder = new DynamicGrammarBuilder(namespace);
+    public List<ConstructedGrammar> buildGrammars(Node node, Namespace namespace) {
+        var builder = new ConstructedGrammarBuilder(namespace);
         buildOperation.setBuilder(builder);
         buildOperation.apply(node);
         buildOperation.reset();
         return builder.buildGrammars();
     }
 
-    public DynamicGrammar buildGrammar(Node node) {
-        var builder = new DynamicGrammarBuilder();
+    public ConstructedGrammar buildGrammar(Node node) {
+        var builder = new ConstructedGrammarBuilder();
         buildOperation.setBuilder(builder);
         buildOperation.apply(node);
         buildOperation.reset();
@@ -40,15 +40,15 @@ public class BuildGrammar extends Semantics {
 
     @Named("build")
     public static class Build extends Operation {
-        private DynamicGrammarBuilder builder;
+        private ConstructedGrammarBuilder builder;
         private GrammarDefinition currentGrammar;
         private RuleDefinition currentRule;
 
-        public DynamicGrammarBuilder getBuilder() {
+        public ConstructedGrammarBuilder getBuilder() {
             return builder;
         }
 
-        public void setBuilder(DynamicGrammarBuilder builder) {
+        public void setBuilder(ConstructedGrammarBuilder builder) {
             this.builder = builder;
         }
 

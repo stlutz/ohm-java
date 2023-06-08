@@ -8,7 +8,7 @@ import net.stlutz.ohm.pexprs.*;
 class GrammarBuildingTest {
 
     private PExpr buildExpr(String startRule, String source) {
-        var matchResult = DynamicGrammar.OhmGrammar.match(source, startRule);
+        var matchResult = ConstructedGrammar.OhmGrammar.match(source, startRule);
         assertTrue(matchResult.succeeded());
         return Ohm.buildGrammarSemantics.buildPExpr(matchResult.getRootNode());
     }

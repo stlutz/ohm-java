@@ -6,19 +6,19 @@ import java.util.Map;
 
 import net.stlutz.ohm.pexprs.*;
 
-public class DynamicGrammar extends AbstractGrammar {
+public class ConstructedGrammar extends AbstractGrammar {
     static final Namespace DefaultNamespace = buildDefaultNamespace();
     static final Grammar ProtoBuiltInRules = DefaultNamespace.get("ProtoBuiltInRules");
     static final Grammar BuiltInRules = DefaultNamespace.get("BuiltInRules");
     static final Grammar OhmGrammar = buildOhmGrammar();
 
-    DynamicGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule,
-                   boolean isBuiltIn) {
+    ConstructedGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule,
+                       boolean isBuiltIn) {
         super(name, superGrammar, rules, defaultStartRule, isBuiltIn);
     }
 
     static Namespace buildDefaultNamespace() {
-        DynamicGrammarBuilder builder = new DynamicGrammarBuilder(Namespace.empty());
+        ConstructedGrammarBuilder builder = new ConstructedGrammarBuilder(Namespace.empty());
         GrammarDefinition grammar = builder.newGrammar("ProtoBuiltInRules").builtIn();
         grammar.newRule("any").description("any character").body(any());
         grammar.newRule("end").description("end of input").body(end());
@@ -56,7 +56,7 @@ public class DynamicGrammar extends AbstractGrammar {
     }
 
     static Grammar buildOhmGrammar() {
-        DynamicGrammarBuilder builder = new DynamicGrammarBuilder();
+        ConstructedGrammarBuilder builder = new ConstructedGrammarBuilder();
         GrammarDefinition grammar = builder.newGrammar("Ohm");
         grammar.defaultStartRule("Grammars");
         grammar.newRule("Grammars").body(star(apply("Grammar")));

@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class Ohm {
     static final BuildGrammar buildGrammarSemantics =
-            DynamicGrammar.OhmGrammar.createSemanticsBlueprint(BuildGrammar.class).instantiate();
+            ConstructedGrammar.OhmGrammar.createSemanticsBlueprint(BuildGrammar.class).instantiate();
 
     private Ohm() {
     }
@@ -23,7 +23,7 @@ public final class Ohm {
         if (source == null) {
             throw new IllegalArgumentException("source must not be null");
         }
-        var matchResult = DynamicGrammar.OhmGrammar.match(source);
+        var matchResult = ConstructedGrammar.OhmGrammar.match(source);
         if (matchResult.failed()) {
             // TODO: actual syntax error
             throw new OhmException("Syntax error in grammar source");

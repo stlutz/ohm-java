@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 class OhmGrammarSyntaxTest extends SyntaxTest {
     @Override
     protected Grammar getGrammar() {
-        return DynamicGrammar.OhmGrammar;
+        return ConstructedGrammar.OhmGrammar;
     }
 
     @Test
