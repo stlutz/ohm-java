@@ -28,17 +28,40 @@ dependencies {
     implementation 'org.json:json:20220924'
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compileClasspath
+
+    javadocTool = javaToolchains.javadocToolFor {
+        languageVersion = JavaLanguageVersion.of(20)
+    }
+
+    options {
+        encoding = "UTF-8"
+        links "https://docs.oracle.com/en/java/javase/17/docs/api"
+        memberLevel = JavadocMemberLevel.PUBLIC
+        locale = Locale.US.getLanguage()
+    }
+}
+
 tasks.named('test') {
-    // Use JUnit Platform for unit tests.
     useJUnitPlatform()
-    
+
     maxHeapSize = '1G'
-    
+
     testLogging {
-		events "failed", "passed", "skipped"
-		exceptionFormat "full"
-		showExceptions true
-		showCauses true
-		showStackTraces true
+        events "failed", "passed", "skipped"
+        exceptionFormat "full"
+        showExceptions true
+        showCauses true
+        showStackTraces true
     }
 }
