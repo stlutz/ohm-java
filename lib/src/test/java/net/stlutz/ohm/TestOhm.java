@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OhmTest {
+class TestOhm {
     String getGrammarSource(String fileName) {
         var path = Paths.get("src", "main", "grammars", fileName);
         try {

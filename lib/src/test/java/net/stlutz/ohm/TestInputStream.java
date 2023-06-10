@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class InputStreamTest {
+class TestInputStream {
     private static final String sentence = "The quick brown fox jumps over the lazy dog.";
     // "Good job 👍 👍🏿 👍🏽 👍🏻!!!"
     // 1F44D -> D83D DC4D

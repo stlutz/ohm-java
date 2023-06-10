@@ -2,7 +2,7 @@ package net.stlutz.ohm;
 
 import org.junit.jupiter.api.Test;
 
-class ProtoBuiltInRulesSyntaxTest extends SyntaxTest {
+class TestProtoBuiltInRulesSyntax extends TestSyntax {
     @Override
     protected Grammar getGrammar() {
         return ConstructedGrammar.ProtoBuiltInRules;

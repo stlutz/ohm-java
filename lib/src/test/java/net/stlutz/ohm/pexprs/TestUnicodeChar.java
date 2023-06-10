@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UnicodeCharTest {
+class TestUnicodeChar {
     @Test
     void testUnicodeCategories() {
         Pattern pattern = UnicodeChar.unicodeCategoryPatterns.get("L");

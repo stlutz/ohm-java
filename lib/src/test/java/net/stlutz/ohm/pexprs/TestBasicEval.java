@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class BasicEvalTest {
+class TestBasicEval {
     private MatchState matchState;
     
     private static MatchState getMatchState(String input, Apply startExpr) {

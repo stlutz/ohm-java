@@ -11,7 +11,7 @@ import static net.stlutz.ohm.MockNode.letter;
 import static net.stlutz.ohm.MockNode.number;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ArithmeticSemanticsTest {
+class TestArithmeticSemantics {
     ArithmeticSemantics semantics;
     
     static ArithmeticSemantics make() {

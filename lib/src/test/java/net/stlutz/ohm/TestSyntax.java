@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public abstract class SyntaxTest {
+public abstract class TestSyntax {
     protected Grammar grammar;
     
     protected abstract Grammar getGrammar();

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MatchStateTest {
+class TestMatchState {
     private MatchState matchState;
     
     private static MatchState getMatchState(String input, Apply startExpr) {

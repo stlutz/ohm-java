@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GrammarBuildingTest {
+class TestGrammarBuilding {
     
     private PExpr buildExpr(String startRule, String source) {
         var matchResult = ConstructedGrammar.OhmGrammar.match(source, startRule);

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SourceIntervalTest {
+class TestSourceInterval {
     private static final String sentence = "The quick brown fox jumps over the lazy dog.";
     
     private static SourceInterval make(int startIndex, int endIndex) {

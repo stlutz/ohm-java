@@ -6,7 +6,7 @@ import static net.stlutz.ohm.MockNode.Nonterminal;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SemanticsBlueprintTest {
+class TestSemanticsBlueprint {
     Throwable e;
     
     public static class SimpleSemantics extends Semantics {
