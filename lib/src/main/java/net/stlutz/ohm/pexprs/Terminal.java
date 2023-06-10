@@ -3,10 +3,10 @@ package net.stlutz.ohm.pexprs;
 import net.stlutz.ohm.InputStream;
 import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.TerminalNode;
-import org.json.JSONObject;
+import net.stlutz.ohm.Util;
 
 public class Terminal extends Prim {
-    // TODO: rename
+    // TODO: rename 'obj' to something more meaningful
     private String obj;
     
     public Terminal(String obj) {
@@ -31,6 +31,8 @@ public class Terminal extends Prim {
     
     @Override
     public void toString(StringBuilder sb) {
-        sb.append(JSONObject.quote(obj));
+        sb.append('"');
+        Util.escapeString(obj, sb);
+        sb.append('"');
     }
 }

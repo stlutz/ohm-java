@@ -3,6 +3,7 @@ package net.stlutz.ohm;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Set;
 
@@ -46,5 +47,50 @@ public final class Util {
     
     public static <T> Collection<T> getDuplicates(T[] elements) {
         return getDuplicates(List.of(elements));
+    }
+    
+    private static final HexFormat hexFormat = HexFormat.of().withUpperCase();
+    
+    public static void escapeString(String string, StringBuilder sb) {
+        if (string == null) return;
+        
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            switch (c) {
+                case '\\', '"', '\'' -> {
+                    sb.append('\\');
+                    sb.append(c);
+                }
+                case '\b' -> sb.append("\\b");
+                case '\n' -> sb.append("\\n");
+                case '\r' -> sb.append("\\r");
+                case '\t' -> sb.append("\\t");
+                default -> {
+                    int codePoint = c;
+                    if (Character.isHighSurrogate(c)) {
+                        if (++i >= string.length()) break; // something's not right
+                        codePoint = Character.toCodePoint(c, string.charAt(i));
+                    }
+                    escapeCodePoint(codePoint, sb);
+                }
+            }
+        }
+    }
+    
+    public static void escapeCodePoint(int codePoint, StringBuilder sb) {
+        if (codePoint > 0xFFFF) {
+            sb.append("\\u{");
+            sb.append(hexFormat.toHexDigits(codePoint));
+            sb.append('}');
+        } else if (codePoint < '\u0020'
+            || (codePoint >= '\u0080' && codePoint < '\u00a0')) {
+            sb.append("\\x");
+            sb.append(hexFormat.toHexDigits(codePoint, 2));
+        } else if (codePoint >= '\u2000' && codePoint < '\u2100') {
+            sb.append("\\u");
+            sb.append(hexFormat.toHexDigits(codePoint, 4));
+        } else {
+            sb.append(codePoint);
+        }
     }
 }

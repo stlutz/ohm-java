@@ -3,7 +3,7 @@ package net.stlutz.ohm.pexprs;
 import net.stlutz.ohm.InputStream;
 import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.TerminalNode;
-import org.json.JSONWriter;
+import net.stlutz.ohm.Util;
 
 public class Range extends Prim {
     /**
@@ -37,9 +37,10 @@ public class Range extends Prim {
     
     @Override
     public void toString(StringBuilder sb) {
-        JSONWriter writer = new JSONWriter(sb);
-        writer.value(Character.toString(from));
-        sb.append("..");
-        writer.value(Character.toString(to));
+        sb.append('"');
+        Util.escapeCodePoint(from, sb);
+        sb.append("\"..\"");
+        Util.escapeCodePoint(to, sb);
+        sb.append('"');
     }
 }
