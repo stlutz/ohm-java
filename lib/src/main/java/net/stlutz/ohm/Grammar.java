@@ -98,7 +98,7 @@ public interface Grammar {
     MatchResult match(String input, String startRule);
     
     <T extends Semantics> SemanticsBlueprint<T> createSemanticsBlueprint(
-            Class<T> semanticsClass);
+        Class<T> semanticsClass);
     
     Apply parseApplication(String ruleName);
     

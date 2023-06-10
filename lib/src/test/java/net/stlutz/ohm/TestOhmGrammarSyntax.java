@@ -11,14 +11,14 @@ class TestOhmGrammarSyntax extends TestSyntax {
     @Test
     void testComment() {
         shouldMatch("comment", "//", "// todo", "////", "/**/", "/* todo */", "/* \n \n */",
-                "/*/////*/");
+            "/*/////*/");
         shouldNotMatch("comment", "/", "//\n", "/*/");
     }
     
     @Test
     void testEscapeChar() {
         shouldMatch("escapeChar", "\\\\", "\\\"", "\\\'", "\\b", "\\n", "\\r", "\\t", "\\u{F}",
-                "\\u{FF}", "\\u{FFF}", "\\u{1234}", "\\u{56789}", "\\u{11ffff}", "\\u0000", "\\x00");
+            "\\u{FF}", "\\u{FFF}", "\\u{1234}", "\\u{56789}", "\\u{11ffff}", "\\u0000", "\\x00");
         shouldNotMatch("escapeChar", "\\z", "\\\n", "\\u{}", "\\u{0000000}", "\\x{0000}", "\\");
     }
     
@@ -43,7 +43,7 @@ class TestOhmGrammarSyntax extends TestSyntax {
     @Test
     void testCaseName() {
         shouldMatch("caseName", "--abc\n", "-- _\n", "-- abc_def\n", "--\t\tabc\t\t\n", "-- abc  \n",
-                "-- /* yo */ abc\n", "-- abc // yo\n");
+            "-- /* yo */ abc\n", "-- abc // yo\n");
         shouldNotMatch("caseName", "", "\n", "-- \n", "-- abc", " -- abc\n", "-- \n abc \n", "--- abc");
     }
     
@@ -62,7 +62,7 @@ class TestOhmGrammarSyntax extends TestSyntax {
     @Test
     void testBaseApplication() {
         shouldMatch("Base_application", "abc", "abc<>", "abc<def>", "abc<\"def\" \"ghi\">",
-                "abc<def,ghi>", "abc<def<ghi>>", "abc<,>", "abc < def >", "abc\n<\ndef\n>");
+            "abc<def,ghi>", "abc<def<ghi>>", "abc<,>", "abc < def >", "abc\n<\ndef\n>");
         shouldNotMatch("Base_application", "abc def", "abc<~>");
     }
     
@@ -80,29 +80,29 @@ class TestOhmGrammarSyntax extends TestSyntax {
     @Test
     void testRuleDefine() {
         shouldMatch("Rule_define", "abc = def", "abc(def)=ghi", "abc<def,ghi>=def ghi",
-                "abc<def>(ghi)=jkl--mno\n", "abc = ");
+            "abc<def>(ghi)=jkl--mno\n", "abc = ");
         shouldNotMatch("Rule_define", "", "abc<\"def\">=ghi", "abc == def", "abc += def", "abc := def");
     }
     
     @Test
     void testRuleOverride() {
         shouldMatch("Rule_override", "abc := def", "abc := ...", "abc:=...|ghi",
-                "abc<def,ghi>:=def|...|ghi", "abc := def | ... | jkl -- ghi\n");
+            "abc<def,ghi>:=def|...|ghi", "abc := def | ... | jkl -- ghi\n");
         shouldNotMatch("Rule_override", "", "abc(def):=ghi", "abc := def ...",
-                "abc := def | ... -- ghi\n");
+            "abc := def | ... -- ghi\n");
     }
     
     @Test
     void testRuleExtend() {
         shouldMatch("Rule_extend", "abc += def", "abc+=ghi|jkl", "abc<def,ghi>+=def|ghi|jkl",
-                "abc += def | jkl -- ghi\n");
+            "abc += def | jkl -- ghi\n");
         shouldNotMatch("Rule_extend", "", "abc(def)+=ghi", "abc += ...", "abc := def", "abc = def");
     }
     
     @Test
     void testGrammar() {
         shouldMatch("Grammar", "G{}", "G\n{\n}", "G1 <: G2 { }", "G1\n<:\nG2\n{\n}",
-                "G { R1 = \"abc\" R2 = \"def\" R3 = \"ghi\" }");
+            "G { R1 = \"abc\" R2 = \"def\" R3 = \"ghi\" }");
         shouldNotMatch("Grammar", "", "G{}H{}", "G1 < : G2 { }");
     }
     

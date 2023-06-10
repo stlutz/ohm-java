@@ -58,7 +58,7 @@ public class Apply extends PExpr {
                 // We are not actually an application, just a parameter
                 if (args.length > 0) {
                     throw new OhmException(
-                            "Parameterized rules cannot be passed as arguments to another rule");
+                        "Parameterized rules cannot be passed as arguments to another rule");
                 }
                 Param result = new Param(index);
                 result.setSource(source);
@@ -117,7 +117,7 @@ public class Apply extends PExpr {
         MemoizationRecord memoRec = posInfo.remember(memoKey);
         
         if (currentLeftRecursion != null
-                && currentLeftRecursion.getHeadApplication().toMemoKey().equals(memoKey)) {
+            && currentLeftRecursion.getHeadApplication().toMemoKey().equals(memoKey)) {
             // We already know about this left recursion, but it's possible there are
             // "involved applications" that we don't already know about, so...
             memoRec.updateInvolvedApplicationMemoKeys();
@@ -144,12 +144,12 @@ public class Apply extends PExpr {
         MemoizationRecord currentLR = origPosInfo.getCurrentLeftRecursion();
         String memoKey = toMemoKey();
         boolean isHeadOfLeftRecursion =
-                (currentLR != null) && (currentLR.getHeadApplication().toMemoKey().equals(memoKey));
+            (currentLR != null) && (currentLR.getHeadApplication().toMemoKey().equals(memoKey));
         
         MemoizationRecord memoRec;
         if (isHeadOfLeftRecursion) {
             nodeOrNull =
-                    growSeedResult(rule.getBody(), matchState, originalPosition, currentLR, nodeOrNull);
+                growSeedResult(rule.getBody(), matchState, originalPosition, currentLR, nodeOrNull);
             origPosInfo.endLeftRecursion();
             memoRec = currentLR;
             origPosInfo.memoize(memoKey, memoRec);

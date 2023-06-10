@@ -185,7 +185,7 @@ class TestSourceInterval {
         
         var intervalWithDifferentSourceString = make(sentence + " ", 16, 19);
         var e = assertThrows(RuntimeException.class,
-                () -> SourceInterval.cover(interval1, intervalWithDifferentSourceString));
+            () -> SourceInterval.cover(interval1, intervalWithDifferentSourceString));
         assertTrue(e.getMessage().contains("Interval sources don't match"));
     }
 }

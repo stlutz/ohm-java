@@ -114,7 +114,7 @@ class TestSemanticActions {
         assertEquals("Rule B", semantics.apply(Nonterminal("RuleB")));
         assertEquals("Rule B", semantics.apply(Nonterminal("RuleA", Nonterminal("RuleB"))));
         assertEquals("Rule C",
-                semantics.apply(Nonterminal("RuleA", Nonterminal("RuleC", Nonterminal("RuleB")))));
+            semantics.apply(Nonterminal("RuleA", Nonterminal("RuleC", Nonterminal("RuleB")))));
     }
     
     @Test
@@ -142,7 +142,7 @@ class TestSemanticActions {
         assertEquals("new Rule B", semantics.apply(Nonterminal("RuleB")));
         assertEquals("better new Rule B", semantics.apply(Nonterminal("RuleA", Nonterminal("RuleB"))));
         assertEquals("better Rule C",
-                semantics.apply(Nonterminal("RuleA", Nonterminal("RuleC", Nonterminal("RuleB")))));
+            semantics.apply(Nonterminal("RuleA", Nonterminal("RuleC", Nonterminal("RuleB")))));
     }
     
     public static class SpecialActions extends Semantics {

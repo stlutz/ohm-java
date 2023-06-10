@@ -18,7 +18,7 @@ class TestInputStream {
     // 1F3FD -> D83C DFFD
     // 1F3FB -> D83C DFFB
     private static final String unicodeString =
-            "Good job \uD83D\uDC4D \uD83D\uDC4D\uD83C\uDFFF \uD83D\uDC4D\uD83C\uDFFD \uD83D\uDC4D\uD83C\uDFFB!!!";
+        "Good job \uD83D\uDC4D \uD83D\uDC4D\uD83C\uDFFF \uD83D\uDC4D\uD83C\uDFFD \uD83D\uDC4D\uD83C\uDFFB!!!";
     
     private InputStream stream;
     
@@ -83,7 +83,7 @@ class TestInputStream {
         assertEquals(103, stream.nextCharCode());
         assertEquals(46, stream.nextCharCode());
         assertThrows(RuntimeException.class, () -> stream.nextCharCode(),
-                "Should throw exception if at end");
+            "Should throw exception if at end");
     }
     
     @Test
@@ -113,7 +113,7 @@ class TestInputStream {
         assertEquals(103, stream.nextCodePoint());
         assertEquals(46, stream.nextCodePoint());
         assertThrows(RuntimeException.class, () -> stream.nextCodePoint(),
-                "Should throw exception if at end");
+            "Should throw exception if at end");
     }
     
     @Test
@@ -130,7 +130,7 @@ class TestInputStream {
         assertEquals(17, stream.getPosition());
         stream.setPosition(18);
         assertEquals(0xDC4D, stream.nextCodePoint(),
-                "Should return char code if in the middle of a code point");
+            "Should return char code if in the middle of a code point");
         assertEquals(19, stream.getPosition());
     }
     
@@ -144,7 +144,7 @@ class TestInputStream {
         stream.setPosition(40); // lazy >d<og
         assertTrue(stream.matches("DOg.", true), "Should match at the current position");
         assertFalse(stream.matches("dog. ", true),
-                "Should not error or match when matching past the end");
+            "Should not error or match when matching past the end");
     }
     
     @Test
@@ -167,7 +167,7 @@ class TestInputStream {
         stream.setPosition(40); // lazy >d<og
         assertEquals(4, stream.match(Pattern.compile("dog.")));
         assertEquals(-1, stream.match(Pattern.compile("dog. ")),
-                "Should not error or match when matching past the end");
+            "Should not error or match when matching past the end");
     }
     
     @Test
@@ -187,7 +187,7 @@ class TestInputStream {
         assertEquals("The", stream.sourceSlice(0, 3));
         assertEquals("dog.", stream.sourceSlice(40, 44));
         assertThrows(RuntimeException.class, () -> stream.sourceSlice(40, 45),
-                "Should throw exception when slicing over end");
+            "Should throw exception when slicing over end");
     }
     
     @Test

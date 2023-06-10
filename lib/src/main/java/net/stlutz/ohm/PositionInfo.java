@@ -43,7 +43,7 @@ public class PositionInfo {
         
         int indexOfFirstInvolvedRule = applicationMemoKeyStack.indexOf(headApplication.toMemoKey()) - 1;
         List<String> involvedApplicationMemoKeys = new ArrayList<>(
-                applicationMemoKeyStack.subList(indexOfFirstInvolvedRule, applicationMemoKeyStack.size()));
+            applicationMemoKeyStack.subList(indexOfFirstInvolvedRule, applicationMemoKeyStack.size()));
         
         // TODO: This seems like it could be done much cleaner differently. For now just
         // copied 1:1 from ohm-js

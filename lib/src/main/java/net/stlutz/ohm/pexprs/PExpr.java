@@ -172,7 +172,7 @@ public abstract class PExpr {
     public static PExpr range(int fromCodePoint, int toCodePoint) {
         if (fromCodePoint > toCodePoint) {
             throw new OhmException(
-                    "Cannot create PExpr range. 'fromCodePoint' must not be higher than 'toCodePoint'.");
+                "Cannot create PExpr range. 'fromCodePoint' must not be higher than 'toCodePoint'.");
         }
         return new Range(fromCodePoint, toCodePoint);
     }
@@ -180,11 +180,11 @@ public abstract class PExpr {
     public static PExpr range(String from, String to) {
         if (Character.codePointCount(from, 0, from.length()) != 1) {
             throw new OhmException(
-                    "Cannot create PExpr range. 'from' must contain exactly one code point.");
+                "Cannot create PExpr range. 'from' must contain exactly one code point.");
         }
         if (Character.codePointCount(to, 0, to.length()) != 1) {
             throw new OhmException(
-                    "Cannot create PExpr range. 'to' must contain exactly one code point.");
+                "Cannot create PExpr range. 'to' must contain exactly one code point.");
         }
         int fromCodePoint = from.codePointAt(0);
         int toCodePoint = to.codePointAt(0);
@@ -211,8 +211,8 @@ public abstract class PExpr {
     public static PExpr unicodeChar(String unicodeCategory) {
         if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory)) {
             throw new OhmException(
-                    "Cannot create PExpr unicodeChar. '%s' is not a valid unicode category."
-                            .formatted(unicodeCategory));
+                "Cannot create PExpr unicodeChar. '%s' is not a valid unicode category."
+                    .formatted(unicodeCategory));
         }
         return new UnicodeChar(unicodeCategory);
     }

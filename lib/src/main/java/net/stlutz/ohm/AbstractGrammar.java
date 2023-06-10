@@ -30,7 +30,7 @@ public abstract class AbstractGrammar implements Grammar {
             throw new IllegalArgumentException("Cannot set the default start rule to null");
         } else if (!hasRule(defaultStartRule)) {
             throw new OhmException("Invalid default start rule: '%s' is not a rule in grammar '%s'"
-                    .formatted(defaultStartRule, name));
+                .formatted(defaultStartRule, name));
         }
         this.defaultStartRule = defaultStartRule;
     }

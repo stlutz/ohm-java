@@ -38,7 +38,7 @@ public abstract class MockNode implements Node {
     public static NonterminalNode letter(char letter) {
         assert Character.isLetter(letter);
         return Nonterminal("letter", Nonterminal(Character.isLowerCase(letter) ? "lower" : "upper",
-                Terminal(String.valueOf(letter))));
+            Terminal(String.valueOf(letter))));
     }
     
     public static NonterminalNode alnum(char alnum) {

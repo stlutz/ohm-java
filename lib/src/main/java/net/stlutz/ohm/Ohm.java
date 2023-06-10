@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class Ohm {
     static final BuildGrammar buildGrammarSemantics =
-            ConstructedGrammar.OhmGrammar.createSemanticsBlueprint(BuildGrammar.class).instantiate();
+        ConstructedGrammar.OhmGrammar.createSemanticsBlueprint(BuildGrammar.class).instantiate();
     
     private Ohm() {
     }

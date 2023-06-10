@@ -39,8 +39,8 @@ public class SemanticsBlueprint<T extends Semantics> {
         if (Modifier.isAbstract(modifiers)) {
             // TODO: refactor out common error message prefix
             throw new OhmException(
-                    "Failed to create semantics blueprint of '%s'. Semantics classes must not be abstract to be instantiated."
-                            .formatted(semanticsClass.getCanonicalName()));
+                "Failed to create semantics blueprint of '%s'. Semantics classes must not be abstract to be instantiated."
+                    .formatted(semanticsClass.getCanonicalName()));
         }
         
         boolean isStandalone = !semanticsClass.isMemberClass() || Modifier.isStatic(modifiers);
@@ -49,8 +49,8 @@ public class SemanticsBlueprint<T extends Semantics> {
         
         if (!isStandalone && declaringClass == null) {
             throw new OhmException(
-                    "Failed to create semantics blueprint of '%s'. Defining semantics as local or anonymous classes is not allowed."
-                            .formatted(semanticsClass.getCanonicalName()));
+                "Failed to create semantics blueprint of '%s'. Defining semantics as local or anonymous classes is not allowed."
+                    .formatted(semanticsClass.getCanonicalName()));
         }
         
         Constructor<T> constructor;
@@ -62,12 +62,12 @@ public class SemanticsBlueprint<T extends Semantics> {
             }
         } catch (SecurityException e) {
             throw new OhmException(
-                    "Failed to create semantics blueprint of '%s'. Security exception on constructor access."
-                            .formatted(semanticsClass.getCanonicalName()), e);
+                "Failed to create semantics blueprint of '%s'. Security exception on constructor access."
+                    .formatted(semanticsClass.getCanonicalName()), e);
         } catch (NoSuchMethodException e) {
             throw new OhmException(
-                    "Failed to create semantics blueprint of '%s'. No public zero-arg constructor was found. Either declare it public explicitly or change the class's access modifier to public."
-                            .formatted(semanticsClass.getCanonicalName()), e);
+                "Failed to create semantics blueprint of '%s'. No public zero-arg constructor was found. Either declare it public explicitly or change the class's access modifier to public."
+                    .formatted(semanticsClass.getCanonicalName()), e);
         }
         
         Map<String, SemanticAction> actionMap = gatherActionMap(semanticsClass);
@@ -78,7 +78,7 @@ public class SemanticsBlueprint<T extends Semantics> {
     public T on(MatchResult matchResult) {
         if (matchResult.failed()) {
             throw new OhmException("Cannot instantiate semantics '%s' for a match result that failed."
-                    .formatted(semanticsClass.getCanonicalName()));
+                .formatted(semanticsClass.getCanonicalName()));
         }
         return on(matchResult.getRootNode());
     }
@@ -105,27 +105,27 @@ public class SemanticsBlueprint<T extends Semantics> {
             } else {
                 if (!enclosingClass.isInstance(enclosingInstance)) {
                     throw new OhmException(
-                            "Failed to instantiate semantics '%s'. Provided enclosing instance is not an instance of the enclosing class (%s)."
-                                    .formatted(semanticsClass.getCanonicalName(), enclosingClass.getCanonicalName()));
+                        "Failed to instantiate semantics '%s'. Provided enclosing instance is not an instance of the enclosing class (%s)."
+                            .formatted(semanticsClass.getCanonicalName(), enclosingClass.getCanonicalName()));
                 }
                 semantics = constructor.newInstance(enclosingInstance);
             }
         } catch (InvocationTargetException e) {
             throw new OhmException(
-                    "Failed to instantiate semantics '%s'. Exception thrown during constructor."
-                            .formatted(semanticsClass.getCanonicalName()), e);
+                "Failed to instantiate semantics '%s'. Exception thrown during constructor."
+                    .formatted(semanticsClass.getCanonicalName()), e);
         } catch (InstantiationException e) {
             // should not be possible (class is checked to not be abstract during creation)
             throw new OhmException("Cannot instantiate semantics '%s'. The semantics class is abstract."
-                    .formatted(semanticsClass.getCanonicalName()), e);
+                .formatted(semanticsClass.getCanonicalName()), e);
         } catch (IllegalArgumentException e) {
             // should not be possible
             throw new OhmException("Cannot instantiate semantics '%s'. Illegal arguments."
-                    .formatted(semanticsClass.getCanonicalName()), e);
+                .formatted(semanticsClass.getCanonicalName()), e);
         } catch (IllegalAccessException e) {
             // should not be possible
             throw new OhmException("Cannot instantiate semantics '%s'. Constructor is inaccessible."
-                    .formatted(semanticsClass.getCanonicalName()), e);
+                .formatted(semanticsClass.getCanonicalName()), e);
         }
         
         semantics.grammar = grammar;
@@ -135,7 +135,7 @@ public class SemanticsBlueprint<T extends Semantics> {
     }
     
     private static Map<String, SemanticAction> gatherActionMap(
-            Class<? extends Semantics> semanticsClass) {
+        Class<? extends Semantics> semanticsClass) {
         Map<String, SemanticAction> actionMap = new HashMap<>();
         
         // TODO: could throw SecurityException -> what then?

@@ -116,17 +116,17 @@ class TestBasicEval {
     void testSeqEval() {
         checkEval("Hello World", 0, new Seq(new PExpr[]{new Range("A", "z"), new Range("a", "z")}), 2);
         checkEval("Hello World", 4, new Seq(new PExpr[]{new Range("A", "z"), new Range("a", "z")}),
-                -1);
+            -1);
     }
     
     @Test
     void testAltEval() {
         for (int i = 0; i < 5; i++) {
             checkEval("Hello World", i, new Alt(new PExpr[]{new Range("A", "Z"), new Range("a", "z")}),
-                    1);
+                1);
         }
         checkEval("Hello World", 5, new Alt(new PExpr[]{new Range("A", "Z"), new Range("a", "z")}),
-                -1);
+            -1);
     }
     
     @Test

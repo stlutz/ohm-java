@@ -24,8 +24,8 @@ public class LineAndColumnInfo {
     @Override
     public String toString() {
         return "LineAndColumnInfo [offset=" + offset + ", lineNum=" + lineNum + ", columnNum="
-                + columnNum + ", line=" + line + ", previousLine=" + previousLine + ", nextLine=" + nextLine
-                + "]";
+            + columnNum + ", line=" + line + ", previousLine=" + previousLine + ", nextLine=" + nextLine
+            + "]";
     }
     
     public static LineAndColumnInfo from(String str, int offset) {
@@ -59,7 +59,7 @@ public class LineAndColumnInfo {
             // Get the next line
             int nextLineEndOffset = str.indexOf('\n', lineEndOffset + 1);
             nextLine = nextLineEndOffset == -1 ? str.substring(lineEndOffset)
-                    : str.substring(lineEndOffset, nextLineEndOffset);
+                : str.substring(lineEndOffset, nextLineEndOffset);
             // Strip leading and trailing EOL char(s)
             nextLine = nextLine.replaceAll("^\r?\n", "");
             nextLine = nextLine.replaceAll("\r&", "");

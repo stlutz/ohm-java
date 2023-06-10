@@ -37,10 +37,10 @@ class TestMatchState {
         PositionInfo fooPos = new PositionInfo();
         matchState.enterApplication(fooPos, fooApp);
         assertSame(fooApp, matchState.currentApplication(),
-                "Should be the last application entered (and not exited)");
+            "Should be the last application entered (and not exited)");
         inputStream.advance(5);
         assertEquals(6, matchState.positionToOffset(9),
-                "Should be the offset to the position the inputStream had when entering the current application");
+            "Should be the offset to the position the inputStream had when entering the current application");
         matchState.enterLexifiedContext();
         assertTrue(matchState.inLexifiedContext());
         
@@ -48,17 +48,17 @@ class TestMatchState {
         PositionInfo barPos = new PositionInfo();
         matchState.enterApplication(barPos, barApp);
         assertSame(barApp, matchState.currentApplication(),
-                "Should be the last application entered (and not exited)");
+            "Should be the last application entered (and not exited)");
         assertEquals(5, matchState.positionToOffset(13),
-                "Should be the offset to the position the inputStream had when entering the current application");
+            "Should be the offset to the position the inputStream had when entering the current application");
         assertFalse(matchState.inLexifiedContext());
         matchState.exitApplication(barPos, null);
         
         assertTrue(matchState.inLexifiedContext());
         assertSame(fooApp, matchState.currentApplication(),
-                "Should be the last application entered (and not exited)");
+            "Should be the last application entered (and not exited)");
         assertEquals(7, matchState.positionToOffset(10),
-                "Should be the offset to the position the inputStream had when entering the current application");
+            "Should be the offset to the position the inputStream had when entering the current application");
         
         matchState.exitApplication(fooPos, null);
     }
@@ -70,19 +70,19 @@ class TestMatchState {
         
         matchState = getMatchState("Hello World!", lexApp);
         assertFalse(matchState.inSyntacticContext(),
-                "Should be false when start application is not syntactic");
+            "Should be false when start application is not syntactic");
         matchState.enterApplication(new PositionInfo(), synApp);
         assertTrue(matchState.inSyntacticContext(),
-                "Should be true when current application is syntactic");
+            "Should be true when current application is syntactic");
         matchState.enterLexifiedContext();
         assertFalse(matchState.inSyntacticContext(), "Should be false in lexified context");
         
         matchState = getMatchState("Hello World!", synApp);
         assertTrue(matchState.inSyntacticContext(),
-                "Should be true when start application is syntactic");
+            "Should be true when start application is syntactic");
         matchState.enterApplication(new PositionInfo(), lexApp);
         assertFalse(matchState.inSyntacticContext(),
-                "Should be false when current application is not syntactic");
+            "Should be false when current application is not syntactic");
         matchState.enterLexifiedContext();
         assertFalse(matchState.inSyntacticContext(), "Should still be false in lexified context");
     }

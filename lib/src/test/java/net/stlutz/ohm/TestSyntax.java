@@ -19,9 +19,9 @@ public abstract class TestSyntax {
             var matchResult = grammar.match(input, startRule);
             boolean doesMatch = matchResult.succeeded();
             assertEquals(shouldMatch, doesMatch, () -> {
-                String template =
-                        shouldMatch ? "Expected input '%s' to be matched by rule '%s', but it wasn't"
-                                : "Expected input '%s' to not be matched by rule '%s', but it was";
+                String template = shouldMatch
+                    ? "Expected input '%s' to be matched by rule '%s', but it wasn't"
+                    : "Expected input '%s' to not be matched by rule '%s', but it was";
                 return template.formatted(input, startRule);
             });
         }

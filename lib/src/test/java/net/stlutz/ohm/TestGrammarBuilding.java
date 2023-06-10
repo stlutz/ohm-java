@@ -38,7 +38,7 @@ class TestGrammarBuilding {
         var expr = buildAndValidateExpr(Terminal.class, "Base_terminal", "\"hello world\"");
         assertEquals("hello world", expr.getString());
         expr = buildAndValidateExpr(Terminal.class, "Base_terminal",
-                "\"\\\\\\\"\\'\\b\\n\\r\\t\\u{61}\\u0062\\x63\"");
+            "\"\\\\\\\"\\'\\b\\n\\r\\t\\u{61}\\u0062\\x63\"");
         assertEquals("\\\"'\b\n\r\tabc", expr.getString());
     }
     

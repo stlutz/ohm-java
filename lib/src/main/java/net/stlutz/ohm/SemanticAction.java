@@ -22,13 +22,13 @@ class SemanticAction {
         if (method.isVarArgs() && parameterTypes.length >= 2) {
             // foobar(Node a, Node... rest)
             throw new OhmException("Action method '%s' is varargs but has more than one parameter"
-                    .formatted(method.getName()));
+                .formatted(method.getName()));
         } else if (parameterTypes.length == 1 && parameterTypes[0].isArray()) {
             // foobar(Node[] children)
             // foobar(Node... children)
             if (!isExactlyNode(parameterTypes[0].getComponentType())) {
                 throw new OhmException("Action method '%s' has vararg parameter that is not '%s'"
-                        .formatted(method.getName(), Node.class.arrayType().getCanonicalName()));
+                    .formatted(method.getName(), Node.class.arrayType().getCanonicalName()));
             }
             return new VarArgsSemanticAction(actionName, method);
         } else {
@@ -37,7 +37,7 @@ class SemanticAction {
             for (Class<?> parameterType : parameterTypes) {
                 if (!isExactlyNode(parameterType)) {
                     throw new OhmException("Action method '%s' expects parameters that are not '%s'"
-                            .formatted(method.getName(), Node.class.getCanonicalName()));
+                        .formatted(method.getName(), Node.class.getCanonicalName()));
                 }
             }
             return new SemanticAction(actionName, method);
@@ -45,7 +45,7 @@ class SemanticAction {
     }
     
     public Object invoke(Semantics semantics, Node self)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         return method.invoke(semantics, (Object[]) self.getChildren());
     }
     
@@ -63,7 +63,7 @@ class SemanticAction {
         int actualArity = method.getParameterCount();
         if (expectedArity != actualArity) {
             throw new OhmException("Rule '%s' expects an action with '%d' arguments, but got '%d'"
-                    .formatted(name, expectedArity, actualArity));
+                .formatted(name, expectedArity, actualArity));
         }
     }
     
@@ -99,7 +99,7 @@ class SemanticAction {
         
         @Override
         public Object invoke(Semantics semantics, Node self)
-                throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
             return method.invoke(semantics, (Object) self.getChildren());
         }
         

@@ -55,7 +55,7 @@ public interface Node {
     default Node onlyChild() {
         if (numChildren() != 1) {
             throw new OhmException(String
-                    .format("Cannot get only child of node %s. It does not have only 1 child", toString()));
+                .format("Cannot get only child of node %s. It does not have only 1 child", toString()));
         }
         return childAt(0);
     }
@@ -63,7 +63,7 @@ public interface Node {
     default Node firstChild() {
         if (hasNoChildren()) {
             throw new OhmException(
-                    String.format("Cannot get first child of node %s. It has no children.", toString()));
+                String.format("Cannot get first child of node %s. It has no children.", toString()));
         }
         return childAt(0);
     }
@@ -71,7 +71,7 @@ public interface Node {
     default Node lastChild() {
         if (hasNoChildren()) {
             throw new OhmException(
-                    String.format("Cannot get last child of node %s. It has no children.", toString()));
+                String.format("Cannot get last child of node %s. It has no children.", toString()));
         }
         return childAt(numChildren() - 1);
     }
@@ -80,10 +80,10 @@ public interface Node {
         int childIndex = indexOfChild(child);
         if (childIndex < 0) {
             throw new OhmException(String.format("Cannot get child before. %s is not a child of %s.",
-                    child.toString(), toString()));
+                child.toString(), toString()));
         } else if (childIndex == 0) {
             throw new OhmException(String.format("Cannot get child before %s in %s. It is first.",
-                    child.toString(), toString()));
+                child.toString(), toString()));
         }
         return childAt(childIndex - 1);
     }
@@ -92,10 +92,10 @@ public interface Node {
         int childIndex = indexOfChild(child);
         if (childIndex < 0) {
             throw new OhmException(String.format("Cannot get child after. %s is not a child of %s.",
-                    child.toString(), toString()));
+                child.toString(), toString()));
         } else if (childIndex == numChildren() - 1) {
             throw new OhmException(String.format("Cannot get child after %s in %s. It is last.",
-                    child.toString(), toString()));
+                child.toString(), toString()));
         }
         return childAt(childIndex + 1);
     }

@@ -16,7 +16,7 @@ public class SourceInterval {
         
         if (startIndex > endIndex || startIndex < 0 || endIndex > sourceString.length()) {
             throw new RuntimeException(
-                    "Invalid interval bounds (%1$d, %2$d).".formatted(startIndex, endIndex));
+                "Invalid interval bounds (%1$d, %2$d).".formatted(startIndex, endIndex));
         }
         
         this.startIndex = startIndex;
@@ -54,7 +54,7 @@ public class SourceInterval {
         }
         SourceInterval other = (SourceInterval) obj;
         return endIndex == other.endIndex && Objects.equals(sourceString, other.sourceString)
-                && startIndex == other.startIndex;
+            && startIndex == other.startIndex;
     }
     
     @Override
@@ -126,15 +126,15 @@ public class SourceInterval {
         } else if (startIndex < subtrahend.startIndex && endIndex > subtrahend.endIndex) {
             // we are split by the subtrahend
             return new SourceInterval[]{
-                    new SourceInterval(sourceString, startIndex, subtrahend.startIndex),
-                    new SourceInterval(sourceString, subtrahend.endIndex, endIndex),};
+                new SourceInterval(sourceString, startIndex, subtrahend.startIndex),
+                new SourceInterval(sourceString, subtrahend.endIndex, endIndex),};
         } else if (startIndex >= subtrahend.startIndex) {
             // subtrahend overlaps with our start
             return new SourceInterval[]{new SourceInterval(sourceString, subtrahend.endIndex, endIndex)};
         } else {
             // subtrahend overlaps with our end
             return new SourceInterval[]{
-                    new SourceInterval(sourceString, startIndex, subtrahend.startIndex)};
+                new SourceInterval(sourceString, startIndex, subtrahend.startIndex)};
         }
     }
     
@@ -151,7 +151,7 @@ public class SourceInterval {
         anchor.assertCovers(this);
         
         return new SourceInterval(sourceString, startIndex - anchor.startIndex,
-                endIndex - anchor.startIndex);
+            endIndex - anchor.startIndex);
     }
     
     /**
@@ -186,7 +186,7 @@ public class SourceInterval {
     private void assertSameSource(SourceInterval interval) {
         if (!sourceString.equals(interval.sourceString)) {
             throw new RuntimeException("Interval sources don't match: \"%1$s\" != \"%2$s\""
-                    .formatted(sourceString, interval.sourceString));
+                .formatted(sourceString, interval.sourceString));
         }
     }
     

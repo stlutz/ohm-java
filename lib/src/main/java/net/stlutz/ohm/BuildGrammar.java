@@ -288,7 +288,7 @@ public class BuildGrammar extends Semantics {
     public PExpr Base_application(Node identNode, Node paramsOpt) {
         String ruleName = String.class.cast(apply(identNode));
         PExpr[] parameters =
-                paramsOpt.hasChildren() ? (PExpr[]) apply(paramsOpt.onlyChild()) : new PExpr[0];
+            paramsOpt.hasChildren() ? (PExpr[]) apply(paramsOpt.onlyChild()) : new PExpr[0];
         PExpr result = PExpr.apply(ruleName, parameters);
         result.setSource(self.getSource());
         return result;
@@ -328,7 +328,7 @@ public class BuildGrammar extends Semantics {
     
     private String unescapedTerminal(SourceInterval chars) {
         return unescapedSubstring(chars.getSourceString(), chars.getStartIndex(),
-                chars.getEndIndex());
+            chars.getEndIndex());
     }
     
     @Action

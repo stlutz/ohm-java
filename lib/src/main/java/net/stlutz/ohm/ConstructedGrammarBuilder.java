@@ -60,16 +60,16 @@ public class ConstructedGrammarBuilder {
                     builtGrammars.forEach(grammar -> {
                         if (grammar.getName().equals(gDef.name)) {
                             throw new OhmException(
-                                    "The grammar '%s' was declared multiple times.".formatted(gDef.name));
+                                "The grammar '%s' was declared multiple times.".formatted(gDef.name));
                         }
                     });
                     if (namespace.get(gDef.name).isBuiltIn()) {
                         throw new OhmException(
-                                "The grammar '%s' is built-in and cannot be overridden.".formatted(gDef.name));
+                            "The grammar '%s' is built-in and cannot be overridden.".formatted(gDef.name));
                     } else {
                         throw new OhmException(
-                                "The grammar '%s' was already declared in the provided namespace."
-                                        .formatted(gDef.name));
+                            "The grammar '%s' was already declared in the provided namespace."
+                                .formatted(gDef.name));
                     }
                 }
                 if (gDef.superGrammarName == null || namespace.has(gDef.superGrammarName)) {
@@ -87,7 +87,7 @@ public class ConstructedGrammarBuilder {
         }
         // TODO: differentiate between the two and give concrete offending grammars
         throw new OhmException(
-                "Either the specified super grammar was not found in the given namespace or grammar inheritance is circular.");
+            "Either the specified super grammar was not found in the given namespace or grammar inheritance is circular.");
     }
     
     private ConstructedGrammar buildGrammar(GrammarDefinition def) {
@@ -143,7 +143,7 @@ public class ConstructedGrammarBuilder {
         Collection<String> duplicateParameterNames = Util.getDuplicates(def.formals);
         if (!duplicateParameterNames.isEmpty()) {
             throw new OhmException("Duplicate parameter names in rule '%s': %s".formatted(def.name,
-                    String.join(", ", duplicateParameterNames)));
+                String.join(", ", duplicateParameterNames)));
         }
         
         Rule superRule = superGrammar != null ? superGrammar.getRule(def.name) : null;
@@ -153,18 +153,18 @@ public class ConstructedGrammarBuilder {
             if (superRule == null) {
                 if (superGrammar == null) {
                     throw new OhmException("Cannot %s rule '%s'. No super grammar was specified."
-                            .formatted("override", def.name));
+                        .formatted("override", def.name));
                 } else {
                     throw new OhmException(
-                            "Cannot %s rule '%s'. No rule of the same name was found in a super grammar."
-                                    .formatted("override", def.name));
+                        "Cannot %s rule '%s'. No rule of the same name was found in a super grammar."
+                            .formatted("override", def.name));
                 }
             }
             String[] superRuleFormals = superRule.getFormals();
             if (superRuleFormals.length != def.formals.length) {
                 throw new OhmException(
-                        "Cannot %s rule '%s': Got %d parameters, but super rule has %d parameters."
-                                .formatted("override", def.name, def.formals.length, superRuleFormals.length));
+                    "Cannot %s rule '%s': Got %d parameters, but super rule has %d parameters."
+                        .formatted("override", def.name, def.formals.length, superRuleFormals.length));
             }
             
             if (def.isExtension()) {
@@ -177,8 +177,8 @@ public class ConstructedGrammarBuilder {
         } else {
             if (superRule != null) {
                 throw new OhmException(
-                        "Rule '%s' was already declared in super grammar and must be explicitly overridden."
-                                .formatted(def.name));
+                    "Rule '%s' was already declared in super grammar and must be explicitly overridden."
+                        .formatted(def.name));
             }
         }
         
