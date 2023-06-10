@@ -1,6 +1,5 @@
 package net.stlutz.ohm.pexprs;
 
-import org.json.JSONArray;
 import net.stlutz.ohm.*;
 
 public class Apply extends PExpr {
@@ -247,19 +246,5 @@ public class Apply extends PExpr {
             isFirst = false;
         }
         sb.append('>');
-    }
-
-    @Override
-    public String recipeName() {
-        return "app";
-    }
-
-    @Override
-    public JSONArray toRecipe(SourceInterval grammarInterval) {
-        JSONArray argsRecipe = new JSONArray();
-        for (PExpr arg : args) {
-            argsRecipe.put(arg.toRecipe(grammarInterval));
-        }
-        return super.toRecipe(grammarInterval).put(ruleName).put(argsRecipe);
     }
 }
