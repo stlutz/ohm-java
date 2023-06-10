@@ -1,21 +1,23 @@
 package net.stlutz.ohm.pexprs;
 
-import net.stlutz.ohm.*;
+import net.stlutz.ohm.InputStream;
+import net.stlutz.ohm.MatchState;
+import net.stlutz.ohm.TerminalNode;
 import org.json.JSONObject;
 
 public class Terminal extends Prim {
     // TODO: rename
     private String obj;
-
+    
     public Terminal(String obj) {
         super();
         this.obj = obj;
     }
-
+    
     public String getString() {
         return obj;
     }
-
+    
     @Override
     public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
         if (inputStream.matches(obj)) {
@@ -26,7 +28,7 @@ public class Terminal extends Prim {
             return false;
         }
     }
-
+    
     @Override
     public void toString(StringBuilder sb) {
         sb.append(JSONObject.quote(obj));

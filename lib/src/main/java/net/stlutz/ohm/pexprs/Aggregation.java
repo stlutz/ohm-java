@@ -2,30 +2,30 @@ package net.stlutz.ohm.pexprs;
 
 public abstract class Aggregation extends PExpr {
     protected final PExpr[] terms;
-
+    
     protected Aggregation(PExpr[] terms) {
         super();
         this.terms = terms;
     }
-
+    
     public PExpr[] getTerms() {
         return terms;
     }
-
+    
     protected abstract Aggregation newInstance(PExpr[] terms);
-
+    
     @Override
     public boolean allowsSkippingPrecedingSpace() {
         return false;
     }
-
+    
     @Override
     public void resolveSplice(PExpr superRuleBody) {
         for (PExpr term : terms) {
             term.resolveSplice(superRuleBody);
         }
     }
-
+    
     @Override
     public PExpr introduceParams(String[] formals) {
         for (int i = 0; i < terms.length; i++) {
@@ -33,7 +33,7 @@ public abstract class Aggregation extends PExpr {
         }
         return this;
     }
-
+    
     @Override
     public PExpr substituteParams(PExpr[] actuals) {
         // TODO: if all terms stay identical, return this?
@@ -43,15 +43,15 @@ public abstract class Aggregation extends PExpr {
         }
         return newInstance(substituted);
     }
-
+    
     protected abstract String getOperator();
-
+    
     @Override
     public void toString(StringBuilder sb) {
         if (terms.length > 1) {
             sb.append('(');
         }
-
+        
         boolean isFirst = true;
         for (PExpr term : terms) {
             if (!isFirst) {
@@ -60,12 +60,12 @@ public abstract class Aggregation extends PExpr {
             term.toString(sb);
             isFirst = false;
         }
-
+        
         if (terms.length > 1) {
             sb.append(')');
         }
     }
-
+    
     @Override
     public void toDisplayString(StringBuilder sb) {
         if (source != null) {

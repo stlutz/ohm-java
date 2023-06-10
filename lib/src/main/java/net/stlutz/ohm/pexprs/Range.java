@@ -1,9 +1,9 @@
 package net.stlutz.ohm.pexprs;
 
-import org.json.JSONArray;
+import net.stlutz.ohm.InputStream;
+import net.stlutz.ohm.MatchState;
+import net.stlutz.ohm.TerminalNode;
 import org.json.JSONWriter;
-
-import net.stlutz.ohm.*;
 
 public class Range extends Prim {
     /**
@@ -12,17 +12,17 @@ public class Range extends Prim {
      */
     public int from;
     public int to;
-
+    
     public Range(int from, int to) {
         super();
         this.from = from;
         this.to = to;
     }
-
+    
     public Range(String from, String to) {
         this(from.codePointAt(0), to.codePointAt(0));
     }
-
+    
     @Override
     public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
         if (!inputStream.atEnd()) {
@@ -34,7 +34,7 @@ public class Range extends Prim {
         }
         return false;
     }
-
+    
     @Override
     public void toString(StringBuilder sb) {
         JSONWriter writer = new JSONWriter(sb);

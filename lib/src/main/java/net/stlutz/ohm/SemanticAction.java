@@ -6,17 +6,17 @@ import java.lang.reflect.Method;
 class SemanticAction {
     final String name;
     final Method method;
-
+    
     private SemanticAction(String name, Method method) {
         super();
         this.name = name;
         this.method = method;
     }
-
+    
     static boolean isExactlyNode(Class<?> type) {
         return Node.class.isAssignableFrom(type) && type.isAssignableFrom(Node.class);
     }
-
+    
     static SemanticAction fromMethod(String actionName, Method method) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (method.isVarArgs() && parameterTypes.length >= 2) {
@@ -43,22 +43,22 @@ class SemanticAction {
             return new SemanticAction(actionName, method);
         }
     }
-
+    
     public Object invoke(Semantics semantics, Node self)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         return method.invoke(semantics, (Object[]) self.getChildren());
     }
-
+    
     int compareTo(SemanticAction otherAction) {
         return compare(this, otherAction);
     }
-
+    
     void validateAgainstGrammar(Grammar grammar) {
         Rule rule = grammar.getRule(name);
         if (rule == null) {
             return;
         }
-
+        
         int expectedArity = name.equals(Semantics.SpecialActionNames.terminal) ? 0 : rule.getArity();
         int actualArity = method.getParameterCount();
         if (expectedArity != actualArity) {
@@ -66,7 +66,7 @@ class SemanticAction {
                     .formatted(name, expectedArity, actualArity));
         }
     }
-
+    
     /**
      * Returns an integer value
      * <ul>
@@ -91,18 +91,18 @@ class SemanticAction {
             return 1;
         }
     }
-
+    
     private static class VarArgsSemanticAction extends SemanticAction {
         VarArgsSemanticAction(String name, Method method) {
             super(name, method);
         }
-
+        
         @Override
         public Object invoke(Semantics semantics, Node self)
                 throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
             return method.invoke(semantics, (Object) self.getChildren());
         }
-
+        
         @Override
         void validateAgainstGrammar(Grammar grammar) {
             // do nothing

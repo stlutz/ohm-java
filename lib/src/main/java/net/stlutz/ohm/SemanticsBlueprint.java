@@ -1,6 +1,9 @@
 package net.stlutz.ohm;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,27 +12,27 @@ public class SemanticsBlueprint<T extends Semantics> {
     private final Class<T> semanticsClass;
     private final Constructor<T> constructor;
     private final Class<?> enclosingClass;
-
+    
     // instance state
     private final Map<String, SemanticAction> actionMap;
     private final Grammar grammar;
-
-
+    
+    
     private SemanticsBlueprint(Class<T> semanticsClass, Grammar grammar, Constructor<T> constructor, Map<String, SemanticAction> actionMap, Class<?> enclosingClass) {
         super();
         this.semanticsClass = semanticsClass;
         this.constructor = constructor;
         this.enclosingClass = enclosingClass;
-
+        
         this.grammar = grammar;
         this.actionMap = actionMap;
     }
-
+    
     // TODO: only for tests
     static <T extends Semantics> SemanticsBlueprint<T> create(Class<T> semanticsClass) {
         return create(semanticsClass, null);
     }
-
+    
     static <T extends Semantics> SemanticsBlueprint<T> create(Class<T> semanticsClass,
                                                               Grammar grammar) {
         int modifiers = semanticsClass.getModifiers();
@@ -39,17 +42,17 @@ public class SemanticsBlueprint<T extends Semantics> {
                     "Failed to create semantics blueprint of '%s'. Semantics classes must not be abstract to be instantiated."
                             .formatted(semanticsClass.getCanonicalName()));
         }
-
+        
         boolean isStandalone = !semanticsClass.isMemberClass() || Modifier.isStatic(modifiers);
         Class<?> declaringClass = semanticsClass.getDeclaringClass();
         Class<?> enclosingClass = isStandalone ? null : declaringClass;
-
+        
         if (!isStandalone && declaringClass == null) {
             throw new OhmException(
                     "Failed to create semantics blueprint of '%s'. Defining semantics as local or anonymous classes is not allowed."
                             .formatted(semanticsClass.getCanonicalName()));
         }
-
+        
         Constructor<T> constructor;
         try {
             if (isStandalone) {
@@ -66,12 +69,12 @@ public class SemanticsBlueprint<T extends Semantics> {
                     "Failed to create semantics blueprint of '%s'. No public zero-arg constructor was found. Either declare it public explicitly or change the class's access modifier to public."
                             .formatted(semanticsClass.getCanonicalName()), e);
         }
-
+        
         Map<String, SemanticAction> actionMap = gatherActionMap(semanticsClass);
-
+        
         return new SemanticsBlueprint<T>(semanticsClass, grammar, constructor, actionMap, enclosingClass);
     }
-
+    
     public T on(MatchResult matchResult) {
         if (matchResult.failed()) {
             throw new OhmException("Cannot instantiate semantics '%s' for a match result that failed."
@@ -79,21 +82,21 @@ public class SemanticsBlueprint<T extends Semantics> {
         }
         return on(matchResult.getRootNode());
     }
-
+    
     T on(Node rootNode) {
         // TODO: why do we do this? just let people instantiate it themselves
         T result = instantiate();
         result.rootNode = rootNode;
         return result;
     }
-
+    
     T instantiate() {
         if (enclosingClass != null) {
             throw new OhmException("Cannot instantiate this semantics blueprint without the enclosing instance. Use #instatiate(Object) instead or make your semantics class static.");
         }
         return instantiate(null);
     }
-
+    
     T instantiate(Object enclosingInstance) {
         T semantics;
         try {
@@ -124,17 +127,17 @@ public class SemanticsBlueprint<T extends Semantics> {
             throw new OhmException("Cannot instantiate semantics '%s'. Constructor is inaccessible."
                     .formatted(semanticsClass.getCanonicalName()), e);
         }
-
+        
         semantics.grammar = grammar;
         semantics.actionMap = actionMap;
         semantics.initialize();
         return semantics;
     }
-
+    
     private static Map<String, SemanticAction> gatherActionMap(
             Class<? extends Semantics> semanticsClass) {
         Map<String, SemanticAction> actionMap = new HashMap<>();
-
+        
         // TODO: could throw SecurityException -> what then?
         for (Method method : semanticsClass.getMethods()) {
             Action[] annotations = method.getDeclaredAnnotationsByType(Action.class);
@@ -142,7 +145,7 @@ public class SemanticsBlueprint<T extends Semantics> {
                 String annotatedName = annotation.value();
                 String ruleName = annotatedName.isEmpty() ? method.getName() : annotatedName;
                 SemanticAction action = SemanticAction.fromMethod(ruleName, method);
-
+                
                 actionMap.merge(ruleName, action, (actionA, actionB) -> {
                     // which action is the more specialized one?
                     int comp = actionA.compareTo(actionB);
@@ -156,10 +159,10 @@ public class SemanticsBlueprint<T extends Semantics> {
                 });
             }
         }
-
+        
         return actionMap;
     }
-
+    
     // TODO: actually use this
     private static void validateActionMap(Map<String, SemanticAction> actionMap, Grammar grammar) {
         actionMap.forEach((ruleName, action) -> {

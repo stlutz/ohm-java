@@ -7,12 +7,12 @@ public class Seq extends Aggregation {
     public Seq(PExpr[] terms) {
         super(terms);
     }
-
+    
     @Override
     protected Aggregation newInstance(PExpr[] terms) {
         return new Seq(terms);
     }
-
+    
     @Override
     public int getArity() {
         int arity = 0;
@@ -21,7 +21,7 @@ public class Seq extends Aggregation {
         }
         return arity;
     }
-
+    
     @Override
     public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
         for (PExpr term : terms) {
@@ -31,12 +31,12 @@ public class Seq extends Aggregation {
         }
         return true;
     }
-
+    
     @Override
     public boolean isSequence() {
         return true;
     }
-
+    
     @Override
     protected String getOperator() {
         return " ";

@@ -1,13 +1,13 @@
 package net.stlutz.ohm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OhmTest {
     String getGrammarSource(String fileName) {
@@ -18,26 +18,26 @@ class OhmTest {
             throw new RuntimeException("Failed to read Ohm grammar source");
         }
     }
-
+    
     Grammar getOhmGrammar() {
         return ConstructedGrammar.OhmGrammar;
     }
-
+    
     String getOhmGrammarSource() {
         return getGrammarSource("ohm-grammar.ohm");
     }
-
+    
     @Test
     void testOhmGrammarMatchesOhmGrammarSource() {
         assertTrue(getOhmGrammar().match(getOhmGrammarSource()).succeeded());
     }
-
+    
     @Test
     void testBuildOhmGrammar() {
         var grammar = Ohm.grammar(getOhmGrammarSource());
         assertEquals("Grammars", grammar.getDefaultStartRule());
     }
-
+    
     @Test
     void testOhmGrammarOuroboros() {
         String ohmSource = getOhmGrammarSource();
@@ -50,20 +50,20 @@ class OhmTest {
             ohmGrammar = Ohm.buildGrammarSemantics.buildGrammar(rootNode);
         }
     }
-
+    
     String getBuiltInRulesSource() {
         return getGrammarSource("built-in-rules.ohm");
     }
-
+    
     @Test
     void testOhmGrammarMatchesBuiltInRulesSource() {
         assertTrue(getOhmGrammar().match(getBuiltInRulesSource()).succeeded());
     }
-
+    
     String getOperationsAndAttributesSource() {
         return getGrammarSource("operations-and-attributes.ohm");
     }
-
+    
     @Test
     void testOhmGrammarMatchesOperationsAndAttributesSource() {
         assertTrue(getOhmGrammar().match(getOperationsAndAttributesSource()).succeeded());

@@ -1,22 +1,37 @@
 package net.stlutz.ohm;
 
-import static net.stlutz.ohm.pexprs.PExpr.*;
+import net.stlutz.ohm.pexprs.Apply;
+import net.stlutz.ohm.pexprs.CaseInsensitiveTerminal;
+import net.stlutz.ohm.pexprs.Param;
 
 import java.util.Map;
 
-import net.stlutz.ohm.pexprs.*;
+import static net.stlutz.ohm.pexprs.PExpr.alt;
+import static net.stlutz.ohm.pexprs.PExpr.any;
+import static net.stlutz.ohm.pexprs.PExpr.apply;
+import static net.stlutz.ohm.pexprs.PExpr.end;
+import static net.stlutz.ohm.pexprs.PExpr.lookahead;
+import static net.stlutz.ohm.pexprs.PExpr.none;
+import static net.stlutz.ohm.pexprs.PExpr.not;
+import static net.stlutz.ohm.pexprs.PExpr.opt;
+import static net.stlutz.ohm.pexprs.PExpr.param;
+import static net.stlutz.ohm.pexprs.PExpr.range;
+import static net.stlutz.ohm.pexprs.PExpr.seq;
+import static net.stlutz.ohm.pexprs.PExpr.star;
+import static net.stlutz.ohm.pexprs.PExpr.terminal;
+import static net.stlutz.ohm.pexprs.PExpr.unicodeChar;
 
 public class ConstructedGrammar extends AbstractGrammar {
     static final Namespace DefaultNamespace = buildDefaultNamespace();
     static final Grammar ProtoBuiltInRules = DefaultNamespace.get("ProtoBuiltInRules");
     static final Grammar BuiltInRules = DefaultNamespace.get("BuiltInRules");
     static final Grammar OhmGrammar = buildOhmGrammar();
-
+    
     ConstructedGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule,
                        boolean isBuiltIn) {
         super(name, superGrammar, rules, defaultStartRule, isBuiltIn);
     }
-
+    
     static Namespace buildDefaultNamespace() {
         ConstructedGrammarBuilder builder = new ConstructedGrammarBuilder(Namespace.empty());
         GrammarDefinition grammar = builder.newGrammar("ProtoBuiltInRules").builtIn();
@@ -30,7 +45,7 @@ public class ConstructedGrammar extends AbstractGrammar {
                 .body(unicodeChar("Ltmo"));
         grammar.newRule("spaces").description("zero or more spaces").body(star(apply("space")));
         grammar.newRule("space").description("a space").body(range(0x00, " ".codePointAt(0)));
-
+        
         grammar = builder.newGrammar("BuiltInRules").extend("ProtoBuiltInRules").builtIn();
         grammar.newRule("alnum").description("an alpha-numeric character")
                 .body(alt(apply("letter"), apply("digit")));
@@ -54,7 +69,7 @@ public class ConstructedGrammar extends AbstractGrammar {
         builder.buildGrammars();
         return builder.getNamespace();
     }
-
+    
     static Grammar buildOhmGrammar() {
         ConstructedGrammarBuilder builder = new ConstructedGrammarBuilder();
         GrammarDefinition grammar = builder.newGrammar("Ohm");
@@ -157,41 +172,41 @@ public class ConstructedGrammar extends AbstractGrammar {
                 terminal("+="), terminal("*"), terminal("+"), terminal("?"), terminal("~"), terminal("&")));
         grammar.newRule("punctuation")
                 .body(alt(terminal("<"), terminal(">"), terminal(","), terminal("--")));
-
+        
         return builder.buildGrammar();
     }
-
+    
     public static Grammar parse(String grammarSource) {
         return null;// OhmGrammar.match(grammarSource);
     }
-
+    
     @Override
     public Matcher getMatcher(String input) {
         return new Matcher(this, input);
     }
-
+    
     @Override
     public MatchResult match(String input, String startRule) {
         return getMatcher(input).match(startRule);
     }
-
+    
     @Override
     public <T extends Semantics> SemanticsBlueprint<T> createSemanticsBlueprint(
             Class<T> semanticsClass) {
         return SemanticsBlueprint.create(semanticsClass, this);
     }
-
+    
     @Override
     public Apply parseApplication(String ruleName) {
         if (ruleName.contains("<")) {
             // TODO
             throw new OhmException("parameterized applications are not implemented yet");
         }
-
+        
         if (!hasRule(ruleName)) {
             throw new OhmException("'%s' is not a rule in grammar '%s'".formatted(ruleName, name));
         }
-
+        
         return new Apply(ruleName);
     }
 }

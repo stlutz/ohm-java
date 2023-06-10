@@ -1,18 +1,20 @@
 package net.stlutz.ohm.pexprs;
 
-import net.stlutz.ohm.*;
+import net.stlutz.ohm.InputStream;
+import net.stlutz.ohm.MatchState;
+import net.stlutz.ohm.TerminalNode;
 
 public class Any extends Prim {
     private static final Any instance = new Any();
-
+    
     public static final Any getInstance() {
         return instance;
     }
-
+    
     private Any() {
         super();
     }
-
+    
     @Override
     public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
         if (inputStream.atEnd()) {
@@ -23,7 +25,7 @@ public class Any extends Prim {
             return true;
         }
     }
-
+    
     @Override
     public void toString(StringBuilder sb) {
         sb.append("any");

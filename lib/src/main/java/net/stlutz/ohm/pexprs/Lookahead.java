@@ -1,36 +1,37 @@
 package net.stlutz.ohm.pexprs;
 
-import net.stlutz.ohm.*;
+import net.stlutz.ohm.InputStream;
+import net.stlutz.ohm.MatchState;
 
 public class Lookahead extends PExpr {
     public PExpr expr;
-
+    
     public Lookahead(PExpr expr) {
         super();
         this.expr = expr;
     }
-
+    
     @Override
     public boolean allowsSkippingPrecedingSpace() {
         return false;
     }
-
+    
     @Override
     public int getArity() {
         return expr.getArity();
     }
-
+    
     @Override
     public PExpr introduceParams(String[] formals) {
         expr = expr.introduceParams(formals);
         return this;
     }
-
+    
     @Override
     public PExpr substituteParams(PExpr[] actuals) {
         return new Lookahead(expr.substituteParams(actuals));
     }
-
+    
     @Override
     public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
         if (matchState.eval(expr)) {
@@ -40,7 +41,7 @@ public class Lookahead extends PExpr {
             return false;
         }
     }
-
+    
     @Override
     public void toString(StringBuilder sb) {
         sb.append('&');

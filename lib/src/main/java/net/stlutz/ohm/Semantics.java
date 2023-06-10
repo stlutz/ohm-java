@@ -14,49 +14,49 @@ public class Semantics {
         public static final String nonterminal = "_nonterminal";
         public static final String terminal = "_terminal";
         public static final String iteration = "_iter";
-
+        
         public static boolean includes(String name) {
             return name.equals(nonterminal) || name.equals(terminal) || name.equals(iteration);
         }
     }
-
+    
     Grammar grammar;
     Map<String, SemanticAction> actionMap;
     Node rootNode;
     protected Node self = null;
-
+    
     public Grammar getGrammar() {
         return grammar;
     }
-
+    
     public Node getRootNode() {
         return rootNode;
     }
-
+    
     protected void initialize() {
     }
-
+    
     boolean hasAction(String actionName) {
         return actionMap.containsKey(actionName);
     }
-
+    
     SemanticAction getAction(Node node) {
         String actionName = node.ctorName();
         SemanticAction action = actionMap.get(actionName);
         if (action != null) {
             return action;
         }
-
+        
         if (node.isNonterminal()) {
             action = actionMap.get(SpecialActionNames.nonterminal);
         }
-
+        
         return action;
     }
-
+    
     Object executeAction(SemanticAction action, Node node) {
         Node previousSelf = self;
-
+        
         Object result = null;
         try {
             self = node;
@@ -75,23 +75,23 @@ public class Semantics {
         } finally {
             self = previousSelf;
         }
-
+        
         return result;
     }
-
+    
     public Object apply() {
         return apply(rootNode);
     }
-
+    
     public Object apply(Node node) {
         SemanticAction action = getAction(node);
         if (action == null) {
             throw new OhmException("Missing semantic action for '%s'".formatted(node.ctorName()));
         }
-
+        
         return executeAction(action, node);
     }
-
+    
     // TODO: Ensure this does not override default actions defined in super semantic
     @Action(SpecialActionNames.nonterminal)
     public Object defaultNonterminalAction(Node... children) {

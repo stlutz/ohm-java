@@ -18,7 +18,7 @@ public interface Grammar {
      * @return This grammar's default start rule name
      */
     String getDefaultStartRule();
-
+    
     /**
      * Sets the default start rule name of this grammar (used in {@link Grammar#match(String)} to the specified value.
      * <p>
@@ -26,24 +26,24 @@ public interface Grammar {
      *
      * @param defaultStartRule The rule name to use as the default start rule.
      * @throws IllegalArgumentException If {@code defaultStartRule} is {@code null}.
-     * @throws OhmException             If {@code defaultStartRule} is not a rule of this grammar.
+     * @throws OhmException If {@code defaultStartRule} is not a rule of this grammar.
      */
     void setDefaultStartRule(String defaultStartRule);
-
+    
     /**
      * Returns the name of this grammar.
      *
      * @return This grammar's name.
      */
     String getName();
-
+    
     /**
      * Returns the super grammar of this grammar.
      *
      * @return This grammar's super grammar, or {@code null} if it has none.
      */
     Grammar getSuperGrammar();
-
+    
     /**
      * Returns this grammar's rule object for the rule named {@code ruleName}.
      * <p>
@@ -53,14 +53,14 @@ public interface Grammar {
      * @return The rule object, or {@code null} if this grammar does not have a rule of this name.
      */
     Rule getRule(String ruleName);
-
+    
     /**
      * Returns all rules defined by this grammar or its super grammar as a map with the respective rule name as key.
      *
      * @return A map of rule names to rule objects for all rules in this grammar.
      */
     Map<String, Rule> getRules();
-
+    
     /**
      * Returns {@code true} if this grammar or any super grammar contains a rule named {@code ruleName}.
      *
@@ -68,7 +68,7 @@ public interface Grammar {
      * @return {@code true} if this grammar or a super grammar can match {@code ruleName}, otherwise {@code false}
      */
     boolean hasRule(String ruleName);
-
+    
     /**
      * Return a new {@link Matcher} object which supports incrementally matching this grammar against a changing input string.
      *
@@ -76,7 +76,7 @@ public interface Grammar {
      * @return A new matcher object for this grammar.
      */
     Matcher getMatcher(String input);
-
+    
     /**
      * Try to match {@code input} against this grammar, starting at the default start rule.
      * <p>
@@ -87,21 +87,21 @@ public interface Grammar {
      * @throws OhmException If {@link Grammar#getDefaultStartRule()} returns {@code null}.
      */
     MatchResult match(String input);
-
+    
     /**
      * Try to match {@code input} against this grammar, starting at rule {@code startRule}.
      *
-     * @param input     The string to be matched.
+     * @param input The string to be matched.
      * @param startRule The rule to start matching with.
      * @return The match result, which contains the parse tree if successful.
      */
     MatchResult match(String input, String startRule);
-
+    
     <T extends Semantics> SemanticsBlueprint<T> createSemanticsBlueprint(
             Class<T> semanticsClass);
-
+    
     Apply parseApplication(String ruleName);
-
+    
     /**
      * Returns whether this grammar is a built-in grammar.
      *
