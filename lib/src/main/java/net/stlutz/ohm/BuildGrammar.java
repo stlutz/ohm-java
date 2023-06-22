@@ -36,7 +36,7 @@ public class BuildGrammar extends Semantics {
     }
     
     public PExpr build(Node node) {
-        return PExpr.class.cast(apply(node));
+        return (PExpr) apply(node);
     }
     
     public PExpr withSource(PExpr expr) {
@@ -53,10 +53,10 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public void Grammar(Node id, Node superGrammarOpt, Node left, Node rulesIter, Node right) {
-        String grammarName = String.class.cast(apply(id));
+        String grammarName = (String) apply(id);
         currentGrammar = builder.newGrammar(grammarName);
         if (superGrammarOpt.hasChildren()) {
-            String superGrammarName = String.class.cast(apply(superGrammarOpt.onlyChild()));
+            String superGrammarName = (String) apply(superGrammarOpt.onlyChild());
             currentGrammar.extend(superGrammarName);
         }
         for (var ruleNode : rulesIter.getChildren()) {
@@ -67,31 +67,39 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public String SuperGrammar(Node op, Node node) {
-        return String.class.cast(apply(node));
+        return (String) apply(node);
+    }
+    
+    private boolean isRuleNameForbidden(String ruleName) {
+        return SpecialActionNames.includes(ruleName);
     }
     
     private void newRule(Node ident) {
-        String ruleName = String.class.cast(apply(ident));
+        String ruleName = (String) apply(ident);
+        if (isRuleNameForbidden(ruleName)) {
+            // TODO: Validate before building?
+            throw new OhmException("Rule name '%s' is forbidden".formatted(ruleName));
+        }
         currentRule = currentGrammar.newRule(ruleName);
         currentRule.sourceInterval(self.getSource().trimmed());
     }
     
     private void setRuleFormals(Node formalsOpt) {
         if (formalsOpt.hasChildren()) {
-            String[] formals = (String[]) String.class.arrayType().cast(apply(formalsOpt.onlyChild()));
+            String[] formals = (String[]) apply(formalsOpt.onlyChild());
             currentRule.formals(formals);
         }
     }
     
     private void setRuleDescription(Node ruleDescrOpt) {
         if (ruleDescrOpt.hasChildren()) {
-            String ruleDescr = String.class.cast(apply(ruleDescrOpt.onlyChild()));
+            String ruleDescr = (String) apply(ruleDescrOpt.onlyChild());
             currentRule.description(ruleDescr);
         }
     }
     
     private void setRuleBody(Node bodyNode) {
-        PExpr body = PExpr.class.cast(apply(bodyNode));
+        PExpr body = (PExpr) apply(bodyNode);
         currentRule.body(body);
     }
     
@@ -123,10 +131,10 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public String[] Formals(Node left, Node list, Node right) {
-        Node[] nodes = (Node[]) Node.class.arrayType().cast(apply(list));
+        Node[] nodes = (Node[]) apply(list);
         var formals = new String[nodes.length];
         for (int i = 0; i < formals.length; i++) {
-            formals[i] = String.class.cast(apply(nodes[i]));
+            formals[i] = (String) apply(nodes[i]);
         }
         return formals;
     }
@@ -134,7 +142,7 @@ public class BuildGrammar extends Semantics {
     @Action
     @Action("OverrideRuleBody")
     public PExpr RuleBody(Node op, Node termsList) {
-        Node[] termNodes = (Node[]) Node.class.arrayType().cast(apply(termsList));
+        Node[] termNodes = (Node[]) apply(termsList);
         PExpr[] terms = new PExpr[termNodes.length];
         for (int i = 0; i < terms.length; i++) {
             terms[i] = build(termNodes[i]);
@@ -144,7 +152,7 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public PExpr TopLevelTerm_inline(Node bodyNode, Node nameNode) {
-        String caseName = String.class.cast(apply(nameNode));
+        String caseName = (String) apply(nameNode);
         String inlineRuleName = currentRule.name + "_" + caseName;
         
         RuleDefinition inlineRule = currentGrammar.newRule(inlineRuleName);
@@ -170,7 +178,7 @@ public class BuildGrammar extends Semantics {
     @Action
     public PExpr Alt(Node list) {
         // TODO: avoid code duplication with Seq
-        Node[] termNodes = (Node[]) Node.class.arrayType().cast(apply(list));
+        Node[] termNodes = (Node[]) apply(list);
         PExpr[] terms = new PExpr[termNodes.length];
         for (int i = 0; i < terms.length; i++) {
             terms[i] = build(termNodes[i]);
@@ -220,7 +228,7 @@ public class BuildGrammar extends Semantics {
     @Action
     public PExpr[] Params(Node left, Node list, Node right) {
         // TODO: avoid boilerplate
-        var paramNodes = (Node[]) Node.class.arrayType().cast(apply(list));
+        var paramNodes = (Node[]) apply(list);
         PExpr[] params = new PExpr[paramNodes.length];
         for (int i = 0; i < params.length; i++) {
             params[i] = build(paramNodes[i]);
@@ -230,7 +238,7 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public PExpr Base_application(Node identNode, Node paramsOpt) {
-        String ruleName = String.class.cast(apply(identNode));
+        String ruleName = (String) apply(identNode);
         PExpr[] parameters =
             paramsOpt.hasChildren() ? (PExpr[]) apply(paramsOpt.onlyChild()) : new PExpr[0];
         PExpr result = PExpr.apply(ruleName, parameters);
@@ -240,8 +248,8 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public PExpr Base_range(Node from, Node op, Node to) {
-        String rangeStart = String.class.cast(apply(from));
-        String rangeEnd = String.class.cast(apply(to));
+        String rangeStart = (String) apply(from);
+        String rangeEnd = (String) apply(to);
         PExpr result = range(rangeStart, rangeEnd);
         result.setSource(self.getSource());
         return result;
@@ -249,7 +257,7 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public PExpr Base_terminal(Node expr) {
-        String contents = String.class.cast(apply(expr));
+        String contents = (String) apply(expr);
         PExpr result = PExpr.terminal(contents);
         result.setSource(self.getSource());
         return result;
@@ -267,7 +275,7 @@ public class BuildGrammar extends Semantics {
     
     @Action
     public String caseName(Node op, Node space1, Node name, Node space2, Node end) {
-        return String.class.cast(apply(name));
+        return (String) apply(name);
     }
     
     private String unescapedTerminal(SourceInterval chars) {
