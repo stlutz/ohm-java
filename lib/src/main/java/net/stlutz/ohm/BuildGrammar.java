@@ -29,62 +29,6 @@ public class BuildGrammar extends Semantics {
     private GrammarDefinition currentGrammar;
     private RuleDefinition currentRule;
     
-    private static final int backslashCodePoint = 92; // "\\".codePointAt(0);
-    private static final int doubleQuoteCodePoint = 34; // "\"".codePointAt(0);
-    private static final int singleQuoteCodePoint = 39; // "\'".codePointAt(0);
-    private static final int backspaceCodePoint = 8; // "\b".codePointAt(0);
-    private static final int lineFeedCodePoint = 10; // "\n".codePointAt(0);
-    private static final int carriageReturnCodePoint = 13; // "\r".codePointAt(0);
-    private static final int tabCodePoint = 9; // "\t".codePointAt(0);
-    
-    private String unescapedSubstring(String sourceString, int inclStart, int exclEnd) {
-        // TODO: move to SourceInterval?
-        // TODO: don't rely on correct input, handle errors
-        var sb = new StringBuilder();
-        int index = inclStart;
-        while (index < exclEnd) {
-            int codePoint = sourceString.codePointAt(index);
-            if (codePoint == backslashCodePoint) {
-                index++;
-                char escapeChar = sourceString.charAt(index++);
-                int actualCodePoint = switch (escapeChar) {
-                    case '\\' -> backslashCodePoint;
-                    case '"' -> doubleQuoteCodePoint;
-                    case '\'' -> singleQuoteCodePoint;
-                    case 'b' -> backspaceCodePoint;
-                    case 'n' -> lineFeedCodePoint;
-                    case 'r' -> carriageReturnCodePoint;
-                    case 't' -> tabCodePoint;
-                    case 'u' -> {
-                        String hexDigits;
-                        if (sourceString.charAt(index) == '{') {
-                            int closingIndex = sourceString.indexOf('}', index + 2);
-                            hexDigits = sourceString.substring(index + 1, closingIndex);
-                            index = closingIndex + 1;
-                        } else {
-                            hexDigits = sourceString.substring(index, index + 4);
-                            index += 4;
-                        }
-                        yield Integer.parseInt(hexDigits, 16);
-                    }
-                    case 'x' -> {
-                        String hexDigits = sourceString.substring(index, index + 2);
-                        index += 2;
-                        yield Integer.parseInt(hexDigits, 16);
-                    }
-                    default -> {
-                        throw new OhmException("Internal error. Unknown escape sequence.");
-                    }
-                };
-                sb.appendCodePoint(actualCodePoint);
-            } else {
-                index += Character.charCount(codePoint);
-                sb.appendCodePoint(codePoint);
-            }
-        }
-        return sb.toString();
-    }
-    
     public void reset() {
         builder = null;
         currentGrammar = null;
@@ -327,8 +271,7 @@ public class BuildGrammar extends Semantics {
     }
     
     private String unescapedTerminal(SourceInterval chars) {
-        return unescapedSubstring(chars.getSourceString(), chars.getStartIndex(),
-            chars.getEndIndex());
+        return Util.unescapedSubstring(chars.getSourceString(), chars.getStartIndex(), chars.getEndIndex());
     }
     
     @Action
