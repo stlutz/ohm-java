@@ -4,8 +4,19 @@ public class TerminalNode extends ParseNode {
     private static final ParseNode[] defaultChildren = new ParseNode[0];
     private static final int[] defaultChildOffsets = new int[0];
     
+    private static final int numCachedInstances = 101;
+    private static final TerminalNode[] cachedInstances = new TerminalNode[numCachedInstances];
+    
+    static {
+        for (int i = 0; i < numCachedInstances; i++) {
+            cachedInstances[i] = new TerminalNode(i);
+        }
+    }
+    
     public static TerminalNode get(int matchLength) {
-        // TODO: introduce cache up to length 20
+        if (matchLength < numCachedInstances) {
+            return cachedInstances[matchLength];
+        }
         return new TerminalNode(matchLength);
     }
     
