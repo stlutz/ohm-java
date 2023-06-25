@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TestGrammarBuilding {
     
     private PExpr buildExpr(String startRule, String source) {
-        var matchResult = ConstructedGrammar.OhmGrammar.match(source, startRule);
+        var matchResult = Ohm.OhmGrammar.match(source, startRule);
         assertTrue(matchResult.succeeded());
         return Ohm.buildGrammarSemantics.buildPExpr(matchResult.getRootNode());
     }
