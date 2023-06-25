@@ -15,26 +15,41 @@ class RuleDefinition {
         this.name = name;
     }
     
+    /**
+     * Optional.
+     */
     public RuleDefinition sourceInterval(SourceInterval sourceInterval) {
         this.sourceInterval = sourceInterval;
         return this;
     }
     
+    /**
+     * Optional.
+     */
     public RuleDefinition description(String description) {
         this.description = description;
         return this;
     }
     
+    /**
+     * Required. Must not be null.
+     */
     public RuleDefinition body(PExpr body) {
         this.body = body;
         return this;
     }
     
+    /**
+     * Required (satisfied by constructor). Must not be null.
+     */
     public RuleDefinition name(String name) {
         this.name = name;
         return this;
     }
     
+    /**
+     * Default.
+     */
     public RuleDefinition define() {
         operation = Rule.Operation.DEFINE;
         return this;
@@ -50,6 +65,9 @@ class RuleDefinition {
         return this;
     }
     
+    /**
+     * Optional.
+     */
     public RuleDefinition formals(String... formals) {
         this.formals = formals;
         return this;

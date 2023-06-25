@@ -31,6 +31,10 @@ public class ConstructedGrammarBuilder {
         return namespace;
     }
     
+    public void clear() {
+        grammars.clear();
+    }
+    
     public GrammarDefinition newGrammar(String grammarName) {
         GrammarDefinition grammar = new GrammarDefinition(grammarName);
         grammars.add(grammar);
@@ -56,14 +60,21 @@ public class ConstructedGrammarBuilder {
             isMakingProgress = false;
             for (int i = 0; i < grammarsToBuild.size(); i++) {
                 GrammarDefinition gDef = grammarsToBuild.removeFirst();
-                if (namespace.has(gDef.name)) {
+                if (gDef.name == null) {
+                    throw new OhmException("Grammar name must not be null.");
+                }
+                if (!gDef.isBuiltIn && isForbiddenGrammarName(gDef.name)) {
+                    throw new OhmException("Grammar name '%s' is forbidden.".formatted(gDef.name));
+                }
+                if (namespace.containsGrammarNamed(gDef.name)) {
                     builtGrammars.forEach(grammar -> {
                         if (grammar.getName().equals(gDef.name)) {
                             throw new OhmException(
                                 "The grammar '%s' was declared multiple times.".formatted(gDef.name));
                         }
                     });
-                    if (namespace.get(gDef.name).isBuiltIn()) {
+                    if (namespace.getGrammarNamed(gDef.name).isBuiltIn()) {
+                        // TODO: this case cannot be reached
                         throw new OhmException(
                             "The grammar '%s' is built-in and cannot be overridden.".formatted(gDef.name));
                     } else {
@@ -72,7 +83,7 @@ public class ConstructedGrammarBuilder {
                                 .formatted(gDef.name));
                     }
                 }
-                if (gDef.superGrammarName == null || namespace.has(gDef.superGrammarName)) {
+                if (gDef.superGrammarName == null || namespace.containsGrammarNamed(gDef.superGrammarName)) {
                     ConstructedGrammar grammar = buildGrammar(gDef);
                     builtGrammars.add(grammar);
                     namespace.add(grammar);
@@ -91,9 +102,9 @@ public class ConstructedGrammarBuilder {
     }
     
     private ConstructedGrammar buildGrammar(GrammarDefinition def) {
-        Grammar superGrammar = namespace.get(def.superGrammarName);
+        Grammar superGrammar = namespace.getGrammarNamed(def.superGrammarName);
         if (superGrammar == null && !def.isBuiltIn) {
-            superGrammar = namespace.get("BuiltInRules");
+            superGrammar = namespace.getGrammarNamed("BuiltInRules");
         }
         Map<String, RuleImpl> rules = buildRules(def, superGrammar);
         String defaultRuleName = getDefaultStartRuleName(def, superGrammar);
@@ -120,6 +131,12 @@ public class ConstructedGrammarBuilder {
         Map<String, RuleImpl> rules = new HashMap<>();
         
         for (RuleDefinition rDef : gDef.rules) {
+            if (rDef.name == null) {
+                throw new OhmException("Rule name must not be null.");
+            }
+            if (isForbiddenRuleName(rDef.name)) {
+                throw new OhmException("Rule name '%s' is forbidden".formatted(rDef.name));
+            }
             if (rules.containsKey(rDef.name)) {
                 throw new OhmException("Duplicate declaration for rule '%s'".formatted(rDef.name));
             }
@@ -138,6 +155,9 @@ public class ConstructedGrammarBuilder {
     
     private RuleImpl buildRule(RuleDefinition def, Grammar superGrammar) {
         PExpr body = def.body;
+        if (body == null) {
+            throw new OhmException("Rule body must not be null.");
+        }
         String description = def.description;
         
         Collection<String> duplicateParameterNames = Util.getDuplicates(def.formals);
@@ -149,22 +169,16 @@ public class ConstructedGrammarBuilder {
         Rule superRule = superGrammar != null ? superGrammar.getRule(def.name) : null;
         
         if (!def.isDefinition()) {
-            // TODO: insert override / extend in err msg depending on operation enum
             if (superRule == null) {
-                if (superGrammar == null) {
-                    throw new OhmException("Cannot %s rule '%s'. No super grammar was specified."
-                        .formatted("override", def.name));
-                } else {
-                    throw new OhmException(
-                        "Cannot %s rule '%s'. No rule of the same name was found in a super grammar."
-                            .formatted("override", def.name));
-                }
+                throw new OhmException(
+                    "Cannot %s rule '%s'. No rule of the same name was found in a super grammar."
+                        .formatted(def.isOverride() ? "override" : "extend", def.name));
             }
             String[] superRuleFormals = superRule.getFormals();
             if (superRuleFormals.length != def.formals.length) {
                 throw new OhmException(
                     "Cannot %s rule '%s': Got %d parameters, but super rule has %d parameters."
-                        .formatted("override", def.name, def.formals.length, superRuleFormals.length));
+                        .formatted(def.isOverride() ? "override" : "extend", def.name, def.formals.length, superRuleFormals.length));
             }
             
             if (def.isExtension()) {
@@ -180,16 +194,18 @@ public class ConstructedGrammarBuilder {
                     "Rule '%s' was already declared in super grammar and must be explicitly overridden."
                         .formatted(def.name));
             }
-            if (isRuleNameForbidden(def.name)) {
-                throw new OhmException("Rule name '%s' is forbidden".formatted(def.name));
-            }
         }
         
         body.introduceParams(def.formals);
         return new RuleImpl(body, def.formals, description, def.sourceInterval, def.operation);
     }
     
-    private boolean isRuleNameForbidden(String ruleName) {
+    private boolean isForbiddenRuleName(String ruleName) {
         return Semantics.SpecialActionNames.includes(ruleName);
+    }
+    
+    private boolean isForbiddenGrammarName(String grammarName) {
+        return ConstructedGrammar.ProtoBuiltInRules.getName().equals(grammarName)
+            || ConstructedGrammar.BuiltInRules.getName().equals(grammarName);
     }
 }

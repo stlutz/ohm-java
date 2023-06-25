@@ -23,8 +23,8 @@ import static net.stlutz.ohm.pexprs.PExpr.unicodeChar;
 
 public class ConstructedGrammar extends AbstractGrammar {
     static final Namespace DefaultNamespace = buildDefaultNamespace();
-    static final Grammar ProtoBuiltInRules = DefaultNamespace.get("ProtoBuiltInRules");
-    static final Grammar BuiltInRules = DefaultNamespace.get("BuiltInRules");
+    static final Grammar ProtoBuiltInRules = DefaultNamespace.getGrammarNamed("ProtoBuiltInRules");
+    static final Grammar BuiltInRules = DefaultNamespace.getGrammarNamed("BuiltInRules");
     static final Grammar OhmGrammar = buildOhmGrammar();
     
     ConstructedGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule,
