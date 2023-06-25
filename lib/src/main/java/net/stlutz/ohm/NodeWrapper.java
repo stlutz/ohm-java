@@ -66,8 +66,7 @@ public class NodeWrapper implements Node {
     @Override
     public Node childAt(int index) {
         if (index < 0 || index >= numChildren()) {
-            // TODO: probably a different kind of exception here
-            throw new OhmException("Index out of bounds");
+            throw new IndexOutOfBoundsException(index);
         }
         ensureWrappedChildren();
         

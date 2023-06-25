@@ -180,9 +180,16 @@ public class ConstructedGrammarBuilder {
                     "Rule '%s' was already declared in super grammar and must be explicitly overridden."
                         .formatted(def.name));
             }
+            if (isRuleNameForbidden(def.name)) {
+                throw new OhmException("Rule name '%s' is forbidden".formatted(def.name));
+            }
         }
         
         body.introduceParams(def.formals);
         return new RuleImpl(body, def.formals, description, def.sourceInterval, def.operation);
+    }
+    
+    private boolean isRuleNameForbidden(String ruleName) {
+        return Semantics.SpecialActionNames.includes(ruleName);
     }
 }

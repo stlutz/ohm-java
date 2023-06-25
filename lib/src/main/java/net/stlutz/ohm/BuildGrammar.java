@@ -70,16 +70,8 @@ public class BuildGrammar extends Semantics {
         return (String) apply(node);
     }
     
-    private boolean isRuleNameForbidden(String ruleName) {
-        return SpecialActionNames.includes(ruleName);
-    }
-    
     private void newRule(Node ident) {
         String ruleName = (String) apply(ident);
-        if (isRuleNameForbidden(ruleName)) {
-            // TODO: Validate before building?
-            throw new OhmException("Rule name '%s' is forbidden".formatted(ruleName));
-        }
         currentRule = currentGrammar.newRule(ruleName);
         currentRule.sourceInterval(self.getSource().trimmed());
     }
