@@ -106,7 +106,7 @@ public class ConstructedGrammarBuilder {
         if (superGrammar == null && !def.isBuiltIn) {
             superGrammar = namespace.getGrammarNamed("BuiltInRules");
         }
-        Map<String, RuleImpl> rules = buildRules(def, superGrammar);
+        Map<String, ConstructedRule> rules = buildRules(def, superGrammar);
         String defaultRuleName = getDefaultStartRuleName(def, superGrammar);
         return new ConstructedGrammar(def.name, superGrammar, rules, defaultRuleName, def.isBuiltIn);
     }
@@ -127,8 +127,8 @@ public class ConstructedGrammarBuilder {
         return null;
     }
     
-    private Map<String, RuleImpl> buildRules(GrammarDefinition gDef, Grammar superGrammar) {
-        Map<String, RuleImpl> rules = new HashMap<>();
+    private Map<String, ConstructedRule> buildRules(GrammarDefinition gDef, Grammar superGrammar) {
+        Map<String, ConstructedRule> rules = new HashMap<>();
         
         for (RuleDefinition rDef : gDef.rules) {
             if (rDef.name == null) {
@@ -140,20 +140,20 @@ public class ConstructedGrammarBuilder {
             if (rules.containsKey(rDef.name)) {
                 throw new OhmException("Duplicate declaration for rule '%s'".formatted(rDef.name));
             }
-            RuleImpl rule = buildRule(rDef, superGrammar);
+            ConstructedRule rule = buildRule(rDef, superGrammar);
             rules.put(rDef.name, rule);
         }
         
         if (superGrammar != null) {
             superGrammar.getRules().forEach((name, rule) -> {
-                rules.putIfAbsent(name, RuleImpl.copyOf(rule));
+                rules.putIfAbsent(name, ConstructedRule.copyOf(rule));
             });
         }
         
         return rules;
     }
     
-    private RuleImpl buildRule(RuleDefinition def, Grammar superGrammar) {
+    private ConstructedRule buildRule(RuleDefinition def, Grammar superGrammar) {
         PExpr body = def.body;
         if (body == null) {
             throw new OhmException("Rule body must not be null.");
@@ -197,7 +197,7 @@ public class ConstructedGrammarBuilder {
         }
         
         body.introduceParams(def.formals);
-        return new RuleImpl(body, def.formals, description, def.sourceInterval, def.operation);
+        return new ConstructedRule(body, def.formals, description, def.sourceInterval, def.operation);
     }
     
     private boolean isForbiddenRuleName(String ruleName) {

@@ -8,9 +8,9 @@ public abstract class AbstractGrammar implements Grammar {
     final Grammar superGrammar;
     final boolean isBuiltIn;
     String defaultStartRule;
-    final Map<String, RuleImpl> rules;
+    final Map<String, ConstructedRule> rules;
     
-    public AbstractGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule, boolean isBuiltIn) {
+    public AbstractGrammar(String name, Grammar superGrammar, Map<String, ConstructedRule> rules, String defaultStartRule, boolean isBuiltIn) {
         super();
         this.name = name;
         this.superGrammar = superGrammar;
@@ -60,7 +60,7 @@ public abstract class AbstractGrammar implements Grammar {
     }
     
     @Override
-    public RuleImpl getRule(String ruleName) {
+    public ConstructedRule getRule(String ruleName) {
         return rules.get(ruleName);
     }
     

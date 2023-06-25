@@ -2,14 +2,14 @@ package net.stlutz.ohm;
 
 import net.stlutz.ohm.pexprs.PExpr;
 
-public class RuleImpl implements Rule {
+public class ConstructedRule implements Rule {
     final Operation operation;
     final PExpr body;
     final String[] formals;
     final String description;
     final SourceInterval source;
     
-    public RuleImpl(PExpr body, String[] formals, String description, SourceInterval source, Operation operation) {
+    public ConstructedRule(PExpr body, String[] formals, String description, SourceInterval source, Operation operation) {
         super();
         this.operation = operation;
         this.body = body;
@@ -18,12 +18,12 @@ public class RuleImpl implements Rule {
         this.source = source;
     }
     
-    RuleImpl(Rule toCopy) {
+    ConstructedRule(Rule toCopy) {
         this(toCopy.getBody(), toCopy.getFormals(), toCopy.getDescription(), null, toCopy.getOperation());
     }
     
-    public static RuleImpl copyOf(Rule rule) {
-        return new RuleImpl(rule);
+    public static ConstructedRule copyOf(Rule rule) {
+        return new ConstructedRule(rule);
     }
     
     @Override

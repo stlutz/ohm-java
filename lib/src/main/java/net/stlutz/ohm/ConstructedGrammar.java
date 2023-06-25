@@ -27,7 +27,7 @@ public class ConstructedGrammar extends AbstractGrammar {
     static final Grammar BuiltInRules = DefaultNamespace.getGrammarNamed("BuiltInRules");
     static final Grammar OhmGrammar = buildOhmGrammar();
     
-    ConstructedGrammar(String name, Grammar superGrammar, Map<String, RuleImpl> rules, String defaultStartRule,
+    ConstructedGrammar(String name, Grammar superGrammar, Map<String, ConstructedRule> rules, String defaultStartRule,
                        boolean isBuiltIn) {
         super(name, superGrammar, rules, defaultStartRule, isBuiltIn);
     }
