@@ -9,25 +9,13 @@ import java.util.Map;
 public class Namespace implements Collection<Grammar> {
     private final Map<String, Grammar> grammars = new HashMap<>();
     
-    private Namespace() {
+    public Namespace() {
         super();
     }
     
-    private Namespace(Namespace toCopy) {
-        super();
+    public Namespace(Namespace toCopy) {
+        this();
         addAll(toCopy.getGrammars());
-    }
-    
-    static Namespace empty() {
-        return new Namespace();
-    }
-    
-    public static Namespace create() {
-        return copyOf(ConstructedGrammar.DefaultNamespace);
-    }
-    
-    public static Namespace copyOf(Namespace toCopy) {
-        return new Namespace(toCopy);
     }
     
     public Grammar getGrammarNamed(String grammarName) {

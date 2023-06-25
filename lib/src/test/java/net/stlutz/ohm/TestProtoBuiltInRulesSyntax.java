@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 class TestProtoBuiltInRulesSyntax extends TestSyntax {
     @Override
     protected Grammar getGrammar() {
-        return ConstructedGrammar.ProtoBuiltInRules;
+        return ConstructedGrammar.BuiltInRules;
     }
     
     @Test

@@ -23,7 +23,6 @@ public class TestConstructedGrammarBuilder {
     @Test
     void testNoGrammarsSingle() {
         assertErrorMessage("No grammars defined.", () -> builder.buildGrammar());
-        Assertions.assertEquals(2, builder.getNamespace().size());
     }
     
     @Test
@@ -35,7 +34,6 @@ public class TestConstructedGrammarBuilder {
     void testOneGrammarSingle() {
         defineValidGrammar();
         Assertions.assertNotNull(builder.buildGrammar());
-        Assertions.assertEquals(3, builder.getNamespace().size());
     }
     
     @Test
@@ -49,7 +47,6 @@ public class TestConstructedGrammarBuilder {
         defineValidGrammar();
         defineValidGrammar();
         assertErrorMessage("More than one grammar defined.", () -> builder.buildGrammar());
-        Assertions.assertEquals(2, builder.getNamespace().size());
     }
     
     @Test
@@ -85,9 +82,9 @@ public class TestConstructedGrammarBuilder {
     }
     
     @Test
-    void testForbiddenGrammarName() {
-        defineValidGrammar("BuiltInRules");
-        assertBuildError("Grammar name 'BuiltInRules' is forbidden.");
+    void testBuiltInRulesGrammarName() {
+        defineValidGrammar(ConstructedGrammar.BuiltInRules.getName());
+        assertBuildValidGrammars(1);
     }
     
     @Test

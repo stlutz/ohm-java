@@ -22,9 +22,7 @@ import static net.stlutz.ohm.pexprs.PExpr.terminal;
 import static net.stlutz.ohm.pexprs.PExpr.unicodeChar;
 
 public class ConstructedGrammar extends AbstractGrammar {
-    static final Namespace DefaultNamespace = buildDefaultNamespace();
-    static final Grammar ProtoBuiltInRules = DefaultNamespace.getGrammarNamed("ProtoBuiltInRules");
-    static final Grammar BuiltInRules = DefaultNamespace.getGrammarNamed("BuiltInRules");
+    static final Grammar BuiltInRules = buildBuiltInRules();
     static final Grammar OhmGrammar = buildOhmGrammar();
     
     ConstructedGrammar(String name, Grammar superGrammar, Map<String, ConstructedRule> rules, String defaultStartRule,
@@ -32,9 +30,10 @@ public class ConstructedGrammar extends AbstractGrammar {
         super(name, superGrammar, rules, defaultStartRule, isBuiltIn);
     }
     
-    static Namespace buildDefaultNamespace() {
-        ConstructedGrammarBuilder builder = new ConstructedGrammarBuilder(Namespace.empty());
-        GrammarDefinition grammar = builder.newGrammar("ProtoBuiltInRules").builtIn();
+    static ConstructedGrammar buildBuiltInRules() {
+        ConstructedGrammarBuilder builder = new ConstructedGrammarBuilder();
+        GrammarDefinition grammar = builder.newGrammar("BuiltInRules").builtIn();
+        // proto built-in
         grammar.newRule("any").description("any character").body(any());
         grammar.newRule("end").description("end of input").body(end());
         grammar.newRule("caseInsensitive").formals("str")
@@ -45,8 +44,7 @@ public class ConstructedGrammar extends AbstractGrammar {
             .body(unicodeChar("Ltmo"));
         grammar.newRule("spaces").description("zero or more spaces").body(star(apply("space")));
         grammar.newRule("space").description("a space").body(range(0x00, " ".codePointAt(0)));
-        
-        grammar = builder.newGrammar("BuiltInRules").extend("ProtoBuiltInRules").builtIn();
+        // built-in
         grammar.newRule("alnum").description("an alpha-numeric character")
             .body(alt(apply("letter"), apply("digit")));
         grammar.newRule("letter").description("a letter")
@@ -66,8 +64,7 @@ public class ConstructedGrammar extends AbstractGrammar {
             .body(seq(param(0), star(seq(param(1), param(0)))));
         grammar.newRule("emptyListOf").formals("elem", "sep").body(none());
         grammar.newRule("applySyntactic").formals("app").body(param(0));
-        builder.buildGrammars();
-        return builder.getNamespace();
+        return builder.buildGrammar();
     }
     
     static Grammar buildOhmGrammar() {

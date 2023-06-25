@@ -18,13 +18,11 @@ public class ConstructedGrammarBuilder {
     List<GrammarDefinition> grammars = new ArrayList<>();
     
     public ConstructedGrammarBuilder() {
-        super();
-        this.namespace = Namespace.create();
+        this(new Namespace());
     }
     
     public ConstructedGrammarBuilder(Namespace namespace) {
-        super();
-        this.namespace = namespace != null ? namespace : Namespace.create();
+        this.namespace = namespace != null ? namespace : new Namespace();
     }
     
     public Namespace getNamespace() {
@@ -62,9 +60,6 @@ public class ConstructedGrammarBuilder {
                 GrammarDefinition gDef = grammarsToBuild.removeFirst();
                 if (gDef.name == null) {
                     throw new OhmException("Grammar name must not be null.");
-                }
-                if (!gDef.isBuiltIn && isForbiddenGrammarName(gDef.name)) {
-                    throw new OhmException("Grammar name '%s' is forbidden.".formatted(gDef.name));
                 }
                 if (namespace.containsGrammarNamed(gDef.name)) {
                     builtGrammars.forEach(grammar -> {
@@ -104,7 +99,8 @@ public class ConstructedGrammarBuilder {
     private ConstructedGrammar buildGrammar(GrammarDefinition def) {
         Grammar superGrammar = namespace.getGrammarNamed(def.superGrammarName);
         if (superGrammar == null && !def.isBuiltIn) {
-            superGrammar = namespace.getGrammarNamed("BuiltInRules");
+            // TODO: should we allow overriding the BuiltInRules entirely?
+            superGrammar = ConstructedGrammar.BuiltInRules;
         }
         Map<String, ConstructedRule> rules = buildRules(def, superGrammar);
         String defaultRuleName = getDefaultStartRuleName(def, superGrammar);
@@ -202,10 +198,5 @@ public class ConstructedGrammarBuilder {
     
     private boolean isForbiddenRuleName(String ruleName) {
         return Semantics.SpecialActionNames.includes(ruleName);
-    }
-    
-    private boolean isForbiddenGrammarName(String grammarName) {
-        return ConstructedGrammar.ProtoBuiltInRules.getName().equals(grammarName)
-            || ConstructedGrammar.BuiltInRules.getName().equals(grammarName);
     }
 }
