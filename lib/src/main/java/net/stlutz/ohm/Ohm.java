@@ -1,7 +1,7 @@
 package net.stlutz.ohm;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static net.stlutz.ohm.pexprs.PExpr.alt;
 import static net.stlutz.ohm.pexprs.PExpr.any;
@@ -27,21 +27,19 @@ public final class Ohm {
         return grammars(source, null).get(0);
     }
     
-    public static List<Grammar> grammars(String source) {
+    public static List<? extends Grammar> grammars(String source) {
         return grammars(source, null);
     }
     
-    public static List<Grammar> grammars(String source, Namespace namespace) {
-        if (source == null) {
-            throw new IllegalArgumentException("source must not be null");
-        }
+    public static List<? extends Grammar> grammars(String source, Namespace namespace) {
+        Objects.requireNonNull(source, "Grammar source must not be null");
         var matchResult = OhmGrammar.match(source);
         if (matchResult.failed()) {
             // TODO: actual syntax error
             throw new OhmException("Syntax error in grammar source");
         }
         
-        return Collections.unmodifiableList(buildGrammarSemantics.buildGrammars(matchResult.getRootNode(), namespace));
+        return buildGrammarSemantics.buildGrammars(matchResult.getRootNode(), namespace);
     }
     
     static Grammar buildOhmGrammar() {

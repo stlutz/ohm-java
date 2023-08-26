@@ -36,10 +36,9 @@ public class CaseInsensitiveTerminal extends PExpr {
     
     @Override
     public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
-        if (!(param instanceof Terminal)) {
+        if (!(param instanceof Terminal terminal)) {
             throw new OhmException("Expected a Terminal expression");
         }
-        Terminal terminal = (Terminal) param;
         String matchStr = terminal.getString();
         
         if (inputStream.matches(matchStr, true)) {

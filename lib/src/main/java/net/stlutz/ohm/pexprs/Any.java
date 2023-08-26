@@ -7,7 +7,7 @@ import net.stlutz.ohm.TerminalNode;
 public class Any extends Prim {
     private static final Any instance = new Any();
     
-    public static final Any getInstance() {
+    public static Any getInstance() {
         return instance;
     }
     

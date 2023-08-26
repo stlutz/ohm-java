@@ -208,6 +208,10 @@ public abstract class PExpr {
         return new Terminal(contents);
     }
     
+    public static PExpr terminal(String contents, boolean caseInsensitive) {
+        return caseInsensitive ? new CaseInsensitiveTerminal(terminal(contents)) : terminal(contents);
+    }
+    
     public static PExpr unicodeChar(String unicodeCategory) {
         if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory)) {
             throw new OhmException(
