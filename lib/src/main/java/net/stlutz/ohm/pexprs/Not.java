@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 
 public class Not extends PExpr {
     public PExpr expr;
@@ -33,13 +32,13 @@ public class Not extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         // TODO: Right now we're just throwing away all of the failures that happen
         // inside a `not`, and recording `this` as a failed expression.
         // TODO: Double negation should be equivalent to lookahead, but that's not the
         // case right now wrt failures. E.g., ~~'foo' produces a failure for ~~'foo',
         // but maybe it should produce a failure for 'foo' instead.
-        boolean matched = matchState.eval(expr);
+        boolean matched = evalContext.eval(expr);
         
         if (matched) {
             return false;

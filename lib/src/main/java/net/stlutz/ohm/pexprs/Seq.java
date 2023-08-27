@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 
 public class Seq extends Aggregation {
     public Seq(PExpr[] terms) {
@@ -23,9 +22,9 @@ public class Seq extends Aggregation {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         for (PExpr term : terms) {
-            if (!matchState.eval(term)) {
+            if (!evalContext.eval(term)) {
                 return false;
             }
         }

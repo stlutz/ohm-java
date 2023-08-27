@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 
 /**
  * Splice is an implementation detail of rule overriding with the `...` operator.
@@ -40,8 +39,8 @@ public class Splice extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
-        return matchState.eval(superExpr);
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
+        return evalContext.eval(superExpr);
     }
     
     @Override

@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.TerminalNode;
 import net.stlutz.ohm.Util;
 
@@ -19,10 +18,10 @@ public class Terminal extends Prim {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (inputStream.matches(obj)) {
             inputStream.advance(obj.length());
-            matchState.pushBinding(TerminalNode.get(obj.length()), originalPosition);
+            evalContext.pushBinding(TerminalNode.get(obj.length()), originalPosition);
             return true;
         } else {
             return false;

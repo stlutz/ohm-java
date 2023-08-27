@@ -2,13 +2,14 @@ package net.stlutz.ohm;
 
 import net.stlutz.ohm.pexprs.Apply;
 import net.stlutz.ohm.pexprs.End;
+import net.stlutz.ohm.pexprs.EvalContext;
 import net.stlutz.ohm.pexprs.PExpr;
 import net.stlutz.ohm.pexprs.Seq;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class MatchState {
+public class MatchState implements EvalContext {
     private final Matcher matcher;
     // borrowed from matcher for easier access
     private final Grammar grammar;
@@ -51,10 +52,12 @@ public class MatchState {
     // // TODO: allow for recorded failures
     // }
     
+    @Override
     public InputStream getInputStream() {
         return inputStream;
     }
     
+    @Override
     public Rule getRule(String ruleName) {
         return grammar.getRule(ruleName);
     }
@@ -63,14 +66,17 @@ public class MatchState {
         return new Seq(new PExpr[]{startApplication, End.getInstance()});
     }
     
+    @Override
     public int positionToOffset(int position) {
         return position - positionStack.getLast();
     }
     
+    @Override
     public int offsetToPosition(int offset) {
         return positionStack.getLast() + offset;
     }
     
+    @Override
     public void enterApplication(PositionInfo positionInfo, Apply application) {
         positionStack.addLast(inputStream.getPosition());
         applicationStack.addLast(application);
@@ -78,6 +84,7 @@ public class MatchState {
         positionInfo.enter(application);
     }
     
+    @Override
     public void exitApplication(PositionInfo positionInfo, ParseNode nodeOrNull) {
         int originalPosition = positionStack.removeLast();
         applicationStack.removeLast();
@@ -89,19 +96,22 @@ public class MatchState {
         }
     }
     
+    @Override
     public void enterLexifiedContext() {
         inLexifiedContextStack.addLast(true);
     }
     
+    @Override
     public void exitLexifiedContext() {
         inLexifiedContextStack.removeLast();
     }
     
+    @Override
     public Apply currentApplication() {
         return applicationStack.peekLast();
     }
     
-    public boolean inSyntacticContext() {
+    boolean inSyntacticContext() {
         Apply app = currentApplication();
         if (app == null) {
             // The top-level context is sytactic if the start application is
@@ -110,11 +120,11 @@ public class MatchState {
         return app.isSyntactic() && !inLexifiedContext();
     }
     
-    public boolean inLexifiedContext() {
+    boolean inLexifiedContext() {
         return inLexifiedContextStack.getLast();
     }
     
-    public int skipSpaces() {
+    int skipSpaces() {
         eval(applySpaces);
         popBinding();
         return inputStream.getPosition();
@@ -132,6 +142,7 @@ public class MatchState {
         }
     }
     
+    @Override
     public ParseNode[] spliceLastBindings(int numBindings) {
         ParseNode[] result = new ParseNode[numBindings];
         for (int i = numBindings - 1; i >= 0; i--) {
@@ -140,6 +151,7 @@ public class MatchState {
         return result;
     }
     
+    @Override
     public int[] spliceLastBindingOffsets(int numBindingOffsets) {
         int[] result = new int[numBindingOffsets];
         for (int i = numBindingOffsets - 1; i >= 0; i--) {
@@ -148,6 +160,7 @@ public class MatchState {
         return result;
     }
     
+    @Override
     public void pushBinding(ParseNode node, int originalPosition) {
         bindings.addLast(node);
         bindingOffsets.addLast(positionToOffset(originalPosition));
@@ -162,18 +175,19 @@ public class MatchState {
         return bindings.size();
     }
     
-    public void truncateBindings(int newLength) {
+    void truncateBindings(int newLength) {
         int bindingsToRemove = bindings.size() - newLength;
         for (int i = 0; i < bindingsToRemove; i++) {
             popBinding();
         }
     }
     
+    @Override
     public PositionInfo getCurrentPositionInfo() {
         return getPositionInfo(inputStream.getPosition());
     }
     
-    public PositionInfo getPositionInfo(int position) {
+    PositionInfo getPositionInfo(int position) {
         PositionInfo positionInfo = memoTable[position];
         if (positionInfo == null) {
             positionInfo = memoTable[position] = new PositionInfo();
@@ -181,10 +195,12 @@ public class MatchState {
         return positionInfo;
     }
     
+    @Override
     public boolean hasNecessaryInfo(MemoizationRecord memoRec) {
         return true;
     }
     
+    @Override
     public boolean useMemoizedResult(int originalPosition, MemoizationRecord memoRec) {
         if (memoRec.getValue() != null) {
             inputStream.advance(memoRec.getMatchLength());
@@ -195,16 +211,7 @@ public class MatchState {
         }
     }
     
-    /**
-     * Evaluate {@code expr} and return {@code true} if it succeeded, {@code false} otherwise. On
-     * success, {@code bindings} will have {@code expr.getArity()} more elements than before, and the
-     * input stream's position may have increased. On failure, {@code bindings} and position will be
-     * unchanged.
-     *
-     * @param expr
-     * @return
-     */
-    
+    @Override
     public boolean eval(PExpr expr) {
         int originalNumBindings = numBindings();
         int originalPosition = inputStream.getPosition();

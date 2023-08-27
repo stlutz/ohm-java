@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.TerminalNode;
 
 public class Any extends Prim {
@@ -16,12 +15,12 @@ public class Any extends Prim {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (inputStream.atEnd()) {
             return false;
         } else {
             inputStream.advance(1);
-            matchState.pushBinding(TerminalNode.get(1), originalPosition);
+            evalContext.pushBinding(TerminalNode.get(1), originalPosition);
             return true;
         }
     }

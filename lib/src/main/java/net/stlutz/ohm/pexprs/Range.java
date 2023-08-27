@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.TerminalNode;
 import net.stlutz.ohm.Util;
 
@@ -24,11 +23,11 @@ public class Range extends Prim {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (!inputStream.atEnd()) {
             int codePoint = inputStream.nextCodePoint();
             if (codePoint >= from && codePoint <= to) {
-                matchState.pushBinding(TerminalNode.get(Character.charCount(codePoint)), originalPosition);
+                evalContext.pushBinding(TerminalNode.get(Character.charCount(codePoint)), originalPosition);
                 return true;
             }
         }

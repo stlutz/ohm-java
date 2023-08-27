@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 
 // TODO: is this actually used anywhere?
 public class Param extends PExpr {
@@ -33,9 +32,9 @@ public class Param extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         // TODO: figure out what's happening here
-        return matchState.eval(matchState.currentApplication().getArg(index));
+        return evalContext.eval(evalContext.currentApplication().getArg(index));
     }
     
     @Override

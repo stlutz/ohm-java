@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 
 public class Lookahead extends PExpr {
     public PExpr expr;
@@ -33,8 +32,8 @@ public class Lookahead extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
-        if (matchState.eval(expr)) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
+        if (evalContext.eval(expr)) {
             inputStream.setPosition(originalPosition);
             return true;
         } else {

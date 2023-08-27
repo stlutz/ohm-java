@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 
 public class Lex extends PExpr {
     public PExpr expr;
@@ -33,10 +32,10 @@ public class Lex extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
-        matchState.enterLexifiedContext();
-        boolean succeeded = matchState.eval(expr);
-        matchState.exitLexifiedContext();
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
+        evalContext.enterLexifiedContext();
+        boolean succeeded = evalContext.eval(expr);
+        evalContext.exitLexifiedContext();
         return succeeded;
     }
     

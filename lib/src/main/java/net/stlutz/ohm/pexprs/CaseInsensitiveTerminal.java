@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.OhmException;
 import net.stlutz.ohm.TerminalNode;
 
@@ -35,7 +34,7 @@ public class CaseInsensitiveTerminal extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (!(param instanceof Terminal terminal)) {
             throw new OhmException("Expected a Terminal expression");
         }
@@ -43,7 +42,7 @@ public class CaseInsensitiveTerminal extends PExpr {
         
         if (inputStream.matches(matchStr, true)) {
             inputStream.advance(matchStr.length());
-            matchState.pushBinding(TerminalNode.get(matchStr.length()), originalPosition);
+            evalContext.pushBinding(TerminalNode.get(matchStr.length()), originalPosition);
             return true;
         }
         

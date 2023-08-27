@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.MemoizationRecord;
 import net.stlutz.ohm.NonterminalNode;
 import net.stlutz.ohm.OhmException;
@@ -86,32 +85,32 @@ public class Apply extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
-        Apply caller = matchState.currentApplication();
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
+        Apply caller = evalContext.currentApplication();
         PExpr[] actuals = (caller != null) ? caller.args : new PExpr[0];
         Apply app = (Apply) substituteParams(actuals);
         
-        PositionInfo posInfo = matchState.getCurrentPositionInfo();
+        PositionInfo posInfo = evalContext.getCurrentPositionInfo();
         if (posInfo.isActive(app)) {
             // This rule is already active at this position, i.e. it's left-recursive
-            return app.handleCycle(matchState, inputStream);
+            return app.handleCycle(evalContext, inputStream);
         }
         
         String memoKey = app.toMemoKey();
         MemoizationRecord memoRec = posInfo.remember(memoKey);
         
         if (memoRec != null && posInfo.shouldUseMemoizedResult(memoRec)) {
-            if (matchState.hasNecessaryInfo(memoRec)) {
-                return matchState.useMemoizedResult(inputStream.getPosition(), memoRec);
+            if (evalContext.hasNecessaryInfo(memoRec)) {
+                return evalContext.useMemoizedResult(inputStream.getPosition(), memoRec);
             }
             posInfo.forget(memoKey);
         }
         
-        return app.reallyEval(matchState, inputStream, inputStream.getPosition());
+        return app.reallyEval(evalContext, inputStream, inputStream.getPosition());
     }
     
-    private boolean handleCycle(MatchState matchState, InputStream inputStream) {
-        PositionInfo posInfo = matchState.getCurrentPositionInfo();
+    private boolean handleCycle(EvalContext evalContext, InputStream inputStream) {
+        PositionInfo posInfo = evalContext.getCurrentPositionInfo();
         MemoizationRecord currentLeftRecursion = posInfo.getCurrentLeftRecursion();
         String memoKey = toMemoKey();
         MemoizationRecord memoRec = posInfo.remember(memoKey);
@@ -127,20 +126,20 @@ public class Apply extends PExpr {
             posInfo.startLeftRecursion(this, memoRec);
         }
         
-        return matchState.useMemoizedResult(inputStream.getPosition(), memoRec);
+        return evalContext.useMemoizedResult(inputStream.getPosition(), memoRec);
     }
     
-    private boolean reallyEval(MatchState matchState, InputStream inputStream, int originalPosition) {
-        PositionInfo origPosInfo = matchState.getCurrentPositionInfo();
+    private boolean reallyEval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
+        PositionInfo origPosInfo = evalContext.getCurrentPositionInfo();
         // TODO: bake rule body into apply node?
-        Rule rule = matchState.getRule(ruleName);
+        Rule rule = evalContext.getRule(ruleName);
         if (rule == null) {
             throw new OhmException("No rule '%s' found".formatted(ruleName));
         }
         
-        matchState.enterApplication(origPosInfo, this);
+        evalContext.enterApplication(origPosInfo, this);
         
-        ParseNode nodeOrNull = evalOnce(rule.getBody(), matchState);
+        ParseNode nodeOrNull = evalOnce(rule.getBody(), evalContext);
         MemoizationRecord currentLR = origPosInfo.getCurrentLeftRecursion();
         String memoKey = toMemoKey();
         boolean isHeadOfLeftRecursion =
@@ -149,7 +148,7 @@ public class Apply extends PExpr {
         MemoizationRecord memoRec;
         if (isHeadOfLeftRecursion) {
             nodeOrNull =
-                growSeedResult(rule.getBody(), matchState, originalPosition, currentLR, nodeOrNull);
+                growSeedResult(rule.getBody(), evalContext, originalPosition, currentLR, nodeOrNull);
             origPosInfo.endLeftRecursion();
             memoRec = currentLR;
             origPosInfo.memoize(memoKey, memoRec);
@@ -161,19 +160,19 @@ public class Apply extends PExpr {
             memoRec = origPosInfo.memoize(memoKey, memoRec);
         }
         
-        matchState.exitApplication(origPosInfo, nodeOrNull);
+        evalContext.exitApplication(origPosInfo, nodeOrNull);
         
         return nodeOrNull != null;
     }
     
-    private ParseNode evalOnce(PExpr body, MatchState matchState) {
-        InputStream inputStream = matchState.getInputStream();
+    private ParseNode evalOnce(PExpr body, EvalContext evalContext) {
+        InputStream inputStream = evalContext.getInputStream();
         int originalPosition = inputStream.getPosition();
         
-        if (matchState.eval(body)) {
+        if (evalContext.eval(body)) {
             int arity = body.getArity();
-            ParseNode[] bindings = matchState.spliceLastBindings(arity);
-            int[] offsets = matchState.spliceLastBindingOffsets(arity);
+            ParseNode[] bindings = evalContext.spliceLastBindings(arity);
+            int[] offsets = evalContext.spliceLastBindingOffsets(arity);
             int matchLength = inputStream.getPosition() - originalPosition;
             return new NonterminalNode(matchLength, ruleName, bindings, offsets);
         }
@@ -181,19 +180,19 @@ public class Apply extends PExpr {
         return null;
     }
     
-    private ParseNode growSeedResult(PExpr body, MatchState matchState, int originalPosition,
+    private ParseNode growSeedResult(PExpr body, EvalContext evalContext, int originalPosition,
                                      MemoizationRecord lrMemoRec, ParseNode newValue) {
         if (newValue == null) {
             return null;
         }
         
-        InputStream inputStream = matchState.getInputStream();
+        InputStream inputStream = evalContext.getInputStream();
         
         while (true) {
             lrMemoRec.setMatchLength(inputStream.getPosition() - originalPosition);
             lrMemoRec.setValue(newValue);
             inputStream.setPosition(originalPosition);
-            newValue = evalOnce(body, matchState);
+            newValue = evalOnce(body, evalContext);
             if (inputStream.getPosition() - originalPosition <= lrMemoRec.getMatchLength()) {
                 break;
             }

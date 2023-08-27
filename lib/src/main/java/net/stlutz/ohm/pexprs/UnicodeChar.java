@@ -1,7 +1,6 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
-import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.TerminalNode;
 
 import java.util.HashMap;
@@ -19,11 +18,11 @@ public class UnicodeChar extends Prim {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         int matchLength = inputStream.match(pattern);
         if (matchLength >= 0) {
             inputStream.advance(matchLength);
-            matchState.pushBinding(TerminalNode.get(matchLength), originalPosition);
+            evalContext.pushBinding(TerminalNode.get(matchLength), originalPosition);
             return true;
         } else {
             return false;

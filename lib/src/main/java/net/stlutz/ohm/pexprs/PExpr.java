@@ -55,24 +55,19 @@ public abstract class PExpr {
     }
     
     /**
-     * Evaluate the expression and return `true` if it succeeds, `false` otherwise. This method should
-     * only be called directly by `MatchState.eval(expr)`, which also updates the data structures that
-     * are used for tracing. (Making those updates in a method of `MatchState` enables the
-     * trace-specific data structures to be "secrets" of that class, which is good for modularity.)
+     * Evaluate the expression and return {@code true} if it succeeds, {@code false} otherwise. This method should
+     * only be called directly by {@link EvalContext#eval(PExpr)}, which also updates the data structures that
+     * are used for tracing.
      * <p>
-     * The contract of this method is as follows: When the return value is `true`, the matcher will
-     * have `expr.getArity()` more bindings than it did before the call. When the return value is
-     * `false`, the matcher may have more bindings than it did before the call, and its input stream's
+     * The contract of this method is as follows: When the return value is {@code true}, the matcher will
+     * have {@link PExpr#getArity()} more bindings than it did before the call. When the return value is
+     * {@code false}, the matcher may have more bindings than it did before the call, and its input stream's
      * position may be anywhere.
      * <p>
-     * Note that `MatchState.eval(expr)`, unlike this method, guarantees that neither the matcher's
+     * Note that {@link EvalContext#eval(PExpr)}, unlike this method, guarantees that neither the matcher's
      * bindings nor its input stream's position will change if the expression fails to match.
-     *
-     * @param matchState
-     * @return
      */
-    public abstract boolean eval(MatchState matchState, InputStream inputStream,
-                                 int originalPosition);
+    public abstract boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition);
     
     public boolean eval(MatchState matchState) {
         InputStream inputStream = matchState.getInputStream();

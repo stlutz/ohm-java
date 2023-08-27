@@ -2,7 +2,6 @@ package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
 import net.stlutz.ohm.IterationNode;
-import net.stlutz.ohm.MatchState;
 import net.stlutz.ohm.OhmException;
 import net.stlutz.ohm.ParseNode;
 
@@ -43,13 +42,13 @@ public abstract class Iter extends PExpr {
     }
     
     @Override
-    public boolean eval(MatchState matchState, InputStream inputStream, int originalPosition) {
+    public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         int arity = getArity();
         
         int numMatches = 0;
         int previousPosition = originalPosition;
         int maxNumMatches = getMaxNumMatches();
-        while (numMatches < maxNumMatches && matchState.eval(expr)) {
+        while (numMatches < maxNumMatches && evalContext.eval(expr)) {
             if (inputStream.getPosition() == previousPosition) {
                 // TODO: proper error handling
                 throw new OhmException("Kleene expression has nullable operand");
@@ -62,11 +61,11 @@ public abstract class Iter extends PExpr {
             return false;
         }
         
-        int offset = matchState.positionToOffset(originalPosition);
+        int offset = evalContext.positionToOffset(originalPosition);
         int matchLength = 0;
         int numBindings = numMatches * arity;
-        ParseNode[] bindings = matchState.spliceLastBindings(numBindings);
-        int[] bindingOffsets = matchState.spliceLastBindingOffsets(numBindings);
+        ParseNode[] bindings = evalContext.spliceLastBindings(numBindings);
+        int[] bindingOffsets = evalContext.spliceLastBindingOffsets(numBindings);
         
         if (numMatches > 0) {
             offset = bindingOffsets[0];
@@ -74,7 +73,7 @@ public abstract class Iter extends PExpr {
             matchLength = endOffset - offset;
         }
         
-        int position = matchState.offsetToPosition(offset);
+        int position = evalContext.offsetToPosition(offset);
         for (int columnIndex = 0; columnIndex < arity; columnIndex++) {
             ParseNode[] column = new ParseNode[numMatches];
             int[] columnOffsets = new int[numMatches];
@@ -84,7 +83,7 @@ public abstract class Iter extends PExpr {
                 columnOffsets[rowIndex] = bindingOffsets[index];
             }
             IterationNode child = new IterationNode(matchLength, column, columnOffsets, isOptional());
-            matchState.pushBinding(child, position);
+            evalContext.pushBinding(child, position);
         }
         
         return true;
