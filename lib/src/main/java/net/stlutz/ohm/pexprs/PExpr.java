@@ -207,12 +207,16 @@ public abstract class PExpr {
         return caseInsensitive ? new CaseInsensitiveTerminal(terminal(contents)) : terminal(contents);
     }
     
-    public static PExpr unicodeChar(String unicodeCategory) {
-        if (!UnicodeChar.unicodeCategoryPatterns.containsKey(unicodeCategory)) {
-            throw new OhmException(
-                "Cannot create PExpr unicodeChar. '%s' is not a valid unicode category."
-                    .formatted(unicodeCategory));
-        }
-        return new UnicodeChar(unicodeCategory);
+    public static PExpr unicodeChar(byte... unicodeCategories) {
+        return new UnicodeChar(unicodeCategories);
+    }
+    
+    public static PExpr letter() {
+        return unicodeChar(
+            Character.UPPERCASE_LETTER,
+            Character.LOWERCASE_LETTER,
+            Character.TITLECASE_LETTER,
+            Character.MODIFIER_LETTER,
+            Character.OTHER_LETTER);
     }
 }

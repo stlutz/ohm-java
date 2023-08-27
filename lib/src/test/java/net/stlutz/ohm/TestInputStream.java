@@ -3,8 +3,6 @@ package net.stlutz.ohm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.regex.Pattern;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -157,29 +155,6 @@ class TestInputStream {
         stream.setPosition(40); // lazy >d<og
         assertTrue(stream.matches("dog."), "Should match at the current position");
         assertFalse(stream.matches("dog. "), "Should not error or match when matching past the end");
-    }
-    
-    @Test
-    void testMatchPattern() {
-        assertEquals(10, stream.match(Pattern.compile("The quick ")));
-        assertEquals(0, stream.getPosition(), "Should not advance the position");
-        assertEquals(-1, stream.match(Pattern.compile("brown fox")));
-        stream.setPosition(40); // lazy >d<og
-        assertEquals(4, stream.match(Pattern.compile("dog.")));
-        assertEquals(-1, stream.match(Pattern.compile("dog. ")),
-            "Should not error or match when matching past the end");
-    }
-    
-    @Test
-    void testUnicodeMatchPattern() {
-        stream = new InputStream(unicodeString);
-        stream.setPosition(8);
-        assertEquals(1, stream.match(Pattern.compile("\\p{Zs}")));
-        stream.setPosition(9);
-        assertEquals(2, stream.match(Pattern.compile("\\p{So}")));
-        assertEquals(2, stream.match(Pattern.compile("\\x{1f44d}")));
-        stream.setPosition(10);
-        assertEquals(-1, stream.match(Pattern.compile("\\p{So}")));
     }
     
     @Test

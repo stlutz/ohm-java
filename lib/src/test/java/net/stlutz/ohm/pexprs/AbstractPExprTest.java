@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractPExprTest {
-    private List<Arguments> basicEvalTestCases = new ArrayList<>();
+    private final List<Arguments> basicEvalTestCases = new ArrayList<>();
     
     public AbstractPExprTest() {
         registerBasicEvalTestCases();

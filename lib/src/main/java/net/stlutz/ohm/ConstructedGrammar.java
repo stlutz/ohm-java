@@ -33,10 +33,10 @@ public class ConstructedGrammar extends AbstractGrammar {
         grammar.newRule("end").description("end of input").body(end());
         grammar.newRule("caseInsensitive").formals("str")
             .body(new CaseInsensitiveTerminal(new Param(0)));
-        grammar.newRule("lower").description("a lowercase letter").body(unicodeChar("Ll"));
-        grammar.newRule("upper").description("an uppercase letter").body(unicodeChar("Lu"));
+        grammar.newRule("lower").description("a lowercase letter").body(unicodeChar(Character.LOWERCASE_LETTER));
+        grammar.newRule("upper").description("an uppercase letter").body(unicodeChar(Character.UPPERCASE_LETTER));
         grammar.newRule("unicodeLtmo").description("a Unicode character in Lt, Lm, or Lo")
-            .body(unicodeChar("Ltmo"));
+            .body(unicodeChar(Character.TITLECASE_LETTER, Character.MODIFIER_LETTER, Character.OTHER_LETTER));
         grammar.newRule("spaces").description("zero or more spaces").body(star(apply("space")));
         grammar.newRule("space").description("a space").body(range(0x00, " ".codePointAt(0)));
         // built-in

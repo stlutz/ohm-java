@@ -1,94 +1,89 @@
 package net.stlutz.ohm.pexprs;
 
 import net.stlutz.ohm.InputStream;
+import net.stlutz.ohm.OhmException;
 import net.stlutz.ohm.TerminalNode;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class UnicodeChar extends Prim {
-    public String category;
-    public Pattern pattern;
+    private final int categories;
     
-    public UnicodeChar(String category) {
-        super();
-        this.category = category;
-        pattern = unicodeCategoryPatterns.get(category);
+    public UnicodeChar(byte[] categories) {
+        int bitset = 0;
+        for (byte category : categories) {
+            if (category > 31) {
+                throw new OhmException("Implementation cannot handle the given Unicode category");
+            }
+            bitset |= 1 << category;
+        }
+        this.categories = bitset;
     }
     
     @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
-        int matchLength = inputStream.match(pattern);
-        if (matchLength >= 0) {
-            inputStream.advance(matchLength);
-            evalContext.pushBinding(TerminalNode.get(matchLength), originalPosition);
-            return true;
-        } else {
-            return false;
+        if (!inputStream.atEnd()) {
+            int nextCodePointCategory = Character.getType(inputStream.nextCodePoint());
+            if (((categories >> nextCodePointCategory) & 1) != 0) {
+                int matchLength = inputStream.offsetTo(originalPosition);
+                evalContext.pushBinding(TerminalNode.get(matchLength), originalPosition);
+                return true;
+            }
         }
+        return false;
+    }
+    
+    private Collection<String> getShorthands() {
+        Collection<String> shorthands = new ArrayList<>();
+        for (int i = 0; i < unicodeCategoryShorthands.length; i++) {
+            if (((categories >> i) & 1) != 0) {
+                shorthands.add(unicodeCategoryShorthands[i]);
+            }
+        }
+        return shorthands;
     }
     
     @Override
     public void toString(StringBuilder sb) {
         sb.append("\\p{");
-        sb.append(category);
+        sb.append(String.join("|", getShorthands()));
         sb.append('}');
     }
     
-    @Override
-    public void toDisplayString(StringBuilder sb) {
-        sb.append("Unicode [");
-        sb.append(category);
-        sb.append("] character");
-    }
-    
-    public static final Map<String, Pattern> unicodeCategoryPatterns;
+    private static final String[] unicodeCategoryShorthands;
     
     static {
-        unicodeCategoryPatterns = new HashMap<String, Pattern>(50);
-        
-        String[] realCategories = new String[]{"Cc", // Other, Control
-            "Cf", // Other, Format
-            "Cn", // Other, Not Assigned (no characters in the file have this property)
-            "Co", // Other, Private Use
-            "Cs", // Other, Surrogate
-            "LC", // Letter, Cased
-            "Ll", // Letter, Lowercase
-            "Lm", // Letter, Modifier
-            "Lo", // Letter, Other
-            "Lt", // Letter, Titlecase
-            "Lu", // Letter, Uppercase
-            "Mc", // Mark, Spacing Combining
-            "Me", // Mark, Enclosing
-            "Mn", // Mark, Nonspacing
-            "Nd", // Number, Decimal Digit
-            "Nl", // Number, Letter
-            "No", // Number, Other
-            "Pc", // Punctuation, Connector
-            "Pd", // Punctuation, Dash
-            "Pe", // Punctuation, Close
-            "Pf", // Punctuation, Final quote (may behave like Ps or Pe depending on usage)
-            "Pi", // Punctuation, Initial quote (may behave like Ps or Pe depending on usage)
-            "Po", // Punctuation, Other
-            "Ps", // Punctuation, Open
-            "Sc", // Symbol, Currency
-            "Sk", // Symbol, Modifier
-            "Sm", // Symbol, Math
-            "So", // Symbol, Other
-            "Zl", // Separator, Line
-            "Zp", // Separator, Paragraph
-            "Zs", // Separator, Space
-        };
-        
-        for (String realCategory : realCategories) {
-            unicodeCategoryPatterns.put(realCategory, Pattern.compile("\\p{%s}".formatted(realCategory)));
-        }
-        
-        // These two are not real Unicode categories, but are useful for Ohm.
-        // L is a combination of all the letter categories.
-        unicodeCategoryPatterns.put("L", Pattern.compile("\\p{IsLetter}"));
-        // Ltmo is a combination of Lt, Lm and Lo.
-        unicodeCategoryPatterns.put("Ltmo", Pattern.compile("\\p{Lt}|\\p{Lm}|\\p{Lo}"));
+        unicodeCategoryShorthands = new String[31];
+        unicodeCategoryShorthands[Character.CONTROL] = "Cc"; // Other, Control
+        unicodeCategoryShorthands[Character.FORMAT] = "Cf"; // Other, Format
+        unicodeCategoryShorthands[Character.UNASSIGNED] = "Cn"; // Other, Not Assigned (no characters in the file have this property)
+        unicodeCategoryShorthands[Character.PRIVATE_USE] = "Co"; // Other, Private Use
+        unicodeCategoryShorthands[Character.SURROGATE] = "Cs"; // Other, Surrogate
+        unicodeCategoryShorthands[Character.LOWERCASE_LETTER] = "Ll"; // Letter, Lowercase
+        unicodeCategoryShorthands[Character.MODIFIER_LETTER] = "Lm"; // Letter, Modifier
+        unicodeCategoryShorthands[Character.OTHER_LETTER] = "Lo"; // Letter, Other
+        unicodeCategoryShorthands[Character.TITLECASE_LETTER] = "Lt"; // Letter, Titlecase
+        unicodeCategoryShorthands[Character.UPPERCASE_LETTER] = "Lu"; // Letter, Uppercase
+        unicodeCategoryShorthands[Character.COMBINING_SPACING_MARK] = "Mc"; // Mark, Spacing Combining
+        unicodeCategoryShorthands[Character.ENCLOSING_MARK] = "Me"; // Mark, Enclosing
+        unicodeCategoryShorthands[Character.NON_SPACING_MARK] = "Mn"; // Mark, Nonspacing
+        unicodeCategoryShorthands[Character.DECIMAL_DIGIT_NUMBER] = "Nd"; // Number, Decimal Digit
+        unicodeCategoryShorthands[Character.LETTER_NUMBER] = "Nl"; // Number, Letter
+        unicodeCategoryShorthands[Character.OTHER_NUMBER] = "No"; // Number, Other
+        unicodeCategoryShorthands[Character.CONNECTOR_PUNCTUATION] = "Pc"; // Punctuation, Connector
+        unicodeCategoryShorthands[Character.DASH_PUNCTUATION] = "Pd"; // Punctuation, Dash
+        unicodeCategoryShorthands[Character.END_PUNCTUATION] = "Pe"; // Punctuation, Close
+        unicodeCategoryShorthands[Character.FINAL_QUOTE_PUNCTUATION] = "Pf"; // Punctuation, Final quote (may behave like Ps or Pe depending on usage)
+        unicodeCategoryShorthands[Character.INITIAL_QUOTE_PUNCTUATION] = "Pi"; // Punctuation, Initial quote (may behave like Ps or Pe depending on usage)
+        unicodeCategoryShorthands[Character.OTHER_PUNCTUATION] = "Po"; // Punctuation, Other
+        unicodeCategoryShorthands[Character.START_PUNCTUATION] = "Ps"; // Punctuation, Open
+        unicodeCategoryShorthands[Character.CURRENCY_SYMBOL] = "Sc"; // Symbol, Currency
+        unicodeCategoryShorthands[Character.MODIFIER_SYMBOL] = "Sk"; // Symbol, Modifier
+        unicodeCategoryShorthands[Character.MATH_SYMBOL] = "Sm"; // Symbol, Math
+        unicodeCategoryShorthands[Character.OTHER_SYMBOL] = "So"; // Symbol, Other
+        unicodeCategoryShorthands[Character.LINE_SEPARATOR] = "Zl"; // Separator, Line
+        unicodeCategoryShorthands[Character.PARAGRAPH_SEPARATOR] = "Zp"; // Separator, Paragraph
+        unicodeCategoryShorthands[Character.SPACE_SEPARATOR] = "Zs"; // Separator, Space
     }
 }
