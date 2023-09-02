@@ -52,65 +52,6 @@ class TestInputStream {
     }
     
     @Test
-    void testNext() {
-        assertEquals('T', stream.next());
-        assertEquals('h', stream.next());
-        assertEquals('e', stream.next());
-        assertEquals(3, stream.getPosition());
-        
-        stream.setPosition(42);
-        assertEquals('g', stream.next());
-        assertEquals('.', stream.next());
-        assertThrows(RuntimeException.class, () -> stream.next(), "Should throw exception if at end");
-    }
-    
-    @Test
-    void testUnicodeNext() {
-        stream = new InputStream(unicodeString);
-        stream.setPosition(8);
-        assertEquals(' ', stream.next());
-        assertEquals('\uD83D', stream.next());
-        assertEquals('\uDC4D', stream.next());
-        assertEquals(11, stream.getPosition());
-        stream.setPosition(12);
-        assertEquals('\uD83D', stream.next());
-        assertEquals('\uDC4D', stream.next());
-        assertEquals('\uD83C', stream.next());
-        assertEquals('\uDFFF', stream.next());
-        assertEquals(' ', stream.next());
-    }
-    
-    @Test
-    void testNextCharCode() {
-        assertEquals(84, stream.nextCharCode());
-        assertEquals(104, stream.nextCharCode());
-        assertEquals(101, stream.nextCharCode());
-        assertEquals(3, stream.getPosition());
-        
-        stream.setPosition(42);
-        assertEquals(103, stream.nextCharCode());
-        assertEquals(46, stream.nextCharCode());
-        assertThrows(RuntimeException.class, () -> stream.nextCharCode(),
-            "Should throw exception if at end");
-    }
-    
-    @Test
-    void testUnicodeNextCharCode() {
-        stream = new InputStream(unicodeString);
-        stream.setPosition(8);
-        assertEquals(32, stream.nextCharCode());
-        assertEquals(0xD83D, stream.nextCharCode());
-        assertEquals(0xDC4D, stream.nextCharCode());
-        assertEquals(11, stream.getPosition());
-        stream.setPosition(12);
-        assertEquals(0xD83D, stream.nextCharCode());
-        assertEquals(0xDC4D, stream.nextCharCode());
-        assertEquals(0xD83C, stream.nextCharCode());
-        assertEquals(0xDFFF, stream.nextCharCode());
-        assertEquals(32, stream.nextCharCode());
-    }
-    
-    @Test
     void testNextCodePoint() {
         assertEquals(84, stream.nextCodePoint());
         assertEquals(104, stream.nextCodePoint());
@@ -134,8 +75,6 @@ class TestInputStream {
         stream.setPosition(12);
         assertEquals(0x1F44D, stream.nextCodePoint());
         assertEquals(0x1F3FF, stream.nextCodePoint());
-        assertEquals(32, stream.nextCharCode());
-        assertEquals(17, stream.getPosition());
         stream.setPosition(18);
         assertEquals(0xDC4D, stream.nextCodePoint(),
             "Should return char code if in the middle of a code point");

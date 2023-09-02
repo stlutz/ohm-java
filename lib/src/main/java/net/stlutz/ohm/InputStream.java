@@ -42,15 +42,6 @@ public class InputStream {
         return position >= source.length();
     }
     
-    public char next() {
-        rightmostExaminedPosition = Math.max(rightmostExaminedPosition, position + 1);
-        return source.charAt(position++);
-    }
-    
-    public int nextCharCode() {
-        return (int) next();
-    }
-    
     public int nextCodePoint() {
         int codePoint = source.codePointAt(position);
         position += Character.charCount(codePoint);
