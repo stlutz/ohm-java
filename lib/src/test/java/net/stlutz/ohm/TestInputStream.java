@@ -26,7 +26,7 @@ class TestInputStream {
     }
     
     @Test
-    void testExaminedLength() {
+    void testRightmostExaminedPosition() {
         // TODO: what is it even supposed to do?
     }
     

@@ -3,19 +3,19 @@ package net.stlutz.ohm;
 public class InputStream {
     private final String source;
     private int position = 0;
-    private int examinedLength = 0;
+    private int rightmostExaminedPosition = 0;
     
     public InputStream(String source) {
         super();
         this.source = source;
     }
     
-    public int getExaminedLength() {
-        return examinedLength;
+    public int getRightmostExaminedPosition() {
+        return rightmostExaminedPosition;
     }
     
-    public void setExaminedLength(int examinedLength) {
-        this.examinedLength = examinedLength;
+    public void setRightmostExaminedPosition(int rightmostExaminedPosition) {
+        this.rightmostExaminedPosition = rightmostExaminedPosition;
     }
     
     public int getPosition() {
@@ -38,12 +38,12 @@ public class InputStream {
     }
     
     public boolean atEnd() {
-        examinedLength = Math.max(examinedLength, position + 1);
+        rightmostExaminedPosition = Math.max(rightmostExaminedPosition, position + 1);
         return position >= source.length();
     }
     
     public char next() {
-        examinedLength = Math.max(examinedLength, position + 1);
+        rightmostExaminedPosition = Math.max(rightmostExaminedPosition, position + 1);
         return source.charAt(position++);
     }
     
@@ -54,7 +54,7 @@ public class InputStream {
     public int nextCodePoint() {
         int codePoint = source.codePointAt(position);
         position += Character.charCount(codePoint);
-        examinedLength = Math.max(examinedLength, position);
+        rightmostExaminedPosition = Math.max(rightmostExaminedPosition, position);
         return codePoint;
     }
     
@@ -96,7 +96,7 @@ public class InputStream {
             matchLength += Character.charCount(codePointActual);
         }
         
-        examinedLength = Math.max(examinedLength, position + matchLength);
+        rightmostExaminedPosition = Math.max(rightmostExaminedPosition, position + matchLength);
         return matchLength;
     }
     
