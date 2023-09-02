@@ -34,7 +34,11 @@ public abstract class AbstractPExprTest {
     }
     
     protected void addBasicEvalTestCase(String input, int offset, PExpr expr, int matchLength) {
-        basicEvalTestCases.add(Arguments.of(input, offset, expr, matchLength));
+        addBasicEvalTestCase(input, offset, expr, matchLength, matchLength > 0 ? offset + matchLength : offset + 1);
+    }
+    
+    protected void addBasicEvalTestCase(String input, int offset, PExpr expr, int matchLength, int rightmostExaminedPosition) {
+        basicEvalTestCases.add(Arguments.of(input, offset, expr, matchLength, rightmostExaminedPosition));
     }
     
     protected Stream<Arguments> basicEvalTestCases() {
@@ -45,7 +49,7 @@ public abstract class AbstractPExprTest {
     
     @ParameterizedTest(name = "[{index}] - {0}")
     @MethodSource("basicEvalTestCases")
-    public void testBasicEval(String input, int offset, PExpr expr, int matchLength) {
+    public void testBasicEval(String input, int offset, PExpr expr, int matchLength, int rightmostExaminedPosition) {
         MatchState matchState = newMatchState(input, offset);
         InputStream inputStream = matchState.getInputStream();
         int arity = expr.getArity();
@@ -54,6 +58,7 @@ public abstract class AbstractPExprTest {
         boolean succeeded = expr.eval(matchState);
         
         assertEquals(matchLength >= 0, succeeded);
+        assertEquals(rightmostExaminedPosition, inputStream.getRightmostExaminedPosition());
         if (succeeded) {
             assertEquals(arity, matchState.numBindings() - numBindingsBefore);
             assertEquals(matchLength + offset, inputStream.getPosition());

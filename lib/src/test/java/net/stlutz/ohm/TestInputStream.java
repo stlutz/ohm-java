@@ -27,7 +27,17 @@ class TestInputStream {
     
     @Test
     void testRightmostExaminedPosition() {
-        // TODO: what is it even supposed to do?
+        assertEquals(0, stream.getRightmostExaminedPosition());
+        stream.nextCodePoint();
+        assertEquals(1, stream.getRightmostExaminedPosition());
+        stream.atEnd();
+        assertEquals(2, stream.getRightmostExaminedPosition());
+        stream.nextCodePoint();
+        stream.nextCodePoint();
+        assertEquals(3, stream.getRightmostExaminedPosition());
+        stream.setPosition(0);
+        stream.nextCodePoint();
+        assertEquals(3, stream.getRightmostExaminedPosition());
     }
     
     @Test

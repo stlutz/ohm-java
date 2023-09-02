@@ -76,7 +76,12 @@ public class InputStream {
     /**
      * Matches {@code str} against the input stream at the current position without moving the current position.
      * Comparison is done between Unicode code points.
-     * Examines up to the first non-matching code point.
+     * Examines
+     * <ul>
+     *      <li>up to the first non-matching code point, </li>
+     *      <li>until all of {@code str} was matched, or </li>
+     *      <li>until the stream's end.</li>
+     * </ul>
      *
      * @param str The string to match
      * @param ignoreCase If true, code points match if either their uppercase or lowercase variants match
@@ -84,8 +89,11 @@ public class InputStream {
      */
     public int match(String str, boolean ignoreCase) {
         int maxMatchLength = Math.min(str.length(), source.length() - position);
-        int matchLength = 0;
+        if (maxMatchLength == 0) {
+            return 0;
+        }
         
+        int matchLength = 0;
         while (matchLength < maxMatchLength) {
             int codePointActual = source.codePointAt(position + matchLength);
             int codePointExpected = str.codePointAt(matchLength);
@@ -96,7 +104,7 @@ public class InputStream {
             matchLength += Character.charCount(codePointActual);
         }
         
-        rightmostExaminedPosition = Math.max(rightmostExaminedPosition, position + matchLength);
+        rightmostExaminedPosition = Math.max(rightmostExaminedPosition, position + Math.min(matchLength + 1, str.length()));
         return matchLength;
     }
     
