@@ -170,11 +170,11 @@ public class ConstructedGrammarBuilder {
                     "Cannot %s rule '%s'. No rule of the same name was found in a super grammar."
                         .formatted(def.isOverride() ? "override" : "extend", def.name));
             }
-            String[] superRuleFormals = superRule.getFormals();
-            if (superRuleFormals.length != def.formals.length) {
+            List<String> superRuleFormals = superRule.getFormals();
+            if (superRuleFormals.size() != def.formals.size()) {
                 throw new OhmException(
                     "Cannot %s rule '%s': Got %d parameters, but super rule has %d parameters."
-                        .formatted(def.isOverride() ? "override" : "extend", def.name, def.formals.length, superRuleFormals.length));
+                        .formatted(def.isOverride() ? "override" : "extend", def.name, def.formals.size(), superRuleFormals.size()));
             }
             
             if (def.isExtension()) {
@@ -192,7 +192,6 @@ public class ConstructedGrammarBuilder {
             }
         }
         
-        body.introduceParams(def.formals);
         return new ConstructedRule(body, def.formals, description, def.sourceInterval, def.operation);
     }
     

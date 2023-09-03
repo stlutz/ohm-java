@@ -51,27 +51,6 @@ public class Apply extends PExpr {
     }
     
     @Override
-    public PExpr introduceParams(String[] formals) {
-        for (int index = 0; index < formals.length; index++) {
-            if (ruleName.equals(formals[index])) {
-                // We are not actually an application, just a parameter
-                if (args.length > 0) {
-                    throw new OhmException(
-                        "Parameterized rules cannot be passed as arguments to another rule");
-                }
-                Param result = new Param(index);
-                result.setSource(source);
-                return result;
-            }
-        }
-        
-        for (int i = 0; i < args.length; i++) {
-            args[i] = args[i].introduceParams(formals);
-        }
-        return this;
-    }
-    
-    @Override
     public PExpr substituteParams(PExpr[] actuals) {
         if (args.length == 0) {
             return this;

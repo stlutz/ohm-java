@@ -28,12 +28,6 @@ public class Splice extends PExpr {
     }
     
     @Override
-    public PExpr introduceParams(String[] formals) {
-        superExpr = superExpr.introduceParams(formals);
-        return this;
-    }
-    
-    @Override
     public PExpr substituteParams(PExpr[] actuals) {
         return new Splice(superExpr.substituteParams(actuals));
     }

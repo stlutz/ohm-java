@@ -22,6 +22,10 @@ public class BuildGrammar extends Semantics {
     }
     
     public PExpr buildPExpr(Node node) {
+        reset();
+        builder = new ConstructedGrammarBuilder();
+        currentGrammar = builder.newGrammar("DummyGrammar");
+        currentRule = currentGrammar.newRule("DummyRule");
         return build(node);
     }
     
@@ -148,14 +152,15 @@ public class BuildGrammar extends Semantics {
         String inlineRuleName = currentRule.name + "_" + caseName;
         
         RuleDefinition inlineRule = currentGrammar.newRule(inlineRuleName);
+        // TODO: Should we set the current rule here?
         inlineRule.sourceInterval(self.getSource().trimmed());
         inlineRule.formals(currentRule.formals);
         PExpr body = build(bodyNode);
         inlineRule.body(body);
         
-        PExpr[] params = new PExpr[currentRule.formals.length];
+        PExpr[] params = new PExpr[currentRule.formals.size()];
         for (int i = 0; i < params.length; i++) {
-            params[i] = PExpr.apply(currentRule.formals[i]);
+            params[i] = PExpr.param(0);
         }
         PExpr result = PExpr.apply(inlineRuleName, params);
         result.setSource(body.getSource());
@@ -231,9 +236,21 @@ public class BuildGrammar extends Semantics {
     @Action
     public PExpr Base_application(Node identNode, Node paramsOpt) {
         String ruleName = (String) apply(identNode);
-        PExpr[] parameters =
-            paramsOpt.hasChildren() ? (PExpr[]) apply(paramsOpt.onlyChild()) : new PExpr[0];
-        PExpr result = PExpr.apply(ruleName, parameters);
+        PExpr[] parameters = paramsOpt.hasChildren() ? (PExpr[]) apply(paramsOpt.onlyChild()) : new PExpr[0];
+        
+        // parameter applications are parsed as applications, so we have to check against the formals
+        // e.g. in `NonemptyListOf<elem, sep> = elem (sep elem)*` the rhs occurrences of `elem` and `sep`
+        // are parsed as applications, but need to be parameters
+        int paramIndex = currentRule.formals.indexOf(ruleName);
+        PExpr result;
+        if (paramIndex >= 0) {
+            if (parameters.length > 0) {
+                throw new OhmException("Parameterized rules cannot be passed as arguments to another rule");
+            }
+            result = PExpr.param(paramIndex);
+        } else {
+            result = PExpr.apply(ruleName, parameters);
+        }
         result.setSource(self.getSource());
         return result;
     }

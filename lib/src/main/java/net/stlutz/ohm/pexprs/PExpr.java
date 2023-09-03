@@ -44,13 +44,6 @@ public abstract class PExpr {
      */
     public abstract PExpr substituteParams(PExpr[] actuals);
     
-    /**
-     * Called at grammar creation time to rewrite a rule body, replacing each reference to a formal
-     * parameter with a `Param` node. Returns a PExpr -- either a new one, or the original one if it
-     * was modified in place.
-     */
-    public abstract PExpr introduceParams(String[] formals);
-    
     public void resolveSplice(PExpr superRuleBody) {
     }
     

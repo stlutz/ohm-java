@@ -2,14 +2,16 @@ package net.stlutz.ohm;
 
 import net.stlutz.ohm.pexprs.PExpr;
 
+import java.util.List;
+
 public class ConstructedRule implements Rule {
     final Operation operation;
     final PExpr body;
-    final String[] formals;
+    final List<String> formals;
     final String description;
     final SourceInterval source;
     
-    public ConstructedRule(PExpr body, String[] formals, String description, SourceInterval source, Operation operation) {
+    public ConstructedRule(PExpr body, List<String> formals, String description, SourceInterval source, Operation operation) {
         super();
         this.operation = operation;
         this.body = body;
@@ -37,7 +39,7 @@ public class ConstructedRule implements Rule {
     }
     
     @Override
-    public String[] getFormals() {
+    public List<String> getFormals() {
         return formals;
     }
     

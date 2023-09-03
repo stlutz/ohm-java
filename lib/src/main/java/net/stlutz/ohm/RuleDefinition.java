@@ -2,13 +2,17 @@ package net.stlutz.ohm;
 
 import net.stlutz.ohm.pexprs.PExpr;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 class RuleDefinition {
     String name;
     SourceInterval sourceInterval;
     String description;
     PExpr body;
     Rule.Operation operation = Rule.Operation.DEFINE;
-    String[] formals = new String[0];
+    List<String> formals = Collections.emptyList();
     
     RuleDefinition(String name) {
         super();
@@ -69,6 +73,10 @@ class RuleDefinition {
      * Optional.
      */
     public RuleDefinition formals(String... formals) {
+        return formals(Arrays.asList(formals));
+    }
+    
+    public RuleDefinition formals(List<String> formals) {
         this.formals = formals;
         return this;
     }

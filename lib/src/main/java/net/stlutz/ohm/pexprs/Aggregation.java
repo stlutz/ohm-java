@@ -27,14 +27,6 @@ public abstract class Aggregation extends PExpr {
     }
     
     @Override
-    public PExpr introduceParams(String[] formals) {
-        for (int i = 0; i < terms.length; i++) {
-            terms[i] = terms[i].introduceParams(formals);
-        }
-        return this;
-    }
-    
-    @Override
     public PExpr substituteParams(PExpr[] actuals) {
         // TODO: if all terms stay identical, return this?
         PExpr[] substituted = new PExpr[terms.length];

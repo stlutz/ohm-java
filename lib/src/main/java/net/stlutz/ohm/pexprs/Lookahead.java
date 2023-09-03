@@ -21,12 +21,6 @@ public class Lookahead extends PExpr {
     }
     
     @Override
-    public PExpr introduceParams(String[] formals) {
-        expr = expr.introduceParams(formals);
-        return this;
-    }
-    
-    @Override
     public PExpr substituteParams(PExpr[] actuals) {
         return new Lookahead(expr.substituteParams(actuals));
     }

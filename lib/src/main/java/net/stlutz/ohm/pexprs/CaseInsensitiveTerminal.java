@@ -24,11 +24,6 @@ public class CaseInsensitiveTerminal extends PExpr {
     }
     
     @Override
-    public PExpr introduceParams(String[] formals) {
-        return this;
-    }
-    
-    @Override
     public PExpr substituteParams(PExpr[] actuals) {
         return new CaseInsensitiveTerminal(param.substituteParams(actuals));
     }

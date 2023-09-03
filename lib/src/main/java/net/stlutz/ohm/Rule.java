@@ -2,6 +2,8 @@ package net.stlutz.ohm;
 
 import net.stlutz.ohm.pexprs.PExpr;
 
+import java.util.List;
+
 public interface Rule {
     public enum Operation {
         DEFINE, EXTEND, OVERRIDE,
@@ -28,9 +30,9 @@ public interface Rule {
     /**
      * Returns the parameter names defined for this rule. Parameter names are guaranteed to be identifiers.
      *
-     * @return An array of parameter names.
+     * @return The rule's parameter names.
      */
-    String[] getFormals();
+    List<String> getFormals();
     
     /**
      * Returns a string describing the role of this rule.
