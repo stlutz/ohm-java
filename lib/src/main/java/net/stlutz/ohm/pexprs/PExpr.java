@@ -54,6 +54,8 @@ public abstract class PExpr {
     public void resolveSplice(PExpr superRuleBody) {
     }
     
+    public abstract <T> T accept(PExprVisitor<T> visitor);
+    
     /**
      * Evaluate the expression and return {@code true} if it succeeds, {@code false} otherwise. This method should
      * only be called directly by {@link EvalContext#eval(PExpr)}, which also updates the data structures that

@@ -29,4 +29,9 @@ public class Star extends Iter {
     protected Iter newInstance(PExpr expr) {
         return new Star(expr);
     }
+    
+    @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitStar(this);
+    }
 }

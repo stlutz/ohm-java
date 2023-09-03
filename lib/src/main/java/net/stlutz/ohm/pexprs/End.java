@@ -15,6 +15,11 @@ public class End extends Prim {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitEnd(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (inputStream.atEnd()) {
             evalContext.pushBinding(TerminalNode.get(0), originalPosition);

@@ -85,6 +85,11 @@ public class Apply extends PExpr {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitApply(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         Apply caller = evalContext.currentApplication();
         PExpr[] actuals = (caller != null) ? caller.args : new PExpr[0];

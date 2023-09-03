@@ -18,6 +18,11 @@ public class Terminal extends Prim {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitTerminal(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (inputStream.matches(obj)) {
             inputStream.advance(obj.length());

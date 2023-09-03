@@ -23,6 +23,11 @@ public class Range extends Prim {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitRange(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (!inputStream.atEnd()) {
             int codePoint = inputStream.nextCodePoint();

@@ -32,6 +32,11 @@ public class Param extends PExpr {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitParam(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         // TODO: figure out what's happening here
         return evalContext.eval(evalContext.currentApplication().getArg(index));

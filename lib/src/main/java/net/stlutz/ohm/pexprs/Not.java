@@ -32,6 +32,11 @@ public class Not extends PExpr {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitNot(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         // TODO: Right now we're just throwing away all of the failures that happen
         // inside a `not`, and recording `this` as a failed expression.

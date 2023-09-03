@@ -6,7 +6,7 @@ import net.stlutz.ohm.InputStream;
  * Splice is an implementation detail of rule overriding with the `...` operator.
  */
 public class Splice extends PExpr {
-    private PExpr superExpr;
+    PExpr superExpr;
     
     public Splice() {
         super();
@@ -36,6 +36,11 @@ public class Splice extends PExpr {
     @Override
     public PExpr substituteParams(PExpr[] actuals) {
         return new Splice(superExpr.substituteParams(actuals));
+    }
+    
+    @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitSplice(this);
     }
     
     @Override

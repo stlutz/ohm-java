@@ -34,4 +34,9 @@ public class Opt extends Iter {
     boolean isOptional() {
         return true;
     }
+    
+    @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitOpt(this);
+    }
 }

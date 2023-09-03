@@ -22,6 +22,11 @@ public class UnicodeChar extends Prim {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitUnicodeChar(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (!inputStream.atEnd()) {
             int nextCodePointCategory = Character.getType(inputStream.nextCodePoint());

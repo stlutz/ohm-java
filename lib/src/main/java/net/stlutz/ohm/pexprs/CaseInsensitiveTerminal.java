@@ -34,6 +34,11 @@ public class CaseInsensitiveTerminal extends PExpr {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitCaseInsensitiveTerminal(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (!(param instanceof Terminal terminal)) {
             throw new OhmException("Expected a Terminal expression");

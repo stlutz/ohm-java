@@ -12,4 +12,9 @@ public class Extend extends Alt {
         this.superBody = superBody;
         this.body = body;
     }
+    
+    @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitExtend(this);
+    }
 }

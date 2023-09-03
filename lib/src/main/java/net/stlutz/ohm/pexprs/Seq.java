@@ -22,6 +22,11 @@ public class Seq extends Aggregation {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitSeq(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         for (PExpr term : terms) {
             if (!evalContext.eval(term)) {

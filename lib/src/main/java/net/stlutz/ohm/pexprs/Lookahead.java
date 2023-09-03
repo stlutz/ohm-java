@@ -32,6 +32,11 @@ public class Lookahead extends PExpr {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitLookahead(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (evalContext.eval(expr)) {
             inputStream.setPosition(originalPosition);

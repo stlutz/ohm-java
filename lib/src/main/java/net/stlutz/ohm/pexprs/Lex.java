@@ -32,6 +32,11 @@ public class Lex extends PExpr {
     }
     
     @Override
+    public <T> T accept(PExprVisitor<T> visitor) {
+        return visitor.visitLex(this);
+    }
+    
+    @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         evalContext.enterLexifiedContext();
         boolean succeeded = evalContext.eval(expr);
