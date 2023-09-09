@@ -146,6 +146,7 @@ public class ConstructedGrammarBuilder {
             });
         }
         
+        RulesFinalizer.finalize(rules);
         return rules;
     }
     
@@ -154,27 +155,31 @@ public class ConstructedGrammarBuilder {
         if (body == null) {
             throw new OhmException("Rule body must not be null.");
         }
+        String name = def.name;
+        if (name == null) {
+            throw new OhmException("Rule name must not be null.");
+        }
         String description = def.description;
         
         Collection<String> duplicateParameterNames = Util.getDuplicates(def.formals);
         if (!duplicateParameterNames.isEmpty()) {
-            throw new OhmException("Duplicate parameter names in rule '%s': %s".formatted(def.name,
+            throw new OhmException("Duplicate parameter names in rule '%s': %s".formatted(name,
                 String.join(", ", duplicateParameterNames)));
         }
         
-        Rule superRule = superGrammar != null ? superGrammar.getRule(def.name) : null;
+        Rule superRule = superGrammar != null ? superGrammar.getRule(name) : null;
         
         if (!def.isDefinition()) {
             if (superRule == null) {
                 throw new OhmException(
                     "Cannot %s rule '%s'. No rule of the same name was found in a super grammar."
-                        .formatted(def.isOverride() ? "override" : "extend", def.name));
+                        .formatted(def.isOverride() ? "override" : "extend", name));
             }
             List<String> superRuleFormals = superRule.getFormals();
             if (superRuleFormals.size() != def.formals.size()) {
                 throw new OhmException(
                     "Cannot %s rule '%s': Got %d parameters, but super rule has %d parameters."
-                        .formatted(def.isOverride() ? "override" : "extend", def.name, def.formals.size(), superRuleFormals.size()));
+                        .formatted(def.isOverride() ? "override" : "extend", name, def.formals.size(), superRuleFormals.size()));
             }
             
             if (def.isExtension()) {
@@ -183,13 +188,20 @@ public class ConstructedGrammarBuilder {
                 body.resolveSplice(superRule.getBody());
             }
             
-            description = superRule.getDescription();
+            if (description != null) {
+                description = superRule.getDescription();
+            }
         } else {
             if (superRule != null) {
                 throw new OhmException(
                     "Rule '%s' was already declared in super grammar and must be explicitly overridden."
-                        .formatted(def.name));
+                        .formatted(name));
             }
+        }
+        
+        if (description == null) {
+            // TODO: "an" for vowels?
+            description = "a " + name;
         }
         
         return new ConstructedRule(body, def.formals, description, def.sourceInterval, def.operation);

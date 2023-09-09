@@ -10,8 +10,9 @@ import net.stlutz.ohm.Rule;
 import net.stlutz.ohm.Util;
 
 public class Apply extends PExpr {
-    public String ruleName;
-    private PExpr[] args;
+    private final String ruleName;
+    private final PExpr[] args;
+    private String description;
     
     /**
      * Caches the result of {@code this.toString()}.
@@ -38,6 +39,14 @@ public class Apply extends PExpr {
     
     public PExpr getArg(int index) {
         return args[index];
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
     }
     
     @Override
