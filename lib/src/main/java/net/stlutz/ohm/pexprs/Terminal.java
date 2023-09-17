@@ -29,8 +29,14 @@ public class Terminal extends Prim {
             evalContext.pushBinding(TerminalNode.get(obj.length()), originalPosition);
             return true;
         } else {
+            evalContext.processFailure(originalPosition, this);
             return false;
         }
+    }
+    
+    @Override
+    public void toFailureDescription(StringBuilder sb) {
+        toString(sb);
     }
     
     @Override

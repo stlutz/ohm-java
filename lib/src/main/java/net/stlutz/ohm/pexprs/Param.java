@@ -38,6 +38,11 @@ public class Param extends PExpr {
     }
     
     @Override
+    public void toFailureDescription(StringBuilder sb) {
+        throw new InternalError("Param::toFailureDescription should never be called");
+    }
+    
+    @Override
     public void toString(StringBuilder sb) {
         sb.append('$');
         sb.append(index);

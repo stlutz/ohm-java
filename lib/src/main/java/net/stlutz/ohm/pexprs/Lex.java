@@ -39,6 +39,12 @@ public class Lex extends PExpr {
     }
     
     @Override
+    public void toFailureDescription(StringBuilder sb) {
+        // TODO: It could be though, right? (e.g. within an iter)
+        throw new InternalError("Lex::toFailureDescription should never be called");
+    }
+    
+    @Override
     public void toString(StringBuilder sb) {
         sb.append("#(");
         expr.toString(sb);

@@ -36,7 +36,13 @@ public class Range extends Prim {
                 return true;
             }
         }
+        evalContext.processFailure(originalPosition, this);
         return false;
+    }
+    
+    @Override
+    public void toFailureDescription(StringBuilder sb) {
+        toString(sb);
     }
     
     @Override

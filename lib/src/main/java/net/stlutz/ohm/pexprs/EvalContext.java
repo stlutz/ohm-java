@@ -20,7 +20,17 @@ public interface EvalContext {
     
     void pushBinding(ParseNode node, int originalPosition);
     
-    void processFailure(int failurePosition, PExpr expr);
+    default void processFailure(int failurePosition, PExpr expr) {
+        // do nothing
+    }
+    
+    default void pushFailuresInfo() {
+        // do nothing
+    }
+    
+    default void popFailuresInfo() {
+        // do nothing
+    }
     
     
     // Apply, Param, Iter

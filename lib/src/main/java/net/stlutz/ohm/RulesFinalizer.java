@@ -14,7 +14,9 @@ public class RulesFinalizer extends BasePExprVisitor<Void> {
     
     public static void finalize(Map<String, ? extends Rule> rules) {
         RulesFinalizer finalizer = new RulesFinalizer(rules);
-        rules.values().stream().map(Rule::getBody).forEach(finalizer::visit);
+        for (Rule rule : rules.values()) {
+            finalizer.visit(rule.getBody());
+        }
     }
     
     @Override
@@ -24,7 +26,7 @@ public class RulesFinalizer extends BasePExprVisitor<Void> {
             // TODO: collect errors
             return null;
         }
-        expr.setDescription(rule.getDescription());
+        expr.setRule(rule);
         return null;
     }
 }

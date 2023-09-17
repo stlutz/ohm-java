@@ -199,12 +199,7 @@ public class ConstructedGrammarBuilder {
             }
         }
         
-        if (description == null) {
-            // TODO: "an" for vowels?
-            description = "a " + name;
-        }
-        
-        return new ConstructedRule(body, def.formals, description, def.sourceInterval, def.operation);
+        return new ConstructedRule(name, body, def.formals, description, def.sourceInterval, def.operation);
     }
     
     private boolean isForbiddenRuleName(String ruleName) {

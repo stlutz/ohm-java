@@ -5,64 +5,65 @@ import net.stlutz.ohm.pexprs.PExpr;
 import java.util.List;
 
 public interface Rule {
-    public enum Operation {
+    enum Operation {
         DEFINE, EXTEND, OVERRIDE,
     }
     
     /**
-     * Returns a parsing expression representing the body of this rule.
-     *
-     * @return This rule's parsing expression.
+     * @return the name of this rule.
+     */
+    String getName();
+    
+    /**
+     * @return a parsing expression representing the body of this rule.
      */
     PExpr getBody();
     
     Operation getOperation();
     
     /**
-     * Returns the arity of this rule. Arity indicates how many parse nodes an application of this rule would produce. Never negative.
-     *
-     * @return This rule's arity.
+     * @return the arity of this rule. Arity indicates how many parse nodes an application of this rule would produce. Never negative.
      */
     int getArity();
     
     // TODO: link definition of identifiers
     
     /**
-     * Returns the parameter names defined for this rule. Parameter names are guaranteed to be identifiers.
-     *
-     * @return The rule's parameter names.
+     * @return the parameter names defined for this rule. Parameter names are guaranteed to be identifiers.
      */
     List<String> getFormals();
     
     /**
-     * Returns a string describing the role of this rule.
-     *
-     * @return A description string, or {@code null} if this rule has no description.
+     * @return a string describing the role of this rule, or {@code null} if this rule has no description.
      */
     String getDescription();
     
     /**
-     * Returns whether this rule is a definition (i.e. declared using {@code =}).
-     *
-     * @return {@code true} if this rule is a definition.
+     * @return a string describing the role of this rule. Never null.
+     */
+    String getEffectiveDescription();
+    
+    /**
+     * @return the source of this rule. Never null.
+     */
+    SourceInterval getSource();
+    
+    /**
+     * @return {@code true} if this rule is a definition (i.e. declared using {@code =}).
      */
     default boolean isDefinition() {
         return getOperation() == Operation.DEFINE;
     }
     
     /**
-     * Returns whether this rule is an override (i.e. declared using {@code :=}).
-     *
-     * @return {@code true} if this rule is an override.
+     * @return {@code true} if this rule is an override (i.e. declared using {@code :=}).
      */
     default boolean isOverride() {
         return getOperation() == Operation.OVERRIDE;
     }
     
     /**
-     * Returns whether this rule is an extension (i.e. declared using {@code +=}).
-     *
-     * @return {@code true} if this rule is an extension.
+     * @return {@code true} if this rule is an extension (i.e. declared using {@code +=}).
      */
     default boolean isExtension() {
         return getOperation() == Operation.EXTEND;

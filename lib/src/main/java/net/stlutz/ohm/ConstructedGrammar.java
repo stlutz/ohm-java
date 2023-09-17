@@ -82,13 +82,14 @@ public class ConstructedGrammar extends AbstractGrammar {
     public Apply parseApplication(String ruleName) {
         if (ruleName.contains("<")) {
             // TODO
-            throw new OhmException("parameterized applications are not implemented yet");
+            throw new UnsupportedOperationException("parameterized applications are not implemented yet");
         }
         
-        if (!hasRule(ruleName)) {
+        Rule rule = rules.get(ruleName);
+        if (rule == null) {
             throw new OhmException("'%s' is not a rule in grammar '%s'".formatted(ruleName, name));
         }
         
-        return new Apply(ruleName);
+        return new Apply(rule);
     }
 }

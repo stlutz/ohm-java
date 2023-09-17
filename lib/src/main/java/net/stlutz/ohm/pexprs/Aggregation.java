@@ -39,6 +39,22 @@ public abstract class Aggregation extends PExpr {
     protected abstract String getOperator();
     
     @Override
+    public void toFailureDescription(StringBuilder sb) {
+        // TODO: this kind of join separated by is repeated a lot --> efficient abstraction possible?
+        sb.append("(");
+        boolean isFirst = true;
+        String join = isAlternation() ? " or " : " ";
+        for (PExpr term : terms) {
+            if (!isFirst) {
+                sb.append(join);
+            }
+            term.toFailureDescription(sb);
+            isFirst = false;
+        }
+        sb.append(")");
+    }
+    
+    @Override
     public void toString(StringBuilder sb) {
         if (terms.length > 1) {
             sb.append('(');

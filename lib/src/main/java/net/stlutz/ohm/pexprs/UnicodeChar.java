@@ -50,6 +50,13 @@ public class UnicodeChar extends Prim {
     }
     
     @Override
+    public void toFailureDescription(StringBuilder sb) {
+        sb.append("a Unicode [");
+        sb.append(String.join(",", getShorthands()));
+        sb.append("] character");
+    }
+    
+    @Override
     public void toString(StringBuilder sb) {
         sb.append("\\p{");
         sb.append(String.join("|", getShorthands()));

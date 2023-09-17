@@ -84,6 +84,14 @@ public abstract class Iter extends PExpr {
     }
     
     @Override
+    public void toFailureDescription(StringBuilder sb) {
+        sb.append("(");
+        expr.toFailureDescription(sb);
+        sb.append(getOperator());
+        sb.append(")");
+    }
+    
+    @Override
     public void toString(StringBuilder sb) {
         expr.toString(sb);
         sb.append(getOperator());

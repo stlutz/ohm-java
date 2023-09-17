@@ -41,6 +41,11 @@ public class Lookahead extends PExpr {
     }
     
     @Override
+    public void toFailureDescription(StringBuilder sb) {
+        expr.toFailureDescription(sb);
+    }
+    
+    @Override
     public void toString(StringBuilder sb) {
         sb.append('&');
         expr.toString(sb);

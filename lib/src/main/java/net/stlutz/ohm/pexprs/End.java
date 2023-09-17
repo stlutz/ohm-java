@@ -25,8 +25,14 @@ public class End extends Prim {
             evalContext.pushBinding(TerminalNode.get(0), originalPosition);
             return true;
         } else {
+            evalContext.processFailure(originalPosition, this);
             return false;
         }
+    }
+    
+    @Override
+    public void toFailureDescription(StringBuilder sb) {
+        sb.append("any object");
     }
     
     @Override

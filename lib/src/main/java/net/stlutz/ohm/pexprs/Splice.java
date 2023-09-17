@@ -43,6 +43,11 @@ public class Splice extends PExpr {
     }
     
     @Override
+    public void toFailureDescription(StringBuilder sb) {
+        throw new InternalError("Splice::toFailureDescription should never be called");
+    }
+    
+    @Override
     public void toString(StringBuilder sb) {
         // TODO Auto-generated method stub
     }

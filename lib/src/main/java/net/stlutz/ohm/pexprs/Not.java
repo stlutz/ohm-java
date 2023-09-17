@@ -40,11 +40,22 @@ public class Not extends PExpr {
         boolean matched = evalContext.eval(expr);
         
         if (matched) {
+            evalContext.processFailure(originalPosition, this);
             return false;
         }
         
         inputStream.setPosition(originalPosition);
         return true;
+    }
+    
+    @Override
+    public void toFailureDescription(StringBuilder sb) {
+        if (expr == Any.getInstance()) {
+            sb.append("nothing");
+        } else {
+            sb.append("not ");
+            expr.toFailureDescription(sb);
+        }
     }
     
     @Override

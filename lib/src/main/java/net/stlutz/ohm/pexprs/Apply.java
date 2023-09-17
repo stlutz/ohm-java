@@ -12,7 +12,7 @@ import net.stlutz.ohm.Util;
 public class Apply extends PExpr {
     private final String ruleName;
     private final PExpr[] args;
-    private String description;
+    private Rule rule;
     
     /**
      * Caches the result of {@code this.toString()}.
@@ -24,8 +24,17 @@ public class Apply extends PExpr {
     }
     
     public Apply(String ruleName, PExpr[] args) {
-        super();
         this.ruleName = ruleName;
+        this.args = args;
+    }
+    
+    public Apply(Rule rule) {
+        this(rule, new PExpr[0]);
+    }
+    
+    public Apply(Rule rule, PExpr[] args) {
+        this.rule = rule;
+        this.ruleName = rule.getName();
         this.args = args;
     }
     
@@ -41,12 +50,12 @@ public class Apply extends PExpr {
         return args[index];
     }
     
-    public String getDescription() {
-        return description;
+    public Rule getRule() {
+        return rule;
     }
     
-    public void setDescription(String description) {
-        this.description = description;
+    public void setRule(Rule rule) {
+        this.rule = rule;
     }
     
     @Override
@@ -69,7 +78,7 @@ public class Apply extends PExpr {
         for (int i = 0; i < args.length; i++) {
             substituted[i] = args[i].substituteParams(actuals);
         }
-        return new Apply(ruleName, substituted);
+        return new Apply(rule, substituted);
     }
     
     @Override
@@ -124,10 +133,12 @@ public class Apply extends PExpr {
     
     private boolean reallyEval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         PositionInfo origPosInfo = evalContext.getCurrentPositionInfo();
-        // TODO: bake rule body into apply node?
-        Rule rule = evalContext.getRule(ruleName);
         if (rule == null) {
-            throw new OhmException("No rule '%s' found".formatted(ruleName));
+            // TODO: Can we get around this for all cases?
+            rule = evalContext.getRule(ruleName);
+            if (rule == null) {
+                throw new OhmException("No rule '%s' found".formatted(ruleName));
+            }
         }
         
         evalContext.enterApplication(origPosInfo, this);
@@ -138,7 +149,7 @@ public class Apply extends PExpr {
         boolean isHeadOfLeftRecursion =
             (currentLR != null) && (currentLR.getHeadApplication().toMemoKey().equals(memoKey));
         
-        MemoizationRecord memoRec;
+        MemoizationRecord memoRec = null;
         if (isHeadOfLeftRecursion) {
             nodeOrNull =
                 growSeedResult(rule.getBody(), evalContext, originalPosition, currentLR, nodeOrNull);
@@ -152,10 +163,21 @@ public class Apply extends PExpr {
             memoRec.setValue(nodeOrNull);
             memoRec = origPosInfo.memoize(memoKey, memoRec);
         }
+        boolean succeeded = nodeOrNull != null;
+        
+        if (rule.getDescription() != null) {
+            if (!succeeded) {
+                evalContext.processFailure(originalPosition, this);
+            }
+            if (memoRec != null) {
+                // TODO
+            }
+        }
+        
         
         evalContext.exitApplication(origPosInfo, nodeOrNull);
         
-        return nodeOrNull != null;
+        return succeeded;
     }
     
     private ParseNode evalOnce(PExpr body, EvalContext evalContext) {
@@ -181,15 +203,12 @@ public class Apply extends PExpr {
         
         InputStream inputStream = evalContext.getInputStream();
         
-        while (true) {
+        do {
             lrMemoRec.setMatchLength(inputStream.getPosition() - originalPosition);
             lrMemoRec.setValue(newValue);
             inputStream.setPosition(originalPosition);
             newValue = evalOnce(body, evalContext);
-            if (inputStream.getPosition() - originalPosition <= lrMemoRec.getMatchLength()) {
-                break;
-            }
-        }
+        } while (inputStream.getPosition() - originalPosition > lrMemoRec.getMatchLength());
         
         inputStream.setPosition(originalPosition + lrMemoRec.getMatchLength());
         return lrMemoRec.getValue();
@@ -205,6 +224,11 @@ public class Apply extends PExpr {
             memoKey = toString();
         }
         return memoKey;
+    }
+    
+    @Override
+    public void toFailureDescription(StringBuilder sb) {
+        sb.append(rule.getEffectiveDescription());
     }
     
     @Override

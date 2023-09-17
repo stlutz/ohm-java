@@ -107,6 +107,11 @@ class TestInputStream {
     }
     
     @Test
+    void testMatch() {
+        // TODO
+    }
+    
+    @Test
     void testSourceSlice() {
         assertEquals("The", stream.sourceSlice(0, 3));
         assertEquals("dog.", stream.sourceSlice(40, 44));

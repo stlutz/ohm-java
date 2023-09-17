@@ -88,14 +88,19 @@ public abstract class PExpr {
         toString(sb);
     }
     
+    public String toFailureDescription() {
+        StringBuilder sb = new StringBuilder();
+        toFailureDescription(sb);
+        return sb.toString();
+    }
+    
+    public abstract void toFailureDescription(StringBuilder sb);
+    
     // abstract void assertAllApplicationsAreValid(String ruleName, Grammar grammar);
     // abstract void assertChoicesHaveUniformArity(String ruleName);
     // abstract void assertIteratedExprsAreNotNullable(Grammar grammar);
     // public abstract boolean isNullable(Grammar grammar) {}
     // public abstract boolean isNullable(Grammar grammar, ? memo);
-    // public abstract PExpr introduceParams(String[] formals);
-    // public abstract PExpr substituteParams(PExpr[] actuals);
-    // public abstract Failure toFailure(Grammar grammar);
     
     public boolean isSequence() {
         return false;

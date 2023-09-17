@@ -22,12 +22,19 @@ public class Any extends Prim {
     @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (inputStream.atEnd()) {
+            evalContext.processFailure(originalPosition, this);
             return false;
         } else {
+            // TODO: Consume code point
             inputStream.advance(1);
             evalContext.pushBinding(TerminalNode.get(1), originalPosition);
             return true;
         }
+    }
+    
+    @Override
+    public void toFailureDescription(StringBuilder sb) {
+        sb.append("any object");
     }
     
     @Override

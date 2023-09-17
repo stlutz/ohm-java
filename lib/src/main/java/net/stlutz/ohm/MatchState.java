@@ -10,26 +10,24 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class MatchState implements EvalContext {
-    private final Matcher matcher;
+    protected final Matcher matcher;
     // borrowed from matcher for easier access
-    private final Grammar grammar;
-    private final String input;
-    private final PositionInfo[] memoTable;
+    protected final Grammar grammar;
+    protected final String input;
+    protected final PositionInfo[] memoTable;
     
-    private final InputStream inputStream;
-    private final PExpr startExpr;
-    private final Apply startApplication;
+    protected final InputStream inputStream;
+    protected final PExpr startExpr;
+    protected final Apply startApplication;
     
-    private final Deque<ParseNode> bindings = new ArrayDeque<>();
-    private final Deque<Integer> bindingOffsets = new ArrayDeque<>();
-    private final Deque<Apply> applicationStack = new ArrayDeque<>();
-    private final Deque<Integer> positionStack = new ArrayDeque<>();
-    private final Deque<Boolean> inLexifiedContextStack = new ArrayDeque<>();
+    protected final Deque<ParseNode> bindings = new ArrayDeque<>();
+    protected final Deque<Integer> bindingOffsets = new ArrayDeque<>();
+    protected final Deque<Apply> applicationStack = new ArrayDeque<>();
+    protected final Deque<Integer> positionStack = new ArrayDeque<>();
+    protected final Deque<Boolean> inLexifiedContextStack = new ArrayDeque<>();
     
-    private static final Apply applySpaces = new Apply("spaces");
-    
-    // private int positionToRecordFailures;
-    // private Map<String, ?> recordedFailures;
+    protected static final Apply APPLY_SPACES = new Apply(ConstructedGrammar.BuiltInRules.getRule("spaces"));
+    protected static final PExpr APPLY_SYNTACTIC_BODY = ConstructedGrammar.BuiltInRules.getRule("applySyntactic").getBody();
     
     public MatchState(Matcher matcher, Apply startApplication) {
         super();
@@ -45,12 +43,6 @@ public class MatchState implements EvalContext {
         positionStack.addLast(0);
         inLexifiedContextStack.addLast(false);
     }
-    
-    // public Matcher(MatchTask matchTask, PExpr startExpr, int positionToRecordFailures) {
-    // this(matchTask, startExpr);
-    // this.positionToRecordFailures = positionToRecordFailures;
-    // // TODO: allow for recorded failures
-    // }
     
     @Override
     public InputStream getInputStream() {
@@ -125,7 +117,7 @@ public class MatchState implements EvalContext {
     }
     
     int skipSpaces() {
-        eval(applySpaces);
+        eval(APPLY_SPACES);
         popBinding();
         return inputStream.getPosition();
     }
@@ -135,7 +127,7 @@ public class MatchState implements EvalContext {
     }
     
     private int maybeSkipSpacesBefore(PExpr expr) {
-        if (expr.allowsSkippingPrecedingSpace() && !(expr.equals(applySpaces))) {
+        if (expr.allowsSkippingPrecedingSpace() && !(expr.equals(APPLY_SPACES))) {
             return skipSpacesIfInSyntacticContext();
         } else {
             return inputStream.getPosition();
@@ -219,9 +211,17 @@ public class MatchState implements EvalContext {
         
         boolean succeeded = expr.eval(this, inputStream, inputStream.getPosition());
         
-        if (!succeeded) {
+        if (succeeded) {
+        
+        } else {
             inputStream.setPosition(originalPosition);
             truncateBindings(originalNumBindings);
+        }
+        
+        // The built-in applySyntactic rule needs special handling: we want to skip
+        // trailing spaces, just as with the top-level application of a syntactic rule.
+        if (expr == APPLY_SYNTACTIC_BODY) { // TODO: more elegant way of checking this?
+            skipSpaces();
         }
         
         return succeeded;

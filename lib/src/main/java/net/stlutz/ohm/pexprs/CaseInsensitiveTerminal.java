@@ -36,6 +36,7 @@ public class CaseInsensitiveTerminal extends PExpr {
     @Override
     public boolean eval(EvalContext evalContext, InputStream inputStream, int originalPosition) {
         if (!(param instanceof Terminal terminal)) {
+            // TODO: validate during construction
             throw new OhmException("Expected a Terminal expression");
         }
         String matchStr = terminal.getString();
@@ -47,6 +48,12 @@ public class CaseInsensitiveTerminal extends PExpr {
         }
         
         return false;
+    }
+    
+    @Override
+    public void toFailureDescription(StringBuilder sb) {
+        param.toFailureDescription(sb);
+        sb.append(" (case-insensitive)");
     }
     
     @Override
